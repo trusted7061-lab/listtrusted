@@ -631,6 +631,14 @@ function Location() {
     {
       question: `What is your cancellation policy in ${currentCity.name}?`,
       answer: `We understand that plans can change. Please contact us at least 4 hours before your scheduled appointment in ${currentCity.name} to cancel or reschedule. Our complete cancellation policy will be explained during your booking confirmation.`
+    },
+    {
+      question: `Are photos on ${currentCity.name} escort profiles real and recent?`,
+      answer: `Yes, we guarantee that all photos are authentic and recently taken. Our verification process ensures that every ${currentCity.name} escort's profile photos are genuine and match their actual appearance. We maintain strict standards for profile authenticity and verification.`
+    },
+    {
+      question: `What safety precautions are taken during bookings in ${currentCity.name}?`,
+      answer: `Your safety is crucial. All our ${currentCity.name} escorts undergo thorough background verification and health screenings. We maintain confidential booking records, provide secure payment methods, and have emergency support available 24/7 for all bookings in ${currentCity.name}.`
     }
   ]
 
