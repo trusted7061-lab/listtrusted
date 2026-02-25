@@ -635,4 +635,78 @@ router.get('/admin/users', adminMiddleware, async (req, res) => {
   }
 });
 
+// Get advertiser coin requests with their ad statistics (Admin)
+router.get('/admin/advertiser-coin-requests', adminMiddleware, async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+
+    // Get all advertisers sorted by most recent first
+    const users = await User.find({ userType: 'advertiser', role: { $ne: 'admin' } })
+      .select('_id email phone displayName businessName createdAt')
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    // Get detailed stats for each advertiser
+    const advertisersWithStats = await Promise.all(
+      users.map(async (user) => {
+        const wallet = await Wallet.findOne({ userId: user._id });
+        const ads = await AdPosting.find({ userId: user._id });
+        
+        // Calculate ad statistics
+        const now = new Date();
+        const activeAds = ads.filter(a => 
+          a.adminApprovalStatus === 'approved' && 
+          new Date(a.expiresAt) > now
+        );
+        const pendingAds = ads.filter(a => a.adminApprovalStatus === 'pending');
+        const expiredAds = ads.filter(a => 
+          new Date(a.expiresAt) < now
+        );
+        const rejectedAds = ads.filter(a => a.adminApprovalStatus === 'rejected');
+
+        return {
+          userId: user._id,
+          email: user.email,
+          phone: user.phone || 'N/A',
+          displayName: user.displayName || 'N/A',
+          businessName: user.businessName || 'N/A',
+          joinedDate: user.createdAt,
+          currentCoins: wallet?.coins || 0,
+          totalCoinsEarned: wallet?.totalCoinsEarned || 0,
+          totalCoinsSpent: wallet?.totalCoinsSpent || 0,
+          adsStats: {
+            total: ads.length,
+            active: activeAds.length,
+            pending: pendingAds.length,
+            expired: expiredAds.length,
+            rejected: rejectedAds.length
+          },
+          recentAds: ads.slice(0, 5).map(a => ({
+            id: a._id,
+            title: a.title,
+            status: a.adminApprovalStatus,
+            expiresAt: a.expiresAt,
+            isPremium: a.isPremium,
+            coinsUsed: a.coinsUsed,
+            createdAt: a.createdAt
+          }))
+        };
+      })
+    );
+
+    const total = await User.countDocuments({ userType: 'advertiser', role: { $ne: 'admin' } });
+
+    res.json({
+      total,
+      page,
+      limit,
+      advertisers: advertisersWithStats
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch advertiser coin requests', error: error.message });
+  }
+});
+
 module.exports = router;
