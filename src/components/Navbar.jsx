@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { getCurrentUser, logoutUser } from '../services/profileService'
+import InstallAppButton from './InstallAppButton'
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
@@ -127,7 +128,8 @@ function Navbar() {
           </div>
 
           {/* CTA Buttons */}
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-3">
+            <InstallAppButton />
             {currentUser ? (
               <div className="relative user-menu-container">
                 <motion.button
