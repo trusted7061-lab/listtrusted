@@ -669,11 +669,11 @@ function Location() {
         <meta name="keywords" content={`${currentCity.name} escorts, ${currentCity.name} escort service, premium escorts ${currentCity.name}, elite escorts ${currentCity.name}, luxury companionship ${currentCity.name}, ${currentCity.name} companion services, hire escorts ${currentCity.name}, independent escorts ${currentCity.name}, professional escorts ${currentCity.name}, verified escorts ${currentCity.name}, high class escorts ${currentCity.name}, call girls ${currentCity.name}, best escorts in ${currentCity.name}, trusted escorts`} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
-        <link rel="canonical" href={`https://trustedescort.in/location/${normalizedCity}`} />
+        <link rel="canonical" href={`https://trustedescort.in/escorts/in/${normalizedCity}`} />
         
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
-        <meta property="og:url" content={`https://trustedescort.in/location/${normalizedCity}`} />
+        <meta property="og:url" content={`https://trustedescort.in/escorts/in/${normalizedCity}`} />
         <meta property="og:title" content={`Premium Escorts in ${currentCity.name} | Trusted Escort`} />
         <meta property="og:description" content={`Discover elite and verified escorts in ${currentCity.name}. Premium companion services for business, events, and private occasions. Book today at Trusted Escort.`} />
         <meta property="og:image" content={currentCity.image} />
@@ -683,7 +683,7 @@ function Location() {
         
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:url" content={`https://trustedescort.in/location/${normalizedCity}`} />
+        <meta name="twitter:url" content={`https://trustedescort.in/escorts/in/${normalizedCity}`} />
         <meta name="twitter:title" content={`Premium Escorts in ${currentCity.name}`} />
         <meta name="twitter:description" content={`Elite escorts in ${currentCity.name}. Verified, professional companions for all occasions. Book premium services at Trusted Escort.`} />
         <meta name="twitter:image" content={currentCity.image} />
@@ -708,10 +708,10 @@ function Location() {
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "LocalBusiness",
-            "@id": `https://trustedescort.in/location/${normalizedCity}`,
+            "@id": `https://trustedescort.in/escorts/in/${normalizedCity}`,
             "name": `Trusted Escort - ${currentCity.name}`,
             "description": currentCity.description,
-            "url": `https://trustedescort.in/location/${normalizedCity}`,
+            "url": `https://trustedescort.in/escorts/in/${normalizedCity}`,
             "image": currentCity.image,
             "telephone": "+91-XXXXXXXXXX",
             "email": "contact@trustedescort.in",
@@ -747,7 +747,7 @@ function Location() {
                 "@type": "Offer",
                 "name": "Premium Escort Service",
                 "description": `Professional escort companion service in ${currentCity.name}`,
-                "url": `https://trustedescort.in/location/${normalizedCity}`,
+                "url": `https://trustedescort.in/escorts/in/${normalizedCity}`,
                 "price": "5000",
                 "priceCurrency": "INR",
                 "availability": "https://schema.org/InStock",
@@ -757,7 +757,7 @@ function Location() {
                 "@type": "Offer",
                 "name": "Luxury Escort Service",
                 "description": `Elite luxury escort service for special occasions in ${currentCity.name}`,
-                "url": `https://trustedescort.in/location/${normalizedCity}`,
+                "url": `https://trustedescort.in/escorts/in/${normalizedCity}`,
                 "price": "10000",
                 "priceCurrency": "INR",
                 "availability": "https://schema.org/InStock",
@@ -795,7 +795,7 @@ function Location() {
             },
             "availableChannel": {
               "@type": "ServiceChannel",
-              "serviceUrl": `https://trustedescort.in/location/${normalizedCity}`
+              "serviceUrl": `https://trustedescort.in/escorts/in/${normalizedCity}`
             },
             "hasOfferCatalog": {
               "@type": "OfferCatalog",
@@ -865,7 +865,7 @@ function Location() {
                 "@type": "ListItem",
                 "position": 4,
                 "name": currentCity.name,
-                "item": `https://trustedescort.in/location/${normalizedCity}`
+                "item": `https://trustedescort.in/escorts/in/${normalizedCity}`
               }
             ]
           })}

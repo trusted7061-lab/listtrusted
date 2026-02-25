@@ -61,7 +61,7 @@ function App() {
               <Route path="/escorts" element={<Escorts />} />
               <Route path="/escorts/in/:city" element={<Escorts />} />
               <Route path="/escorts/:slug" element={<CompanionProfile />} />
-              <Route path="/location/:city" element={<Location />} />
+              <Route path="/escorts/in/:city" element={<Location />} />
               <Route path="/booking" element={<Booking />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />

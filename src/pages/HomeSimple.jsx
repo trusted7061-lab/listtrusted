@@ -107,7 +107,7 @@ function HomeSimple() {
             {['Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Pune', 'Goa', 'Chennai', 'Kolkata'].map(city => (
               <Link 
                 key={city}
-                to={`/location/${city.toLowerCase()}`}
+                to={`/escorts/in/${city.toLowerCase()}`}
                 style={{
                   padding: '10px 20px',
                   backgroundColor: '#1a1a1a',

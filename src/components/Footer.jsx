@@ -6,7 +6,7 @@ function Footer() {
   const emailLink = 'mailto:info@trustedescort.in'
   const whatsappLink = 'https://wa.me/1234567890'
   const location = useLocation()
-  const isLocationPage = location.pathname.startsWith('/location/')
+  const isLocationPage = location.pathname.startsWith('/escorts/in/')
 
   const currentYear = new Date().getFullYear()
 
@@ -82,10 +82,10 @@ function Footer() {
       { name: 'Terms', path: '/terms' },
     ]},
     { title: 'Top Locations', items: [
-      { name: 'Mumbai', path: '/location/mumbai' },
-      { name: 'Delhi', path: '/location/delhi' },
-      { name: 'Bangalore', path: '/location/bangalore' },
-      { name: 'Hyderabad', path: '/location/hyderabad' },
+      { name: 'Mumbai', path: '/escorts/in/mumbai' },
+      { name: 'Delhi', path: '/escorts/in/delhi' },
+      { name: 'Bangalore', path: '/escorts/in/bangalore' },
+      { name: 'Hyderabad', path: '/escorts/in/hyderabad' },
     ]},
   ]
 

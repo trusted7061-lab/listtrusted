@@ -133,7 +133,7 @@ try {
   const majorCities = ['Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Pune', 'Goa'];
   console.log(`\n${colors.blue}Sample major cities:${colors.reset}`);
   majorCities.forEach(city => {
-    const found = sitemapContent.includes(`/location/${city}`);
+    const found = sitemapContent.includes(`/escorts/in/${city}`);
     if (found) {
       console.log(`${colors.green}✓${colors.reset} ${city}`);
     } else {

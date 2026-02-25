@@ -104,7 +104,7 @@ Array.from(cities).sort().forEach(city => {
   const slug = city.toLowerCase().replace(/[\s&]+/g, '-').replace(/[^a-z0-9-]/g, '');
   xml += `
   <url>
-    <loc>${SITE_URL}/location/${slug}</loc>
+    <loc>${SITE_URL}/escorts/in/${slug}</loc>
     <lastmod>${TODAY}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>

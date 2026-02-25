@@ -139,7 +139,7 @@ These files in the `/public` directory are automatically:
 
 ## Important Notes
 
-1. **URL Format**: All city URLs use capitalized names matching folder structure (e.g., `/location/Mumbai`, `/location/Navi-Mumbai`)
+1. **URL Format**: All city URLs use `/escorts/in/` format with lowercase city names (e.g., `/escorts/in/mumbai`, `/escorts/in/navi-mumbai`)
 
 2. **Priority System**:
    - 1.0: Homepage (most important)
