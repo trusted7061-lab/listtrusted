@@ -874,13 +874,33 @@ function AdvertiserDashboard() {
                           </p>
                         </div>
 
-                        {/* Pay via App Button (Mobile deep link) */}
-                        <a
-                          href={getPaymentLink()}
+                        {/* Pay via App Button (Mobile deep link with fallback) */}
+                        <button
+                          onClick={() => {
+                            const paymentLink = getPaymentLink()
+                            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+                            
+                            if (isMobile) {
+                              // On mobile, open the UPI link
+                              window.open(paymentLink, '_blank')
+                            } else {
+                              // On desktop, show instructions
+                              alert(
+                                'To pay via UPI on desktop:\n\n' +
+                                '1. Open a UPI app on your mobile phone (Google Pay, PhonePe, or Paytm)\n' +
+                                '2. Use the "Send Money" option\n' +
+                                '3. Enter UPI ID: ' + getUPIId() + '\n' +
+                                '4. Enter amount: ₹' + selectedPackage.price + '\n' +
+                                '5. Complete the payment\n' +
+                                '6. Copy the Transaction ID (UTR) from payment confirmation\n' +
+                                '7. Come back here and paste it in the Transaction ID field'
+                              )
+                            }
+                          }}
                           className="flex items-center justify-center gap-2 w-full py-3 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg text-white font-semibold hover:from-purple-700 hover:to-blue-700 transition mb-4"
                         >
                           <span>📱</span> Open UPI App to Pay
-                        </a>
+                        </button>
 
                         {/* Transaction ID Input */}
                         <div className="mt-6">
