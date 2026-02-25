@@ -418,12 +418,7 @@ function Escorts() {
                 "item": {
                   "@type": "Person",
                   "name": escort.name,
-                  "description": escort.description,
-                  "aggregateRating": {
-                    "@type": "AggregateRating",
-                    "ratingValue": escort.rating,
-                    "reviewCount": escort.reviews
-                  }
+                  "description": escort.description
                 }
               }))
             })}

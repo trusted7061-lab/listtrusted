@@ -190,11 +190,6 @@ function CompanionProfile() {
             "address": {
               "@type": "PostalAddress",
               "addressLocality": companion.location
-            },
-            "aggregateRating": {
-              "@type": "AggregateRating",
-              "ratingValue": companion.rating,
-              "reviewCount": companion.reviews
             }
           })}
         </script>
