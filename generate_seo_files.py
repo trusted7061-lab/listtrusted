@@ -107,7 +107,7 @@ for city in sorted(cities):
     slug = re.sub(r'[^a-z0-9-]', '', slug)
     sitemap += f'''
   <url>
-    <loc>{SITE_URL}/location/{slug}</loc>
+    <loc>{SITE_URL}/escorts/in/{slug}</loc>
     <lastmod>{TODAY}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
@@ -136,7 +136,6 @@ Allow: /
 # Main content pages (high priority)
 Allow: /escorts
 Allow: /escorts/in/*
-Allow: /location/*
 Allow: /booking
 Allow: /about
 Allow: /contact
