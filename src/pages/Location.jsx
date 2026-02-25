@@ -890,12 +890,12 @@ function Location() {
         {/* Background Image */}
         <div className="absolute inset-0">
           <img
-            src={currentCity.image}
+            src="/images/hero-section-2.png"
             alt={`${currentCity.title} - Premium escort services in ${currentCity.name}, India`}
-            className="w-full h-full object-cover opacity-20"
+            className="w-full h-full object-cover"
             loading="eager"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-dark-bg via-dark-bg/80 to-dark-bg" />
+          <div className="absolute inset-0 bg-gradient-to-b from-dark-bg/80 via-dark-bg/70 to-dark-bg" />
         </div>
 
         {/* Content */}
