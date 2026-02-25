@@ -226,6 +226,17 @@ function Home() {
 
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+        {/* Hero Banner Background Image */}
+        <div className="absolute inset-0 -z-20">
+          <img 
+            src="/images/hero-banner.png" 
+            alt="Hero Banner" 
+            className="w-full h-full object-cover"
+          />
+          {/* Dark Overlay */}
+          <div className="absolute inset-0 bg-black/50"></div>
+        </div>
+
         {/* Background Elements */}
         <div className="absolute inset-0 -z-10">
           <motion.div
