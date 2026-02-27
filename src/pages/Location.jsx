@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet-async'
 import { motion, AnimatePresence } from 'framer-motion'
 import { getAllProfiles } from '../services/profileService'
 import { defaultEscorts } from '../services/escortData'
-import { getCityInfo, getAllCities } from '../services/locationsData'
+import { getCityInfo, getAllCities, getAreasForCity, getSubLocationsForCity, majorCities } from '../services/locationsData'
 
 // Generate dynamic city data for any location
 const generateCityData = (cityName) => {
@@ -920,6 +920,44 @@ function Location() {
               {currentCity.description}
             </p>
           </motion.div>
+        </div>
+      </section>
+
+      {/* Internal Linking: Sublocations & Metro Locations */}
+      <section className="py-12 bg-dark-card border-t border-gold/10">
+        <div className="max-w-6xl mx-auto px-4 md:px-6">
+          <div className="grid md:grid-cols-2 gap-8">
+            <div>
+              <h3 className="text-2xl font-serif font-bold text-gold mb-4">Explore areas in {currentCity.name}</h3>
+              <p className="text-gray-400 mb-4">Find escorts by locality and nearby cities within {currentCity.name}.</p>
+              <div className="grid sm:grid-cols-2 gap-2">
+                {(() => {
+                  const cityForAreas = currentCity.isArea ? (currentCity.city || currentCity.parentCity || currentCity.name) : currentCity.name
+                  const areas = getAreasForCity(cityForAreas) || []
+                  if (areas.length === 0) return <p className="text-gray-500">No sublocations available.</p>
+                  return areas.slice(0, 20).map((area) => {
+                    const slug = area.toLowerCase().replace(/\s+/g, '-').replace(/,/g, '')
+                    return (
+                      <Link key={area} to={`/escorts/in/${slug}`} className="text-gray-300 hover:text-gold text-sm">{area}</Link>
+                    )
+                  })
+                })()}
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-2xl font-serif font-bold text-gold mb-4">Metro locations</h3>
+              <p className="text-gray-400 mb-4">Popular metro cities you can browse instantly.</p>
+              <div className="flex flex-wrap gap-2">
+                {majorCities && majorCities.map((m) => {
+                  const slug = m.toLowerCase().replace(/\s+/g, '-')
+                  return (
+                    <Link key={m} to={`/escorts/in/${slug}`} className="px-3 py-1 bg-dark-bg/60 text-gray-300 rounded-md text-sm hover:bg-gold/10">{m}</Link>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
