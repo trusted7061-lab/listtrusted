@@ -923,44 +923,6 @@ function Location() {
         </div>
       </section>
 
-      {/* Internal Linking: Sublocations & Metro Locations */}
-      <section className="py-12 bg-dark-card border-t border-gold/10">
-        <div className="max-w-6xl mx-auto px-4 md:px-6">
-          <div className="grid md:grid-cols-2 gap-8">
-            <div>
-              <h3 className="text-2xl font-serif font-bold text-gold mb-4">Explore areas in {currentCity.name}</h3>
-              <p className="text-gray-400 mb-4">Find escorts by locality and nearby cities within {currentCity.name}.</p>
-              <div className="grid sm:grid-cols-2 gap-2">
-                {(() => {
-                  const cityForAreas = currentCity.isArea ? (currentCity.city || currentCity.parentCity || currentCity.name) : currentCity.name
-                  const areas = getAreasForCity(cityForAreas) || []
-                  if (areas.length === 0) return <p className="text-gray-500">No sublocations available.</p>
-                  return areas.slice(0, 20).map((area) => {
-                    const slug = area.toLowerCase().replace(/\s+/g, '-').replace(/,/g, '')
-                    return (
-                      <Link key={area} to={`/escorts/in/${slug}`} className="text-gray-300 hover:text-gold text-sm">{area}</Link>
-                    )
-                  })
-                })()}
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-2xl font-serif font-bold text-gold mb-4">Metro locations</h3>
-              <p className="text-gray-400 mb-4">Popular metro cities you can browse instantly.</p>
-              <div className="flex flex-wrap gap-2">
-                {majorCities && majorCities.map((m) => {
-                  const slug = m.toLowerCase().replace(/\s+/g, '-')
-                  return (
-                    <Link key={m} to={`/escorts/in/${slug}`} className="px-3 py-1 bg-dark-bg/60 text-gray-300 rounded-md text-sm hover:bg-gold/10">{m}</Link>
-                  )
-                })}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Featured Escorts / Location Ads Section */}
       <section className="py-20 bg-dark-card border-t border-gold/10">
         <div className="max-w-7xl mx-auto px-4 md:px-6">
@@ -1146,95 +1108,106 @@ function Location() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="space-y-8"
+            className="space-y-10"
           >
+            {/* Block 1: City Introduction */}
             <div>
-              <h2 className="text-3xl font-serif font-bold text-gold mb-6">
-                Premium Escort Services in {currentCity.name}
+              <h2 className="text-3xl font-serif font-bold text-gold mb-5">
+                Escorts in {currentCity.name} — Find Verified Companions Near You
               </h2>
               <p className="text-lg text-gray-300 leading-relaxed mb-4">
-                Trusted Escort is {currentCity.name}'s most trusted and verified escort service platform, connecting discerning clients with sophisticated, professional companions. Our carefully selected escorts in {currentCity.name} are known for their elegance, discretion, and ability to provide exceptional companionship for any occasion.
+                Looking for <strong>escorts in {currentCity.name}</strong>? Trusted Escort is {currentCity.state ? `${currentCity.state}'s` : 'India\'s'} most reliable platform to discover genuine, verified companion profiles right here in {currentCity.name}. Every individual listed on our platform goes through a thorough identity and profile verification process — so what you see is exactly what you get.
               </p>
               <p className="text-lg text-gray-300 leading-relaxed">
-                Whether you're seeking a companion for business meetings, corporate events, social gatherings, or private occasions, our elite escort service in {currentCity.name} guarantees professional, confidential, and unforgettable experiences.
+                {currentCity.name} is a vibrant city where professionals, travellers, and locals alike look for quality companionship. Whether it's a high-profile business dinner, a social evening out, a weekend getaway, or simply someone to share a meaningful conversation with — our <strong>escort service in {currentCity.name}</strong> is available 24 hours a day, 7 days a week.
               </p>
             </div>
 
+            {/* Block 2: Why Us - unique differentiators */}
             <div>
-              <h3 className="text-2xl font-serif font-bold text-gold mb-4">
-                Why Choose Our {currentCity.name} Escorts?
+              <h3 className="text-2xl font-serif font-bold text-gold mb-5">
+                Why Trusted Escort is the #1 Choice for Escorts in {currentCity.name}
               </h3>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <span className="text-gold font-bold">✓</span>
-                  <span className="text-gray-300"><strong>Verified & Authentic Profiles:</strong> All our escorts in {currentCity.name} are thoroughly screened and verified for your safety and satisfaction.</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-gold font-bold">✓</span>
-                  <span className="text-gray-300"><strong>Complete Discretion & Privacy:</strong> Your confidentiality is our top priority. 100% private and secure bookings with non-disclosure guarantees.</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-gold font-bold">✓</span>
-                  <span className="text-gray-300"><strong>Professional & Educated Companions:</strong> Our {currentCity.name} escorts are cultured, educated, and well-versed in etiquette, making them perfect for any social situation.</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-gold font-bold">✓</span>
-                  <span className="text-gray-300"><strong>24/7 Booking & Support:</strong> Easy online booking platform with round-the-clock customer support for a hassle-free experience.</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-gold font-bold">✓</span>
-                  <span className="text-gray-300"><strong>Flexible & Affordable Rates:</strong> Competitive pricing packages suitable for all occasions and budgets in {currentCity.name}.</span>
-                </li>
-              </ul>
+              <div className="grid sm:grid-cols-2 gap-4">
+                {[
+                  { icon: '🛡️', title: 'Identity-Verified Profiles', body: `Every escort in ${currentCity.name} on our platform is personally verified with a photo-ID check. No fake profiles, no surprises.` },
+                  { icon: '🔒', title: '100 % Confidential Booking', body: `Your name, number, and booking details are never shared. Complete privacy is a non-negotiable standard at Trusted Escort.` },
+                  { icon: '⭐', title: 'Rated & Reviewed Companions', body: `Read real client reviews for ${currentCity.name} escorts before you book. Transparent ratings help you choose the right match every time.` },
+                  { icon: '📍', title: 'Hyper-Local ${currentCity.name} Coverage', body: `We list companions from every major locality in ${currentCity.name} — hotels, residential areas, business hubs, and more.` },
+                  { icon: '💬', title: 'Instant WhatsApp Bookings', body: `Skip lengthy forms. Message us on WhatsApp and get confirmed within minutes for escorts in ${currentCity.name}.` },
+                  { icon: '💰', title: 'Transparent, Fixed Pricing', body: `No hidden charges. Rates are clearly listed on each profile, so you always know exactly what you're paying in ${currentCity.name}.` },
+                ].map((item, i) => (
+                  <div key={i} className="bg-dark-card/60 border border-gold/15 rounded-xl p-5">
+                    <div className="text-2xl mb-2">{item.icon}</div>
+                    <h4 className="text-white font-semibold mb-1">{item.title}</h4>
+                    <p className="text-gray-400 text-sm leading-relaxed">{item.body}</p>
+                  </div>
+                ))}
+              </div>
             </div>
 
+            {/* Block 3: Types of companion services */}
             <div>
               <h3 className="text-2xl font-serif font-bold text-gold mb-4">
                 Types of Escort Services Available in {currentCity.name}
               </h3>
-              <p className="text-gray-300 mb-4">
-                Our comprehensive escort services in {currentCity.name} cater to diverse needs:
+              <p className="text-gray-300 mb-4 leading-relaxed">
+                Our <strong>escort service in {currentCity.name}</strong> is not one-size-fits-all. Clients have very different needs, and our companions are hand-picked to serve all of them professionally:
               </p>
-              <ul className="space-y-2 text-gray-300">
-                <li>• <strong>Business Meeting Companions:</strong> Professional escorts for corporate events, conferences, and client entertainment</li>
-                <li>• <strong>Social Event Escorts:</strong> Refined companions perfect for parties, weddings, and social gatherings</li>
-                <li>• <strong>Dinner Date Escorts:</strong> Charming and cultured companions for fine dining and restaurant experiences</li>
-                <li>• <strong>Hotel Escorts:</strong> Private companionship services available at luxury hotels in {currentCity.name}</li>
-                <li>• <strong>Travel Companions:</strong> Engaging escorts for trips and vacation experiences</li>
-                <li>• <strong>Personal Assistant Escorts:</strong> Discreet companions available for personal engagements</li>
-              </ul>
+              <div className="space-y-3 text-gray-300">
+                <div className="flex items-start gap-3">
+                  <span className="text-gold mt-1">▶</span>
+                  <p><strong>Corporate & Business Companions:</strong> Polished professionals who understand boardroom etiquette. Ideal for client meetings, conferences, and product launches in {currentCity.name}.</p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="text-gold mt-1">▶</span>
+                  <p><strong>Dinner Date & Social Escort:</strong> Charming, well-spoken companions for fine dining, cocktail evenings, weddings, and private parties across {currentCity.name}.</p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="text-gold mt-1">▶</span>
+                  <p><strong>Outcall Hotel Escort in {currentCity.name}:</strong> Escorts who visit premium hotels and resorts directly in {currentCity.name}. Discreet, punctual, and professional.</p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="text-gold mt-1">▶</span>
+                  <p><strong>Travel Companion:</strong> Planning a trip from or through {currentCity.name}? Our travel companions provide engaging company for business trips, pilgrimages, or leisure tours.</p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="text-gold mt-1">▶</span>
+                  <p><strong>Overnight & Long-Duration Bookings:</strong> Premium companions available for extended bookings — from a few hours to a full overnight stay in {currentCity.name}.</p>
+                </div>
+              </div>
             </div>
 
+            {/* Block 4: How to book */}
             <div>
-              <h3 className="text-2xl font-serif font-bold text-gold mb-4">
-                How to Book an Escort in {currentCity.name}
+              <h3 className="text-2xl font-serif font-bold text-gold mb-5">
+                How to Book an Escort in {currentCity.name} — Simple 4-Step Process
               </h3>
-              <ol className="space-y-3 text-gray-300">
-                <li className="flex gap-3">
-                  <span className="text-gold font-bold">1.</span>
-                  <span>Browse our gallery of verified {currentCity.name} escorts with detailed profiles and photos</span>
-                </li>
-                <li className="flex gap-3">
-                  <span className="text-gold font-bold">2.</span>
-                  <span>Select your preferred companion based on your requirements and preferences</span>
-                </li>
-                <li className="flex gap-3">
-                  <span className="text-gold font-bold">3.</span>
-                  <span>Make a secure online booking with our simple and encrypted payment process</span>
-                </li>
-                <li className="flex gap-3">
-                  <span className="text-gold font-bold">4.</span>
-                  <span>Receive confirmation details and enjoy your experience with professional discretion</span>
-                </li>
-              </ol>
+              <div className="grid sm:grid-cols-2 gap-4">
+                {[
+                  { step: '01', title: 'Browse Profiles', desc: `Visit our ${currentCity.name} escort gallery. Filter by availability, area, or service type to find your ideal companion.` },
+                  { step: '02', title: 'Choose Your Match', desc: `Read verified reviews, check photo galleries, and shortlist the escort in ${currentCity.name} that fits your preference.` },
+                  { step: '03', title: 'Confirm via WhatsApp', desc: `Message us your preferred date, time, and location within ${currentCity.name}. We confirm bookings fast — usually within minutes.` },
+                  { step: '04', title: 'Enjoy with Confidence', desc: `Your escort arrives on time. Every booking is fully confidential, professionally managed, and backed by our satisfaction commitment.` },
+                ].map((s) => (
+                  <div key={s.step} className="flex gap-4 bg-dark-card/50 border border-gold/15 rounded-xl p-5">
+                    <div className="text-3xl font-serif font-bold text-gold/30 select-none w-10 shrink-0">{s.step}</div>
+                    <div>
+                      <h4 className="text-white font-semibold mb-1">{s.title}</h4>
+                      <p className="text-gray-400 text-sm leading-relaxed">{s.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            <div className="bg-dark-card/50 border border-gold/20 rounded-lg p-6">
+            {/* Block 5: Safety */}
+            <div className="bg-dark-card/50 border border-gold/20 rounded-xl p-6">
               <h3 className="text-xl font-serif font-bold text-gold mb-3">
-                Safe & Secure Escorts in {currentCity.name}
+                Safety & Discretion — Our Promise to Every Client in {currentCity.name}
               </h3>
-              <p className="text-gray-300">
-                Your safety and security are paramount. Trusted Escort implements strict safety protocols, ensures STI-free status verification, maintains confidentiality agreements, and provides secure payment systems for all bookings in {currentCity.name}. All escorts are trained in professional conduct and client care.
+              <p className="text-gray-300 leading-relaxed">
+                Safety is built into every step of your booking. All <strong>escorts in {currentCity.name}</strong> listed on Trusted Escort undergo regular health checks, identity verification, and conduct screenings. Client data is encrypted and never sold. Our support team is available around the clock to handle any concerns, and every interaction is protected under our strict non-disclosure policy. You book with confidence — every single time.
               </p>
             </div>
           </motion.div>
@@ -1443,6 +1416,68 @@ function Location() {
               Message on WhatsApp
             </motion.a>
           </motion.div>
+        </div>
+      </section>
+      {/* Internal Linking: Sublocations & Metro Locations — above Footer */}
+      <section className="py-14 bg-dark-card border-t border-gold/10">
+        <div className="max-w-6xl mx-auto px-4 md:px-6">
+          <div className="grid md:grid-cols-2 gap-10">
+            {/* Sublocations */}
+            <div>
+              <h3 className="text-xl font-serif font-bold text-gold mb-3">
+                Escorts by Area in {currentCity.name}
+              </h3>
+              <p className="text-gray-400 text-sm mb-4">
+                Browse verified escorts by locality within {currentCity.name} for quicker, more targeted results.
+              </p>
+              <div className="grid grid-cols-2 gap-x-6 gap-y-2">
+                {(() => {
+                  const cityForAreas = currentCity.isArea
+                    ? (currentCity.city || currentCity.parentCity || currentCity.name)
+                    : currentCity.name
+                  const areas = getAreasForCity(cityForAreas) || []
+                  if (areas.length === 0)
+                    return <p className="col-span-2 text-gray-500 text-sm">Sublocations coming soon.</p>
+                  return areas.slice(0, 24).map((area) => {
+                    const slug = area.toLowerCase().replace(/\s+/g, '-').replace(/,/g, '')
+                    return (
+                      <Link
+                        key={area}
+                        to={`/escorts/in/${slug}`}
+                        className="text-gray-400 hover:text-gold text-sm flex items-center gap-1 transition-colors"
+                      >
+                        <span className="text-gold/50 text-xs">›</span> Escorts in {area}
+                      </Link>
+                    )
+                  })
+                })()}
+              </div>
+            </div>
+
+            {/* Metro cities */}
+            <div>
+              <h3 className="text-xl font-serif font-bold text-gold mb-3">
+                Escorts in Other Major Cities
+              </h3>
+              <p className="text-gray-400 text-sm mb-4">
+                Travelling or planning ahead? Find premium escorts in India's top metro cities.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {majorCities && majorCities.map((m) => {
+                  const slug = m.toLowerCase().replace(/\s+/g, '-')
+                  return (
+                    <Link
+                      key={m}
+                      to={`/escorts/in/${slug}`}
+                      className="px-3 py-1.5 bg-dark-bg/70 border border-gold/15 text-gray-300 rounded-lg text-sm hover:border-gold/50 hover:text-gold transition-colors"
+                    >
+                      {m}
+                    </Link>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
         </div>
       </section>
     </>
