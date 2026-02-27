@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState, useEffect, useRef } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
-import { motion } from 'framer-motion'
-import { defaultEscorts } from '../services/escortData'
+import { motion, AnimatePresence } from 'framer-motion'
 import { majorCities } from '../services/locationsData'
 
 const fadeUp = {
@@ -12,7 +11,7 @@ const fadeUp = {
 
 const staggerContainer = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.1 } },
+  visible: { transition: { staggerChildren: 0.08 } },
 }
 
 const cityImages = {
@@ -24,7 +23,56 @@ const cityImages = {
   Nashik: '🍇', Kochi: '⛵', Coimbatore: '🌾', Thane: '🏘️',
 }
 
-const featuredEscorts = defaultEscorts.slice(0, 6)
+const faqs = [
+  {
+    q: 'Is TrustedEsco legal and safe to use?',
+    a: 'Yes. TrustedEsco is a legal adult companion directory for individuals aged 18 and above. All profiles are voluntarily submitted by independent adults. We do not facilitate or promote any illegal activity.',
+  },
+  {
+    q: 'Are the companion profiles verified?',
+    a: 'Yes. Every profile on TrustedEsco goes through a verification process to confirm the authenticity of the individual. Verified profiles are clearly marked with a gold ✓ Verified badge.',
+  },
+  {
+    q: 'Which cities are covered on TrustedEsco?',
+    a: 'We cover 500+ cities across India including Mumbai, Delhi, Bangalore, Hyderabad, Pune, Goa, Chennai, Kolkata, Chandigarh, Jaipur, Indore, Ahmedabad, and many more metro and tier-2 cities.',
+  },
+  {
+    q: 'How do I contact a companion?',
+    a: 'Browse companion profiles in your city, view their contact details, and reach out directly via call or WhatsApp. All contact is between you and the companion — we do not handle any transactions.',
+  },
+  {
+    q: 'Is my personal information kept private?',
+    a: 'Absolutely. We take privacy seriously. We do not share your personal data with third parties. Your browsing activity and contact details remain strictly confidential.',
+  },
+  {
+    q: 'How do I post my companion ad on TrustedEsco?',
+    a: 'Click "Post Your Ad" from the home page or the top navigation. Create an advertiser account, fill in your profile details including photos, services, and contact info, and your listing goes live within minutes.',
+  },
+  {
+    q: 'Is it free to post an ad?',
+    a: 'Yes, basic listing is free. We also offer premium placement options to increase your visibility in search results and across city pages.',
+  },
+  {
+    q: 'How can I make my ad stand out?',
+    a: 'Add high-quality photos, write a detailed description, list your services clearly, and keep your availability status updated. Verified profiles consistently receive more enquiries.',
+  },
+  {
+    q: 'Can I edit or remove my ad after posting?',
+    a: 'Yes. You can log in to your advertiser dashboard at any time to update your profile, change photos, edit contact details, or pause/remove your listing.',
+  },
+  {
+    q: 'What types of companion services are available?',
+    a: 'Companions on TrustedEsco offer a range of services including dinner dates, corporate events, travel companionship, social events, nightlife, and more — all between consenting adults.',
+  },
+  {
+    q: 'How do I report a fake or suspicious profile?',
+    a: 'You can report any suspicious profile using the "Report" option on the profile page, or contact our support team. We take all reports seriously and investigate promptly.',
+  },
+  {
+    q: 'Is there a mobile app for TrustedEsco?',
+    a: 'Our platform is fully mobile-optimised and works seamlessly on all devices. You can also install it as a Progressive Web App (PWA) on your phone for an app-like experience — no download required.',
+  },
+]
 
 const features = [
   {
@@ -85,22 +133,34 @@ const stats = [
 ]
 
 export default function Home() {
-  const [searchQuery, setSearchQuery] = useState('')
-  const [filteredCities, setFilteredCities] = useState(majorCities.slice(0, 24))
-
-  useEffect(() => {
-    if (searchQuery.trim()) {
-      setFilteredCities(
-        majorCities.filter(c =>
-          c.toLowerCase().includes(searchQuery.toLowerCase())
-        ).slice(0, 24)
-      )
-    } else {
-      setFilteredCities(majorCities.slice(0, 24))
-    }
-  }, [searchQuery])
+  const navigate = useNavigate()
+  const [activeTab, setActiveTab] = useState('find') // 'find' | 'post'
+  const [searchCity, setSearchCity] = useState('')
+  const [suggestions, setSuggestions] = useState([])
+  const [openFaq, setOpenFaq] = useState(null)
 
   const citySlug = (city) => city.toLowerCase().replace(/\s+/g, '-')
+
+  useEffect(() => {
+    if (searchCity.trim().length > 1) {
+      setSuggestions(
+        majorCities.filter(c =>
+          c.toLowerCase().includes(searchCity.toLowerCase())
+        ).slice(0, 6)
+      )
+    } else {
+      setSuggestions([])
+    }
+  }, [searchCity])
+
+  const handleSearch = (e) => {
+    e.preventDefault()
+    if (searchCity.trim()) {
+      navigate(`/escorts/in/${citySlug(searchCity.trim())}`)
+    } else {
+      navigate('/escorts')
+    }
+  }
 
   return (
     <>
@@ -124,7 +184,7 @@ export default function Home() {
           description: 'Premium escort directory across India with verified companion profiles.',
           potentialAction: {
             '@type': 'SearchAction',
-            target: 'https://trustedesco.in/escorts?q={search_term_string}',
+            target: 'https://trustedesco.in/escorts/in/{search_term_string}',
             'query-input': 'required name=search_term_string',
           },
         })}</script>
@@ -138,13 +198,13 @@ export default function Home() {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-dark-bg/60 via-dark-bg/40 to-dark-bg" />
 
-        <div className="relative z-10 max-w-5xl mx-auto px-4 text-center">
+        <div className="relative z-10 w-full max-w-5xl mx-auto px-4 text-center py-32">
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <p className="text-gold text-sm uppercase tracking-widest mb-4 font-sans">
+            <p className="text-gold text-xs uppercase tracking-widest mb-5 font-sans">
               India's Most Trusted Escort Directory
             </p>
             <h1 className="font-serif text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
@@ -152,38 +212,124 @@ export default function Home() {
               <span className="text-gold">Companion</span>
             </h1>
             <p className="text-gray-300 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
-              Browse thousands of verified, premium companion profiles across 500+ cities in India.
+              Thousands of verified, premium companions across 500+ cities in India.
               Discreet, safe, and always available.
             </p>
 
-            {/* Search bar */}
-            <div className="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto mb-8">
-              <input
-                type="text"
-                placeholder="Search city — Mumbai, Delhi, Bangalore…"
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                className="flex-1 px-5 py-3 rounded-lg bg-dark-card border border-gold/30 text-white placeholder-gray-500 focus:outline-none focus:border-gold transition-colors"
-              />
-              <Link
-                to={searchQuery ? `/escorts/in/${citySlug(searchQuery)}` : '/escorts'}
-                className="btn-gold px-7 py-3 rounded-lg text-sm font-semibold whitespace-nowrap"
-              >
-                Browse Now
-              </Link>
+            {/* ── TAB SWITCHER ── */}
+            <div className="flex justify-center mb-8">
+              <div className="inline-flex bg-dark-card border border-gold/20 rounded-xl p-1 gap-1">
+                <button
+                  onClick={() => setActiveTab('find')}
+                  className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                    activeTab === 'find'
+                      ? 'bg-gold text-black shadow-lg'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  🔍 Find Escorts
+                </button>
+                <button
+                  onClick={() => setActiveTab('post')}
+                  className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                    activeTab === 'post'
+                      ? 'bg-gold text-black shadow-lg'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  📋 Post Your Ad
+                </button>
+              </div>
             </div>
 
-            <div className="flex flex-wrap justify-center gap-2 text-xs text-gray-400">
-              {['Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Pune', 'Goa'].map(city => (
-                <Link
-                  key={city}
-                  to={`/escorts/in/${citySlug(city)}`}
-                  className="px-3 py-1 border border-gold/20 rounded-full hover:border-gold/60 hover:text-gold transition-colors"
+            {/* ── TAB CONTENT ── */}
+            <AnimatePresence mode="wait">
+              {activeTab === 'find' ? (
+                <motion.div
+                  key="find"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.25 }}
+                  className="max-w-xl mx-auto"
                 >
-                  {city}
-                </Link>
-              ))}
-            </div>
+                  <form onSubmit={handleSearch} className="relative">
+                    <div className="flex gap-2">
+                      <div className="relative flex-1">
+                        <input
+                          type="text"
+                          placeholder="Enter your city — Mumbai, Delhi, Goa…"
+                          value={searchCity}
+                          onChange={e => setSearchCity(e.target.value)}
+                          className="w-full px-5 py-4 rounded-xl bg-dark-card border border-gold/30 text-white placeholder-gray-500 focus:outline-none focus:border-gold transition-colors text-base"
+                        />
+                        {suggestions.length > 0 && (
+                          <div className="absolute top-full left-0 right-0 mt-1 bg-dark-card border border-gold/20 rounded-xl overflow-hidden z-50 shadow-xl">
+                            {suggestions.map(city => (
+                              <button
+                                key={city}
+                                type="button"
+                                onClick={() => { setSearchCity(city); setSuggestions([]) }}
+                                className="w-full text-left px-5 py-3 text-sm text-gray-300 hover:bg-dark-hover hover:text-gold transition-colors flex items-center gap-2"
+                              >
+                                <span>{cityImages[city] || '🏙️'}</span> {city}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      <button type="submit" className="btn-gold px-7 py-4 rounded-xl text-sm font-semibold whitespace-nowrap">
+                        Search
+                      </button>
+                    </div>
+                  </form>
+                  <div className="flex flex-wrap justify-center gap-2 mt-5 text-xs">
+                    {['Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Pune', 'Goa', 'Chennai', 'Kolkata'].map(city => (
+                      <Link
+                        key={city}
+                        to={`/escorts/in/${citySlug(city)}`}
+                        className="px-3 py-1 border border-gold/20 rounded-full text-gray-400 hover:border-gold/60 hover:text-gold transition-colors"
+                      >
+                        {city}
+                      </Link>
+                    ))}
+                  </div>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="post"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.25 }}
+                  className="max-w-xl mx-auto"
+                >
+                  <div className="card-glass rounded-2xl p-8 text-left">
+                    <h2 className="font-serif text-2xl font-bold text-white mb-2">
+                      Advertise on TrustedEsco
+                    </h2>
+                    <p className="text-gray-400 text-sm mb-6 leading-relaxed">
+                      Reach thousands of genuine clients across India. Post your companion profile in minutes — <span className="text-gold font-medium">free to start.</span>
+                    </p>
+                    <ul className="space-y-2 mb-7 text-sm text-gray-300">
+                      {['Instant listing — goes live immediately', 'Reach clients in 500+ cities', 'Verified badge for trusted profiles', 'Direct WhatsApp & call contact'].map(item => (
+                        <li key={item} className="flex items-center gap-2">
+                          <span className="text-gold">✓</span> {item}
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="flex gap-3">
+                      <Link to="/advertiser-signup" className="btn-gold flex-1 text-center py-3 rounded-xl text-sm font-semibold">
+                        Create Free Account
+                      </Link>
+                      <Link to="/post-ad" className="btn-outline flex-1 text-center py-3 rounded-xl text-sm font-semibold">
+                        Post Ad Directly
+                      </Link>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         </div>
 
@@ -217,88 +363,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── FEATURED COMPANIONS ── */}
-      <section className="py-20 bg-dark-bg">
-        <div className="max-w-7xl mx-auto px-4">
-          <motion.div
-            className="text-center mb-14"
-            variants={fadeUp}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-          >
-            <p className="text-gold text-xs uppercase tracking-widest mb-3">Hand-Picked for You</p>
-            <h2 className="font-serif text-4xl md:text-5xl font-bold text-white mb-4">
-              Featured <span className="text-gold">Companions</span>
-            </h2>
-            <p className="text-gray-400 max-w-xl mx-auto">
-              Meet some of our top-rated verified companions, each ready to make your experience unforgettable.
-            </p>
-          </motion.div>
-
-          <motion.div
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-          >
-            {featuredEscorts.map(escort => (
-              <motion.div key={escort.id} variants={fadeUp}>
-                <Link to={`/escorts/${escort.id}`} className="block card-glass overflow-hidden group hover:border-gold/50 transition-all duration-300">
-                  <div className="relative overflow-hidden h-64">
-                    <img
-                      src={escort.image}
-                      alt={`${escort.name} – companion in ${escort.location}`}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      onError={e => { e.target.src = '/images/placeholder.jpg' }}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-dark-bg via-transparent to-transparent" />
-                    {escort.verified && (
-                      <span className="absolute top-3 right-3 bg-gold text-black text-xs font-bold px-2 py-0.5 rounded-full">
-                        ✓ Verified
-                      </span>
-                    )}
-                    <span className={`absolute top-3 left-3 text-xs px-2 py-0.5 rounded-full font-medium ${escort.availability === 'Available' ? 'bg-green-500/90 text-white' : 'bg-yellow-500/90 text-black'}`}>
-                      {escort.availability}
-                    </span>
-                  </div>
-                  <div className="p-5">
-                    <div className="flex items-center justify-between mb-1">
-                      <h3 className="font-serif text-xl font-semibold text-white group-hover:text-gold transition-colors">
-                        {escort.name}, <span className="text-gold/80 font-sans text-sm font-normal">{escort.age}</span>
-                      </h3>
-                      <span className="text-yellow-400 text-sm">★ {escort.rating}</span>
-                    </div>
-                    <p className="text-gray-400 text-xs mb-3 flex items-center gap-1">
-                      <span>📍</span> {escort.location}
-                      <span className="mx-2">·</span>
-                      <span>⚡ {escort.responseTime}</span>
-                    </p>
-                    <p className="text-gray-300 text-sm line-clamp-2 mb-4">{escort.description}</p>
-                    <div className="flex flex-wrap gap-1">
-                      {escort.services.slice(0, 3).map(s => (
-                        <span key={s} className="text-xs border border-gold/20 text-gold/70 px-2 py-0.5 rounded-full">
-                          {s}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
-          </motion.div>
-
-          <div className="text-center mt-12">
-            <Link to="/escorts" className="btn-outline px-8 py-3 rounded-lg text-sm font-semibold">
-              View All Companions →
-            </Link>
-          </div>
-        </div>
-      </section>
-
       {/* ── HOW IT WORKS ── */}
-      <section className="py-20 bg-dark-card">
+      <section className="py-20 bg-dark-bg">
         <div className="max-w-5xl mx-auto px-4">
           <motion.div
             className="text-center mb-14"
@@ -345,8 +411,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── BROWSE BY CITY ── */}
-      <section className="py-20 bg-dark-bg">
+      {/* ── BROWSE ALL METRO CITIES ── */}
+      <section className="py-20 bg-dark-card">
         <div className="max-w-7xl mx-auto px-4">
           <motion.div
             className="text-center mb-14"
@@ -355,12 +421,12 @@ export default function Home() {
             whileInView="visible"
             viewport={{ once: true }}
           >
-            <p className="text-gold text-xs uppercase tracking-widest mb-3">500+ Cities Covered</p>
+            <p className="text-gold text-xs uppercase tracking-widest mb-3">All Metro Cities</p>
             <h2 className="font-serif text-4xl md:text-5xl font-bold text-white mb-4">
               Browse by <span className="text-gold">City</span>
             </h2>
             <p className="text-gray-400 max-w-xl mx-auto">
-              Find verified companions in your city. We cover every major metro and tier-2 city across India.
+              Find verified companions across all major metro and tier-1 cities in India.
             </p>
           </motion.div>
 
@@ -371,7 +437,7 @@ export default function Home() {
             whileInView="visible"
             viewport={{ once: true }}
           >
-            {filteredCities.map(city => (
+            {majorCities.map(city => (
               <motion.div key={city} variants={fadeUp}>
                 <Link
                   to={`/escorts/in/${citySlug(city)}`}
@@ -396,7 +462,7 @@ export default function Home() {
       </section>
 
       {/* ── WHY CHOOSE US ── */}
-      <section className="py-20 bg-dark-card">
+      <section className="py-20 bg-dark-bg">
         <div className="max-w-7xl mx-auto px-4">
           <motion.div
             className="text-center mb-14"
@@ -439,7 +505,7 @@ export default function Home() {
       </section>
 
       {/* ── ADVERTISER CTA ── */}
-      <section className="py-20 bg-dark-bg">
+      <section className="py-20 bg-dark-card">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <motion.div
             variants={fadeUp}
@@ -448,7 +514,7 @@ export default function Home() {
             viewport={{ once: true }}
             className="card-glass p-12"
           >
-            <p className="text-gold text-xs uppercase tracking-widest mb-4">For Companions</p>
+            <p className="text-gold text-xs uppercase tracking-widest mb-4">For Companions & Advertisers</p>
             <h2 className="font-serif text-4xl md:text-5xl font-bold text-white mb-6">
               Grow Your <span className="text-gold">Business</span>
             </h2>
@@ -458,12 +524,72 @@ export default function Home() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/advertiser-signup" className="btn-gold px-8 py-3 rounded-lg text-sm font-semibold">
-                Post Your Ad Free
+                Create Free Account
               </Link>
               <Link to="/post-ad" className="btn-outline px-8 py-3 rounded-lg text-sm font-semibold">
-                Learn More
+                Post Ad Directly
               </Link>
             </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ── FAQ ── */}
+      <section className="py-20 bg-dark-bg">
+        <div className="max-w-3xl mx-auto px-4">
+          <motion.div
+            className="text-center mb-14"
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+          >
+            <p className="text-gold text-xs uppercase tracking-widest mb-3">Got Questions?</p>
+            <h2 className="font-serif text-4xl md:text-5xl font-bold text-white mb-4">
+              Frequently Asked <span className="text-gold">Questions</span>
+            </h2>
+            <p className="text-gray-400 max-w-xl mx-auto">
+              Everything you need to know about TrustedEsco — for clients and advertisers alike.
+            </p>
+          </motion.div>
+
+          <motion.div
+            className="space-y-3"
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+          >
+            {faqs.map((faq, i) => (
+              <motion.div key={i} variants={fadeUp}>
+                <button
+                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                  className="w-full text-left card-glass px-6 py-5 flex items-center justify-between gap-4 hover:border-gold/50 transition-all duration-200 group"
+                >
+                  <span className="font-medium text-white group-hover:text-gold transition-colors text-sm leading-snug">
+                    {faq.q}
+                  </span>
+                  <span className={`text-gold text-xl font-bold flex-shrink-0 transition-transform duration-200 ${openFaq === i ? 'rotate-45' : ''}`}>
+                    +
+                  </span>
+                </button>
+                <AnimatePresence initial={false}>
+                  {openFaq === i && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.25, ease: 'easeInOut' }}
+                      className="overflow-hidden"
+                    >
+                      <div className="px-6 py-4 bg-dark-card border border-t-0 border-gold/10 rounded-b-xl">
+                        <p className="text-gray-400 text-sm leading-relaxed">{faq.a}</p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            ))}
           </motion.div>
         </div>
       </section>
