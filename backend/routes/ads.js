@@ -227,6 +227,7 @@ router.post('/ads/create', [
   body('location').notEmpty().trim().withMessage('Location required'),
   body('city').notEmpty().trim().withMessage('City required'),
   body('contact.phone').isMobilePhone('any').withMessage('Valid phone required'),
+  body('contact.whatsapp').optional().isMobilePhone('any').withMessage('Valid whatsapp number'),
   body('contact.email').isEmail().withMessage('Valid email required')
 ], authMiddleware, async (req, res) => {
   const errors = validationResult(req);
