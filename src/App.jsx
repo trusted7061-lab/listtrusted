@@ -68,6 +68,7 @@ function App() {
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/signin" element={<SignIn />} />
+              <Route path="/sign-in" element={<SignIn />} />
               <Route path="/register" element={<Register />} />
               <Route path="/account" element={<Account />} />
               <Route path="/profile" element={<Profile />} />
