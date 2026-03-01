@@ -22,21 +22,23 @@ You have **two options** to create the initial admin account:
 
 Make a POST request to create your admin account. Use any HTTP client like Postman, cURL, or your application:
 
-**Endpoint:** `POST https://trustedescort.onrender.com/api/auth/admin/setup`
+**Endpoint:** `POST https://trustedescort-backend.onrender.com/api/auth/admin/setup`
 
 **Request Body:**
 ```json
 {
-  "email": "admin@trustedescort.in",
-  "password": "YourSecurePassword123",
+  "email": "trusted7061@gmail.com",
+  "password": "Kold800*",
   "setupKey": "TRUSTED_ESCORT_SETUP_KEY_2024"
 }
 ```
 
-**Replace:**
-- `admin@trustedescort.in` - Your admin email address
-- `YourSecurePassword123` - Your strong password (minimum 8 characters)
-- `TRUSTED_ESCORT_SETUP_KEY_2024` - The setup key from your .env file
+**Your Admin Credentials:**
+- **Email:** trusted7061@gmail.com
+- **Password:** Kold800*
+- **Setup Key:** TRUSTED_ESCORT_SETUP_KEY_2024 (from .env)
+
+**Note:** The backend is deployed on Render at trustedescort-backend.onrender.com
 
 **Success Response:**
 ```json
@@ -96,8 +98,10 @@ https://trustedescort.vercel.app/admin/login
 
 ### Enter Your Credentials
 
-- **Email:** admin@trustedescort.in
-- **Password:** YourSecurePassword123
+- **Email:** trusted7061@gmail.com
+- **Password:** Kold800*
+
+**Note:** These credentials are also displayed at the bottom of the login page for quick reference.
 
 ### Successful Login
 
