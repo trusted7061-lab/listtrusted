@@ -125,6 +125,14 @@ export const authAPI = {
       body: JSON.stringify(profileData),
     });
   },
+
+  // Admin login
+  adminLogin: async (email, password) => {
+    return apiRequest('/auth/admin/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
+    });
+  },
 };
 
 // Email API functions (for testing)
