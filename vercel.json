@@ -33,13 +33,37 @@
           "value": "geolocation=(), microphone=(), camera=()"
         },
         {
+          "key": "X-Robots-Tag",
+          "value": "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+        },
+        {
           "key": "Cache-Control",
           "value": "public, max-age=3600"
+        },
+        {
+          "key": "X-UA-Compatible",
+          "value": "IE=edge"
         }
       ]
     },
     {
-      "source": "/sitemap.xml",
+      "source": "/(.*)\\.html$",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    },
       "headers": [
         {
           "key": "Content-Type",
