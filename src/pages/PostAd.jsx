@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
-import { getAllCities } from '../services/locationsData'
+import { locationsData, getAreasForCity } from '../services/locationsData'
 
 const API_BASE = import.meta.env.DEV ? '/api' : (import.meta.env.VITE_API_URL || 'http://localhost:5002/api')
 
@@ -34,6 +34,7 @@ export default function PostAd() {
   const [formData, setFormData] = useState({
     state: '',
     city: '',
+    area: '',
     title: '',
     description: '',
     name: '',
@@ -51,15 +52,40 @@ export default function PostAd() {
     optionalInfo: []
   })
 
-  const cities = getAllCities()
-  const states = [...new Set(cities.map(c => c.state))].sort()
-  const citiesInState = formData.state 
-    ? cities.filter(c => c.state === formData.state).map(c => c.name).sort()
+  // Get states from locationsData
+  const states = Object.entries(locationsData)
+    .map(([slug, state]) => ({
+      slug,
+      name: state.name
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name))
+
+  // Get cities for selected state
+  const cities = formData.state
+    ? Object.entries(locationsData[formData.state].districts)
+        .flatMap(([districtSlug, district]) =>
+          district.cities.map(city => ({
+            name: city,
+            district: district.name
+          }))
+        )
+        .sort((a, b) => a.name.localeCompare(b.name))
     : []
+
+  // Get areas/sublocations for selected city
+  const areas = formData.city ? getAreasForCity(formData.city) : []
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
+    if (name === 'state') {
+      // Reset city and area when state changes
+      setFormData(prev => ({ ...prev, [name]: value, city: '', area: '' }))
+    } else if (name === 'city') {
+      // Reset area when city changes
+      setFormData(prev => ({ ...prev, [name]: value, area: '' }))
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }))
+    }
   }
 
   const handleCheckbox = (field, value) => {
@@ -141,6 +167,7 @@ export default function PostAd() {
       uploadFormData.append('description', formData.description)
       uploadFormData.append('city', formData.city)
       uploadFormData.append('state', formData.state)
+      uploadFormData.append('area', formData.area)
       uploadFormData.append('contact', JSON.stringify({
         phone: formData.phone,
         whatsapp: formData.whatsapp
@@ -205,7 +232,7 @@ export default function PostAd() {
               className="card-glass rounded-xl p-6"
             >
               <h2 className="font-serif text-xl font-semibold text-gold mb-4">Choose your Location</h2>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-white mb-2">State</label>
                   <select
@@ -217,7 +244,7 @@ export default function PostAd() {
                   >
                     <option value="">Select State</option>
                     {states.map(state => (
-                      <option key={state} value={state}>{state}</option>
+                      <option key={state.slug} value={state.slug}>{state.name}</option>
                     ))}
                   </select>
                 </div>
@@ -229,11 +256,26 @@ export default function PostAd() {
                     onChange={handleInputChange}
                     required
                     disabled={!formData.state}
-                    className="w-full bg-dark-card border border-gold/20 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:border-gold/50 focus:outline-none transition-colors disabled:opacity-50"
+                    className="w-full bg-dark-card border border-gold/20 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:border-gold/50 focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <option value="">Select City</option>
-                    {citiesInState.map(city => (
-                      <option key={city} value={city}>{city}</option>
+                    {cities.map(city => (
+                      <option key={city.name} value={city.name}>{city.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-white mb-2">Area / Sub-location</label>
+                  <select
+                    name="area"
+                    value={formData.area}
+                    onChange={handleInputChange}
+                    disabled={!formData.city}
+                    className="w-full bg-dark-card border border-gold/20 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:border-gold/50 focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <option value="">Select Area (optional)</option>
+                    {areas.map(area => (
+                      <option key={area} value={area}>{area}</option>
                     ))}
                   </select>
                 </div>
