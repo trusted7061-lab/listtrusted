@@ -1,9 +1,16 @@
 #!/usr/bin/env python3
 import os
 
-# Read approved locations
+# Read approved locations and clean them (remove escorts-in- prefix)
 with open('approved-locations.txt', 'r') as f:
-    locations = [line.strip() for line in f if line.strip()]
+    locations = []
+    for line in f:
+        loc = line.strip()
+        if loc:
+            # Remove 'escorts-in-' prefix if present
+            if loc.startswith('escorts-in-'):
+                loc = loc.replace('escorts-in-', '', 1)
+            locations.append(loc)
 
 print(f"✅ Loaded {len(locations)} approved locations")
 
