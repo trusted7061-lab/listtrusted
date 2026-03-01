@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
 const Wallet = require('../models/Wallet');
 const AdPosting = require('../models/AdPosting');
@@ -13,20 +14,35 @@ const authMiddleware = (req, res, next) => {
   if (!token) {
     return res.status(401).json({ message: 'No authorization token' });
   }
-  // TODO: Add JWT verification
-  req.userId = req.body.userId || req.query.userId;
-  next();
+  
+  try {
+    // Verify and decode JWT token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret_here');
+    req.userId = decoded.userId;
+    req.userRole = decoded.role;
+    next();
+  } catch (error) {
+    console.error('Token verification failed:', error.message);
+    return res.status(401).json({ message: 'Invalid or expired token' });
+  }
 };
 
 // Middleware to verify super admin
 const adminMiddleware = async (req, res, next) => {
   try {
+    // First check if user has admin role from token
+    if (req.userRole !== 'admin') {
+      return res.status(403).json({ message: 'Admin access required' });
+    }
+    
+    // Then verify in database
     const user = await User.findById(req.userId);
     if (!user || user.role !== 'admin') {
       return res.status(403).json({ message: 'Admin access required' });
     }
     next();
   } catch (error) {
+    console.error('Admin verification failed:', error);
     res.status(500).json({ message: 'Admin verification failed' });
   }
 };
