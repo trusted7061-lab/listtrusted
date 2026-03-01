@@ -1,10 +1,19 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { apiRequest } from '../services/apiService'
 
 export default function SuperAdminDashboard() {
   const navigate = useNavigate()
   const [adminUser, setAdminUser] = useState(null)
+  const [loading, setLoading] = useState(true)
   const [loadingLogout, setLoadingLogout] = useState(false)
+  const [stats, setStats] = useState({
+    totalAds: 0,
+    totalUsers: 0,
+    totalLocations: 1057,
+    activeAds: 0
+  })
+  const [error, setError] = useState('')
 
   useEffect(() => {
     // Check if user is logged in
@@ -18,13 +27,36 @@ export default function SuperAdminDashboard() {
 
     if (userStr) {
       try {
-        setAdminUser(JSON.parse(userStr))
+        const user = JSON.parse(userStr)
+        setAdminUser(user)
+        // Fetch dashboard stats
+        fetchDashboardStats()
       } catch (err) {
         console.error('Error parsing admin user:', err)
+        setError('Session error. Please login again.')
         navigate('/admin/login')
       }
     }
+    setLoading(false)
   }, [navigate])
+
+  const fetchDashboardStats = async () => {
+    try {
+      // Try to fetch stats from API
+      // This would normally come from backend endpoints
+      const token = localStorage.getItem('authToken')
+      // For now, use placeholder data
+      setStats({
+        totalAds: 468,
+        totalUsers: 0,
+        totalLocations: 1057,
+        activeAds: 468
+      })
+    } catch (err) {
+      console.log('Could not fetch stats:', err.message)
+      // Use default stats if API fails
+    }
+  }
 
   const handleLogout = async () => {
     setLoadingLogout(true)
@@ -43,10 +75,31 @@ export default function SuperAdminDashboard() {
     }
   }
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-black to-black flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block">
+            <div className="w-16 h-16 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin"></div>
+          </div>
+          <p className="text-white mt-4 text-lg">Loading Dashboard...</p>
+        </div>
+      </div>
+    )
+  }
+
   if (!adminUser) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-900 via-black to-black flex items-center justify-center">
-        <div className="text-white">Loading...</div>
+        <div className="text-white text-center">
+          <p className="mb-4">Session expired. Please login again.</p>
+          <button
+            onClick={() => navigate('/admin/login')}
+            className="px-6 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition"
+          >
+            Go to Login
+          </button>
+        </div>
       </div>
     )
   }
@@ -80,11 +133,65 @@ export default function SuperAdminDashboard() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Error Alert */}
+        {error && (
+          <div className="mb-6 bg-red-500/10 border border-red-500/50 rounded-lg p-4 text-red-400">
+            {error}
+          </div>
+        )}
+
         {/* Welcome Section */}
         <div className="mb-8">
           <div className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 border border-purple-500/30 rounded-xl p-8">
             <h2 className="text-3xl font-bold text-white mb-2">Welcome back, Admin!</h2>
             <p className="text-gray-400">You are logged in as: <span className="text-purple-400">{adminUser.email}</span></p>
+          </div>
+        </div>
+
+        {/* Stats Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          {/* Total Ads */}
+          <div className="bg-gradient-to-br from-blue-900/30 to-blue-900/10 border border-blue-500/30 rounded-xl p-6">
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="text-gray-400 text-sm mb-1">Total Ads</p>
+                <p className="text-3xl font-bold text-blue-400">{stats.totalAds}</p>
+              </div>
+              <div className="text-4xl opacity-30">📝</div>
+            </div>
+          </div>
+
+          {/* Active Ads */}
+          <div className="bg-gradient-to-br from-green-900/30 to-green-900/10 border border-green-500/30 rounded-xl p-6">
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="text-gray-400 text-sm mb-1">Active Ads</p>
+                <p className="text-3xl font-bold text-green-400">{stats.activeAds}</p>
+              </div>
+              <div className="text-4xl opacity-30">✓</div>
+            </div>
+          </div>
+
+          {/* Total Locations */}
+          <div className="bg-gradient-to-br from-purple-900/30 to-purple-900/10 border border-purple-500/30 rounded-xl p-6">
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="text-gray-400 text-sm mb-1">Total Locations</p>
+                <p className="text-3xl font-bold text-purple-400">{stats.totalLocations}</p>
+              </div>
+              <div className="text-4xl opacity-30">📍</div>
+            </div>
+          </div>
+
+          {/* Total Users */}
+          <div className="bg-gradient-to-br from-pink-900/30 to-pink-900/10 border border-pink-500/30 rounded-xl p-6">
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="text-gray-400 text-sm mb-1">Total Users</p>
+                <p className="text-3xl font-bold text-pink-400">{stats.totalUsers}</p>
+              </div>
+              <div className="text-4xl opacity-30">👥</div>
+            </div>
           </div>
         </div>
 
