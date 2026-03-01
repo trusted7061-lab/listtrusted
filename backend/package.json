@@ -7,7 +7,8 @@
     "start": "node server.js",
     "build": "echo 'Backend built successfully'",
     "dev": "nodemon server.js",
-    "test": "jest"
+    "test": "jest",
+    "seed:locations": "node generate-bulk-ads.js"
   },
   "dependencies": {
     "@sendgrid/mail": "^8.1.3",

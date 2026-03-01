@@ -555,13 +555,28 @@ function Location() {
         // Fetch advertiser ads from backend
         let backendAds = []
         try {
-          const API_BASE = import.meta.env.DEV ? '/api' : (import.meta.env.VITE_API_URL || 'http://localhost:5002/api')
-          const response = await fetch(`${API_BASE}/ads/city/${currentCity.name}?limit=50&sort=featured`)
+          const API_BASE = import.meta.env.VITE_API_URL || 'https://trustedescort-backend.onrender.com/api'
+          
+          // Try with current city name first
+          let response = await fetch(`${API_BASE}/ads/city/${currentCity.name}?limit=50&sort=featured`)
+          let data = null
+          
           if (response.ok) {
-            const data = await response.json()
+            data = await response.json()
             backendAds = data.ads || []
-            console.log(`Loaded ${backendAds.length} ads for ${currentCity.name}`)
           }
+          
+          // If no ads found, try with hyphenated version (for area names)
+          if (backendAds.length === 0 && currentCity.name.includes('-')) {
+            const spacedName = currentCity.name.replace(/-/g, ' ')
+            response = await fetch(`${API_BASE}/ads/city/${spacedName}?limit=50&sort=featured`)
+            if (response.ok) {
+              data = await response.json()
+              backendAds = data.ads || []
+            }
+          }
+          
+          console.log(`Loaded ${backendAds.length} ads for ${currentCity.name}`)
         } catch (err) {
           console.error('Failed to fetch advertiser ads:', err)
         }
