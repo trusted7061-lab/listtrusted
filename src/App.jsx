@@ -83,6 +83,7 @@ function App() {
               <Route path="/promote-ad" element={<PromoteAd />} />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin/dashboard" element={<SuperAdminDashboard />} />
+              <Route path="/superadmin-dashboard" element={<SuperAdminDashboard />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
