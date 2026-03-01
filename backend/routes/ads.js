@@ -27,23 +27,50 @@ const authMiddleware = (req, res, next) => {
   }
 };
 
-// Middleware to verify super admin
+// Middleware to verify super admin - Complete JWT verification
 const adminMiddleware = async (req, res, next) => {
   try {
-    // First check if user has admin role from token
-    if (req.userRole !== 'admin') {
-      return res.status(403).json({ message: 'Admin access required' });
+    // Get token from Authorization header
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ message: 'No authorization token' });
     }
+
+    const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+
+    // Verify and decode JWT token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret_here');
     
-    // Then verify in database
-    const user = await User.findById(req.userId);
-    if (!user || user.role !== 'admin') {
+    // Extract user info from token
+    const userId = decoded.userId;
+    const role = decoded.role;
+
+    // Verify admin role from token
+    if (role !== 'admin') {
       return res.status(403).json({ message: 'Admin access required' });
     }
+
+    // Optional: Also verify in database
+    const user = await User.findById(userId);
+    if (!user || user.role !== 'admin') {
+      return res.status(403).json({ message: 'Admin access required - user not found or role mismatch' });
+    }
+
+    // Attach user info to request for use in route handlers
+    req.userId = userId;
+    req.userRole = role;
+    req.user = user;
+
     next();
   } catch (error) {
-    console.error('Admin verification failed:', error);
-    res.status(500).json({ message: 'Admin verification failed' });
+    console.error('Admin middleware error:', error.message);
+    if (error.name === 'JsonWebTokenError') {
+      return res.status(401).json({ message: 'Invalid token' });
+    }
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({ message: 'Token expired' });
+    }
+    res.status(500).json({ message: 'Admin verification failed', error: error.message });
   }
 };
 
@@ -459,6 +486,20 @@ router.delete('/ads/:adId', authMiddleware, async (req, res) => {
 // ==========================================
 // SUPER ADMIN ENDPOINTS
 // ==========================================
+
+// Test admin access (for debugging)
+router.get('/admin/verify', adminMiddleware, async (req, res) => {
+  res.json({
+    success: true,
+    message: 'Admin access verified',
+    user: {
+      id: req.user._id,
+      email: req.user.email,
+      role: req.user.role,
+      displayName: req.user.displayName
+    }
+  });
+});
 
 // Get pending ads for approval
 router.get('/admin/pending-ads', adminMiddleware, async (req, res) => {

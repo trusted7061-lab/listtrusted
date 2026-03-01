@@ -87,6 +87,16 @@ export default function SuperAdminDashboard() {
     setDataLoading(true)
     setError('')
     try {
+      // First, verify admin access
+      try {
+        const verifyRes = await apiRequest('/ads/admin/verify')
+        console.log('✅ Admin verification successful:', verifyRes)
+      } catch (verifyError) {
+        console.error('❌ Admin verification failed:', verifyError)
+        throw verifyError
+      }
+
+      // Then fetch dashboard data
       const [statsData, adsData, usersData] = await Promise.all([
         apiRequest('/ads/admin/stats'),
         apiRequest('/ads/admin/pending-ads?limit=50'),
