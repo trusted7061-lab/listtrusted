@@ -27,6 +27,11 @@ export default function AdvertiserDashboard() {
   const [toast, setToast] = useState('')
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isChecking, setIsChecking] = useState(true)
+  const [coins, setCoins] = useState(0)
+  const [loadingCoins, setLoadingCoins] = useState(true)
+  const [showCoinModal, setShowCoinModal] = useState(false)
+  const [selectedCoins, setSelectedCoins] = useState(null)
+  const [requestingCoins, setRequestingCoins] = useState(false)
 
   useEffect(() => {
     const stored = localStorage.getItem('currentUser')
@@ -39,6 +44,7 @@ export default function AdvertiserDashboard() {
     setIsAuthenticated(true)
     setIsChecking(false)
     fetchAds()
+    fetchCoins()
   }, [])
 
   const fetchAds = async () => {
@@ -61,6 +67,56 @@ export default function AdvertiserDashboard() {
       setAds(localAds)
     } finally {
       setLoadingAds(false)
+    }
+  }
+
+  const fetchCoins = async () => {
+    setLoadingCoins(true)
+    const token = localStorage.getItem('authToken')
+    try {
+      const res = await fetch(`${API_BASE}/wallet/balance`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setCoins(data.coins || 0)
+      } else {
+        // Fallback to localStorage
+        const userCoins = localStorage.getItem('userCoins') || '0'
+        setCoins(parseInt(userCoins))
+      }
+    } catch {
+      const userCoins = localStorage.getItem('userCoins') || '0'
+      setCoins(parseInt(userCoins))
+    } finally {
+      setLoadingCoins(false)
+    }
+  }
+
+  const handleRequestCoins = async (amount) => {
+    setRequestingCoins(true)
+    const token = localStorage.getItem('authToken')
+    try {
+      const res = await fetch(`${API_BASE}/ads/request-coins`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ coinsRequested: amount }),
+      })
+      if (res.ok) {
+        showToast(`Coin request for ${amount} coins submitted to admin for approval`)
+        setShowCoinModal(false)
+        setSelectedCoins(null)
+      } else {
+        const err = await res.json()
+        showToast(err.message || 'Failed to request coins')
+      }
+    } catch (error) {
+      showToast('Error: ' + (error.message || 'Failed to request coins'))
+    } finally {
+      setRequestingCoins(false)
     }
   }
 
@@ -109,7 +165,7 @@ export default function AdvertiserDashboard() {
     { label: 'Total Ads Posted', value: totalAds, icon: '📋', color: 'border-gold/30' },
     { label: 'Live Ads', value: liveAds, icon: '🟢', color: 'border-green-400/30' },
     { label: 'Pending Review', value: pendingAds, icon: '🕐', color: 'border-yellow-400/30' },
-    { label: 'Rejected', value: rejectedAds, icon: '❌', color: 'border-red-400/30' },
+    { label: 'My Coins', value: loadingCoins ? '–' : coins, icon: '💰', color: 'border-blue-400/30' },
   ]
 
   return (
@@ -191,6 +247,12 @@ export default function AdvertiserDashboard() {
           <motion.div variants={fadeUp} initial="hidden" animate="visible" className="flex flex-wrap gap-3 mb-10">
             <Link to="/post-ad" className="btn-gold px-6 py-2.5 rounded-lg text-sm font-semibold">+ Post New Ad</Link>
             <Link to="/account" className="btn-outline px-6 py-2.5 rounded-lg text-sm font-semibold">Edit Profile</Link>
+            <button 
+              onClick={() => setShowCoinModal(true)} 
+              className="px-6 py-2.5 rounded-lg text-sm font-semibold border border-blue-400/40 text-blue-400 hover:text-blue-300 hover:border-blue-400/60 transition-colors"
+            >
+              💰 Request Coins
+            </button>
             <button onClick={fetchAds} className="px-6 py-2.5 rounded-lg text-sm font-semibold border border-gold/20 text-gray-400 hover:text-white hover:border-gold/50 transition-colors">
               🔄 Refresh
             </button>
@@ -275,6 +337,65 @@ export default function AdvertiserDashboard() {
           </motion.div>
         </div>
       </div>
+      )}
+
+      {/* Coin Request Modal */}
+      {showCoinModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="card-glass rounded-xl p-8 max-w-md w-full"
+          >
+            <h2 className="font-serif text-2xl font-bold text-white mb-4">Request Coins</h2>
+            <p className="text-gray-400 mb-6">Select the number of coins you want to request. The admin will review and approve your request.</p>
+            
+            <div className="space-y-3 mb-6">
+              {[
+                { amount: 200, desc: 'Basic Package' },
+                { amount: 500, desc: 'Popular Package' },
+                { amount: 1000, desc: 'Premium Package' }
+              ].map(pkg => (
+                <button
+                  key={pkg.amount}
+                  onClick={() => setSelectedCoins(pkg.amount)}
+                  className={`w-full p-4 rounded-lg border transition-all text-left ${
+                    selectedCoins === pkg.amount
+                      ? 'border-blue-400 bg-blue-400/10 text-white'
+                      : 'border-gold/20 bg-dark-card/50 text-gray-300 hover:border-gold/30'
+                  }`}
+                >
+                  <div className="font-semibold">{pkg.amount} Coins</div>
+                  <div className="text-xs text-gray-400">{pkg.desc}</div>
+                </button>
+              ))}
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setShowCoinModal(false)
+                  setSelectedCoins(null)
+                }}
+                className="flex-1 px-4 py-2.5 rounded-lg border border-gold/20 text-gray-400 hover:text-white transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => selectedCoins && handleRequestCoins(selectedCoins)}
+                disabled={!selectedCoins || requestingCoins}
+                className={`flex-1 px-4 py-2.5 rounded-lg font-semibold transition-all ${
+                  selectedCoins && !requestingCoins
+                    ? 'btn-gold text-dark-bg'
+                    : 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                }`}
+              >
+                {requestingCoins ? 'Submitting...' : 'Submit Request'}
+              </button>
+            </div>
+          </motion.div>
+        </div>
       )}
 
       {/* Toast */}

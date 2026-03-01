@@ -189,6 +189,42 @@ router.post('/wallet/confirm-purchase', [
   }
 });
 
+// Request coins from admin (Advertiser)
+router.post('/request-coins', [
+  body('coinsRequested').isIn([200, 500, 1000]).withMessage('Invalid coin amount')
+], authMiddleware, async (req, res) => {
+  try {
+    const { coinsRequested } = req.body;
+
+    // Get or create wallet
+    let wallet = await Wallet.findOne({ userId: req.userId });
+    if (!wallet) {
+      wallet = new Wallet({ userId: req.userId });
+      await wallet.save();
+    }
+
+    // Add a pending transaction for admin review
+    wallet.transactions.push({
+      type: 'admin-add',
+      coins: coinsRequested,
+      description: `Coin request for ${coinsRequested} coins`,
+      reference: 'manual',
+      status: 'pending',
+      createdAt: new Date()
+    });
+
+    await wallet.save();
+
+    res.json({
+      success: true,
+      message: `Requested ${coinsRequested} coins. Admin will review and approve your request.`,
+      coinsRequested
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to request coins', error: error.message });
+  }
+});
+
 // ==========================================
 // AD POSTING ENDPOINTS
 // ==========================================
