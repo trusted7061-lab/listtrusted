@@ -1,50 +1,54 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5002/api'
+
+async function apiRequest(endpoint, options = {}) {
+  const url = `${API_BASE_URL}${endpoint}`
+  const token = localStorage.getItem('authToken')
+
+  const config = {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+      ...options.headers,
+    },
+    ...options,
+  }
+
+  try {
+    const response = await fetch(url, config)
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ error: 'Network error' }))
+      throw new Error(errorData.message || `HTTP ${response.status}`)
+    }
+    return await response.json()
+  } catch (error) {
+    console.error(`API request failed: ${endpoint}`, error)
+    throw error
+  }
+}
+
 export default function SuperAdminDashboard() {
   const navigate = useNavigate()
   const [adminUser, setAdminUser] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [dataLoading, setDataLoading] = useState(false)
   const [loadingLogout, setLoadingLogout] = useState(false)
-  const [activeTab, setActiveTab] = useState('ads') // ads, advertisers, wallets
+  const [activeTab, setActiveTab] = useState('ads')
   const [error, setError] = useState('')
+  const [successMsg, setSuccessMsg] = useState('')
 
-  // Mock data - Replace with API calls
-  const [ads, setAds] = useState([
-    {
-      id: 1,
-      title: 'Premium Escort Services Delhi',
-      advertiser: { name: 'John Advertiser', email: 'john@ads.com', id: 101 },
-      status: 'pending',
-      coins: 50,
-      location: 'New Delhi',
-      createdAt: '2026-03-01',
-      image: '👤'
-    },
-    {
-      id: 2,
-      title: 'Bangalore Elite Companions',
-      advertiser: { name: 'Sarah Marketing', email: 'sarah@ads.com', id: 102 },
-      status: 'approved',
-      coins: 100,
-      location: 'Bangalore',
-      createdAt: '2026-02-28',
-      image: '👤'
-    }
-  ])
-
-  const [advertisers, setAdvertisers] = useState([
-    { id: 101, name: 'John Advertiser', email: 'john@ads.com', coins: 450, adsCount: 5, status: 'active' },
-    { id: 102, name: 'Sarah Marketing', email: 'sarah@ads.com', coins: 1200, adsCount: 8, status: 'active' },
-    { id: 103, name: 'Mike Promotions', email: 'mike@ads.com', coins: 150, adsCount: 2, status: 'inactive' }
-  ])
-
+  // Real data from API
+  const [ads, setAds] = useState([])
+  const [advertisers, setAdvertisers] = useState([])
   const [stats, setStats] = useState({
-    totalAds: 468,
-    pendingAds: 2,
-    approvedAds: 466,
-    activeAdvertisers: 150,
-    totalCoinsDistributed: 15000,
+    totalAds: 0,
+    pendingAds: 0,
+    approvedAds: 0,
+    rejectedAds: 0,
+    activeAdvertisers: 0,
+    totalCoinsDistributed: 0,
     totalLocations: 1057
   })
 
@@ -53,6 +57,7 @@ export default function SuperAdminDashboard() {
   const [coinAmount, setCoinAmount] = useState('')
   const [coinReason, setCoinReason] = useState('bonus')
 
+  // Check authentication
   useEffect(() => {
     const token = localStorage.getItem('authToken')
     const userStr = localStorage.getItem('adminUser')
@@ -70,10 +75,154 @@ export default function SuperAdminDashboard() {
         console.error('Error parsing admin user:', err)
         setError('Session error. Please login again.')
         navigate('/admin/login')
+        return
       }
     }
     setLoading(false)
+    fetchDashboardData()
   }, [navigate])
+
+  // Fetch all dashboard data from API
+  const fetchDashboardData = async () => {
+    setDataLoading(true)
+    setError('')
+    try {
+      const [statsData, adsData, usersData] = await Promise.all([
+        apiRequest('/ads/admin/stats'),
+        apiRequest('/ads/admin/pending-ads?limit=50'),
+        apiRequest('/ads/admin/users?limit=100')
+      ])
+
+      if (statsData) {
+        setStats(prev => ({
+          ...prev,
+          totalAds: (statsData.ads?.pending || 0) + (statsData.ads?.approved || 0) + (statsData.ads?.rejected || 0),
+          pendingAds: statsData.ads?.pending || 0,
+          approvedAds: statsData.ads?.approved || 0,
+          rejectedAds: statsData.ads?.rejected || 0,
+          totalCoinsDistributed: statsData.coins?.circulatingCoins || 0
+        }))
+      }
+
+      if (adsData && adsData.ads) {
+        const processedAds = adsData.ads.map(ad => ({
+          id: ad._id,
+          title: ad.title || 'Untitled Ad',
+          advertiser: {
+            id: ad.userId?._id || ad.userId,
+            name: ad.userId?.displayName || 'Unknown User',
+            email: ad.userId?.email || 'N/A'
+          },
+          status: ad.adminApprovalStatus || 'pending',
+          coins: ad.coinsUsed || 0,
+          location: ad.location || 'Multiple',
+          createdAt: new Date(ad.createdAt).toLocaleDateString(),
+          category: ad.category,
+          isPremium: ad.isPremium
+        }))
+        setAds(processedAds)
+      }
+
+      if (usersData && usersData.users) {
+        const processedUsers = usersData.users.map(user => ({
+          id: user.id,
+          name: user.displayName || user.businessName || 'Unknown',
+          email: user.email,
+          coins: user.coins || 0,
+          adsCount: user.totalAds || 0,
+          pendingAds: user.pendingAds || 0,
+          approvedAds: user.approvedAds || 0,
+          status: user.coins > 0 ? 'active' : 'inactive'
+        }))
+        setAdvertisers(processedUsers)
+      }
+    } catch (err) {
+      console.error('Failed to fetch dashboard data:', err)
+      setError(`Unable to load data: ${err.message}`)
+    } finally {
+      setDataLoading(false)
+    }
+  }
+
+  const handleApproveAd = async (adId) => {
+    try {
+      const response = await apiRequest(`/ads/admin/ads/${adId}/approve`, {
+        method: 'POST'
+      })
+
+      if (response.success) {
+        setAds(ads.map(ad => ad.id === adId ? { ...ad, status: 'approved' } : ad))
+        setStats(prev => ({
+          ...prev,
+          pendingAds: Math.max(0, prev.pendingAds - 1),
+          approvedAds: prev.approvedAds + 1
+        }))
+        setSuccessMsg('Ad approved successfully!')
+        setTimeout(() => setSuccessMsg(''), 3000)
+      }
+    } catch (err) {
+      setError(`Failed to approve ad: ${err.message}`)
+    }
+  }
+
+  const handleRejectAd = async (adId) => {
+    const reason = prompt('Enter rejection reason:')
+    if (!reason) return
+
+    try {
+      const response = await apiRequest(`/ads/admin/ads/${adId}/reject`, {
+        method: 'POST',
+        body: JSON.stringify({ rejectionReason: reason })
+      })
+
+      if (response.success) {
+        setAds(ads.filter(ad => ad.id !== adId))
+        setStats(prev => ({
+          ...prev,
+          pendingAds: Math.max(0, prev.pendingAds - 1),
+          rejectedAds: prev.rejectedAds + 1
+        }))
+        setSuccessMsg('Ad rejected and coins refunded!')
+        setTimeout(() => setSuccessMsg(''), 3000)
+      }
+    } catch (err) {
+      setError(`Failed to reject ad: ${err.message}`)
+    }
+  }
+
+  const handleAddCoins = async () => {
+    if (!selectedAdvertiser || !coinAmount) {
+      setError('Please select advertiser and enter coin amount')
+      return
+    }
+
+    try {
+      const response = await apiRequest('/ads/admin/coins/add', {
+        method: 'POST',
+        body: JSON.stringify({
+          userId: selectedAdvertiser.id,
+          coins: parseInt(coinAmount),
+          reason: coinReason
+        })
+      })
+
+      if (response.success) {
+        setAdvertisers(advertisers.map(adv =>
+          adv.id === selectedAdvertiser.id
+            ? { ...adv, coins: adv.coins + parseInt(coinAmount) }
+            : adv
+        ))
+        setShowCoinModal(false)
+        setSelectedAdvertiser(null)
+        setCoinAmount('')
+        setCoinReason('bonus')
+        setSuccessMsg(`${coinAmount} coins added successfully!`)
+        setTimeout(() => setSuccessMsg(''), 3000)
+      }
+    } catch (err) {
+      setError(`Failed to add coins: ${err.message}`)
+    }
+  }
 
   const handleLogout = async () => {
     setLoadingLogout(true)
@@ -87,36 +236,6 @@ export default function SuperAdminDashboard() {
     } finally {
       setLoadingLogout(false)
     }
-  }
-
-  const handleApproveAd = (adId) => {
-    setAds(ads.map(ad => 
-      ad.id === adId ? { ...ad, status: 'approved' } : ad
-    ))
-    setStats({ ...stats, pendingAds: stats.pendingAds - 1, approvedAds: stats.approvedAds + 1 })
-  }
-
-  const handleRejectAd = (adId) => {
-    setAds(ads.filter(ad => ad.id !== adId))
-    setStats({ ...stats, pendingAds: stats.pendingAds - 1, totalAds: stats.totalAds - 1 })
-  }
-
-  const handleAddCoins = () => {
-    if (!selectedAdvertiser || !coinAmount) {
-      setError('Please select advertiser and enter coin amount')
-      return
-    }
-
-    setAdvertisers(advertisers.map(adv =>
-      adv.id === selectedAdvertiser.id
-        ? { ...adv, coins: adv.coins + parseInt(coinAmount) }
-        : adv
-    ))
-
-    setShowCoinModal(false)
-    setSelectedAdvertiser(null)
-    setCoinAmount('')
-    setCoinReason('bonus')
   }
 
   if (loading) {
@@ -165,6 +284,13 @@ export default function SuperAdminDashboard() {
                 <span className="text-purple-400 font-semibold">{adminUser.email}</span>
               </span>
               <button
+                onClick={() => { setDataLoading(true); fetchDashboardData(); }}
+                className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition text-sm font-medium"
+                disabled={dataLoading}
+              >
+                {dataLoading ? '⟳ Refreshing...' : '⟳ Refresh'}
+              </button>
+              <button
                 onClick={handleLogout}
                 disabled={loadingLogout}
                 className="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-600 text-white rounded-lg transition text-sm font-medium"
@@ -178,6 +304,13 @@ export default function SuperAdminDashboard() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Success Message */}
+        {successMsg && (
+          <div className="mb-6 bg-green-500/10 border border-green-500/50 rounded-lg p-4 text-green-400">
+            ✓ {successMsg}
+          </div>
+        )}
+
         {/* Error Alert */}
         {error && (
           <div className="mb-6 bg-red-500/10 border border-red-500/50 rounded-lg p-4 text-red-400">
@@ -199,17 +332,17 @@ export default function SuperAdminDashboard() {
             <p className="text-gray-400 text-xs mb-1">Approved Ads</p>
             <p className="text-2xl font-bold text-green-400">{stats.approvedAds}</p>
           </div>
+          <div className="bg-red-900/30 border border-red-500/30 rounded-lg p-4">
+            <p className="text-gray-400 text-xs mb-1">Rejected Ads</p>
+            <p className="text-2xl font-bold text-red-400">{stats.rejectedAds}</p>
+          </div>
           <div className="bg-purple-900/30 border border-purple-500/30 rounded-lg p-4">
-            <p className="text-gray-400 text-xs mb-1">Active Advertisers</p>
-            <p className="text-2xl font-bold text-purple-400">{stats.activeAdvertisers}</p>
+            <p className="text-gray-400 text-xs mb-1">Advertisers</p>
+            <p className="text-2xl font-bold text-purple-400">{advertisers.length}</p>
           </div>
           <div className="bg-pink-900/30 border border-pink-500/30 rounded-lg p-4">
-            <p className="text-gray-400 text-xs mb-1">Coins Distributed</p>
-            <p className="text-2xl font-bold text-pink-400">{stats.totalCoinsDistributed.toLocaleString()}</p>
-          </div>
-          <div className="bg-orange-900/30 border border-orange-500/30 rounded-lg p-4">
-            <p className="text-gray-400 text-xs mb-1">Locations</p>
-            <p className="text-2xl font-bold text-orange-400">{stats.totalLocations}</p>
+            <p className="text-gray-400 text-xs mb-1">Coins in System</p>
+            <p className="text-2xl font-bold text-pink-400">{(stats.totalCoinsDistributed / 1000).toFixed(1)}k</p>
           </div>
         </div>
 
