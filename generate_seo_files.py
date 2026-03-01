@@ -14,7 +14,7 @@ for match in re.findall(r"cities:\s*\[([^\]]*)\]", content):
     for city in re.findall(r"'([^']+)'", match):
         cities.add(city)
 
-SITE_URL = 'https://www.trustedescort.com'
+SITE_URL = 'https://trustedescort.in'
 TODAY = datetime.now().strftime('%Y-%m-%d')
 
 # Generate sitemap.xml

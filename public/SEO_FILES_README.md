@@ -8,7 +8,7 @@ This directory contains essential SEO and crawler configuration files for the Tr
 ### 1. robots.txt
 **Purpose**: Controls search engine crawler access to website sections.
 
-**Location**: `/robots.txt` (https://www.trustedescort.in/robots.txt)
+**Location**: `/robots.txt` (https://trustedescort.in/robots.txt)
 
 **Features**:
 - Allows all major search engines (Google, Bing, Yandex)
@@ -23,7 +23,7 @@ This directory contains essential SEO and crawler configuration files for the Tr
 ### 2. sitemap.xml
 **Purpose**: Helps search engines discover and index all pages on the website.
 
-**Location**: `/sitemap.xml` (https://www.trustedescort.in/sitemap.xml)
+**Location**: `/sitemap.xml` (https://trustedescort.in/sitemap.xml)
 
 **Content**:
 - 9 main pages (home, escorts, booking, about, contact, FAQ, privacy, terms, advertiser-signup)
@@ -43,7 +43,7 @@ This directory contains essential SEO and crawler configuration files for the Tr
 ### 3. llms.txt
 **Purpose**: Provides AI crawlers with structured information about the website.
 
-**Location**: `/llms.txt` (https://www.trustedescort.in/llms.txt)
+**Location**: `/llms.txt` (https://trustedescort.in/llms.txt)
 
 **Features**:
 - Site description and purpose
@@ -68,7 +68,7 @@ http://localhost:3000/robots.txt
 
 Production:
 ```
-https://www.trustedescort.in/robots.txt
+https://trustedescort.in/robots.txt
 ```
 
 ### Test sitemap.xml
@@ -79,7 +79,7 @@ http://localhost:3000/sitemap.xml
 
 Production:
 ```
-https://www.trustedescort.in/sitemap.xml
+https://trustedescort.in/sitemap.xml
 ```
 
 ### Test llms.txt
@@ -90,7 +90,7 @@ http://localhost:3000/llms.txt
 
 Production:
 ```
-https://www.trustedescort.in/llms.txt
+https://trustedescort.in/llms.txt
 ```
 
 ## Validation Tools

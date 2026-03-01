@@ -86,21 +86,21 @@ npm run build
 
 **Google Search Console:**
 1. Go to https://search.google.com/search-console
-2. Add property: `https://www.trustedescort.in`
-3. Submit sitemap: `https://www.trustedescort.in/sitemap.xml`
+2. Add property: `https://trustedescort.in`
+3. Submit sitemap: `https://trustedescort.in/sitemap.xml`
 4. Test robots.txt: Use robots.txt tester tool
 
 **Bing Webmaster Tools:**
 1. Go to https://www.bing.com/webmasters
-2. Add site: `https://www.trustedescort.in`
-3. Submit sitemap: `https://www.trustedescort.in/sitemap.xml`
+2. Add site: `https://trustedescort.in`
+3. Submit sitemap: `https://trustedescort.in/sitemap.xml`
 
 ### 2. Verify Accessibility
 
 After deploying to production, verify:
-- [ ] https://www.trustedescort.in/robots.txt - Loads correctly
-- [ ] https://www.trustedescort.in/sitemap.xml - Valid XML
-- [ ] https://www.trustedescort.in/llms.txt - Human readable
+- [ ] https://trustedescort.in/robots.txt - Loads correctly
+- [ ] https://trustedescort.in/sitemap.xml - Valid XML
+- [ ] https://trustedescort.in/llms.txt - Human readable
 
 ### 3. Monitor Performance
 

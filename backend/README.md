@@ -76,7 +76,7 @@ JWT_SECRET=your-super-secret-jwt-key-here
 
 # SendGrid Configuration
 SENDGRID_API_KEY=your-sendgrid-api-key-here
-SENDGRID_FROM_EMAIL=noreply@trustedescort.com
+SENDGRID_FROM_EMAIL=noreply@trustedescort.in
 SENDGRID_FROM_NAME=Trusted Escort
 
 # Email Templates

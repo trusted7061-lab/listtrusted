@@ -250,11 +250,13 @@ Updated main HTML file with:
 ## ⚠️ Important Notes
 
 ### Domain Configuration
-- Replace `www.trustedescort.in` in all files with your actual domain
-- Files to update:
-  - sitemap.xml
-  - All page meta tags (canonical URLs)
-  - index.html
+✅ Domain is set to: `https://trustedescort.in`
+- All URLs use trustedescort.in without www prefix
+- CORS origins include both versions for compatibility
+- Files utilizing domain:
+  - sitemap.xml (✓ Updated)
+  - index.html (✓ Updated)
+  - All page meta tags with canonical URLs (✓ Updated)
 
 ### Privacy & Legal
 - Ensure compliance with local laws
