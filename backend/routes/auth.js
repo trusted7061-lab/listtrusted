@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const { body, validationResult } = require('express-validator');
 const { OAuth2Client } = require('google-auth-library');
 const User = require('../models/User');
+const Wallet = require('../models/Wallet');
 const sendEmail = require('../services/emailService');
 const { sendSMS } = require('../services/smsService');
 const otpGenerator = require('otp-generator');
@@ -194,6 +195,29 @@ router.post('/verify', [
     user.otp = undefined;
     user.otpExpires = undefined;
     await user.save();
+
+    // Grant 300 coins to advertiser on first verification
+    if (user.userType === 'advertiser') {
+      const existingWallet = await Wallet.findOne({ userId: user._id });
+      if (!existingWallet) {
+        // First time advertiser - grant 300 coins
+        const wallet = new Wallet({
+          userId: user._id,
+          coins: 300,
+          totalCoinsEarned: 300,
+          transactions: [{
+            type: 'admin-add',
+            coins: 300,
+            description: 'Welcome bonus for new advertiser',
+            reference: 'manual',
+            status: 'completed',
+            paymentMethod: 'system',
+            createdAt: new Date()
+          }]
+        });
+        await wallet.save();
+      }
+    }
 
     // Generate token
     const accessToken = jwt.sign(
@@ -628,6 +652,25 @@ router.post('/google', async (req, res) => {
         userType: 'user'
       });
       await user.save();
+
+      // Grant 300 coins if registering as advertiser
+      if (user.userType === 'advertiser') {
+        const wallet = new Wallet({
+          userId: user._id,
+          coins: 300,
+          totalCoinsEarned: 300,
+          transactions: [{
+            type: 'admin-add',
+            coins: 300,
+            description: 'Welcome bonus for new advertiser',
+            reference: 'manual',
+            status: 'completed',
+            paymentMethod: 'system',
+            createdAt: new Date()
+          }]
+        });
+        await wallet.save();
+      }
     }
 
     // Generate JWT tokens

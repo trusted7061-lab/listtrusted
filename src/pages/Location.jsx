@@ -547,20 +547,71 @@ function Location() {
 
   // Load featured escorts for this city
   useEffect(() => {
-    const loadFeaturedEscorts = () => {
-      // Get all profiles including advertiser profiles
-      const advertiserProfiles = getAllProfiles()
+    const loadFeaturedEscorts = async () => {
+      try {
+        // Get all profiles including advertiser profiles
+        const advertiserProfiles = getAllProfiles()
 
-      // Combine default escorts with advertiser profiles
-      const combinedEscorts = [...defaultEscorts, ...advertiserProfiles]
-      
-      // Filter escorts by current city
-      const cityEscorts = combinedEscorts.filter(
-        escort => escort.location.toLowerCase() === currentCity.name.toLowerCase()
-      )
-      
-      // Get up to 6 featured escorts
-      setFeaturedEscorts(cityEscorts.slice(0, 6))
+        // Fetch advertiser ads from backend
+        let backendAds = []
+        try {
+          const API_BASE = import.meta.env.DEV ? '/api' : (import.meta.env.VITE_API_URL || 'http://localhost:5002/api')
+          const response = await fetch(`${API_BASE}/ads/city/${currentCity.name}?limit=50&sort=featured`)
+          if (response.ok) {
+            const data = await response.json()
+            backendAds = data.ads || []
+            console.log(`Loaded ${backendAds.length} ads for ${currentCity.name}`)
+          }
+        } catch (err) {
+          console.error('Failed to fetch advertiser ads:', err)
+        }
+
+        // Convert backend ads to escort format
+        const adsAsEscorts = backendAds.map(ad => ({
+          id: ad.id,
+          name: ad.profileInfo?.name || 'Unknown',
+          age: ad.profileInfo?.age || 'N/A',
+          city: ad.city,
+          location: ad.city,
+          bodyType: ad.profileInfo?.bodyType || '',
+          image: ad.images?.[0]?.url || 'https://via.placeholder.com/300x400?text=Profile',
+          rating: 4.9,
+          reviews: 12,
+          isVerified: true,
+          isPremium: ad.isPremium,
+          boost: ad.boost,
+          services: ad.services,
+          area: ad.area,
+          isAdvertiserAd: true
+        }))
+
+        // Combine default escorts with advertiser profiles and ads
+        const combinedEscorts = [...defaultEscorts, ...advertiserProfiles, ...adsAsEscorts]
+        
+        // Filter escorts by current city
+        const cityEscorts = combinedEscorts.filter(
+          escort => escort.location.toLowerCase() === currentCity.name.toLowerCase()
+        )
+        
+        // Get up to 6 featured escorts (prioritize advertiser ads with boost)
+        const sortedEscorts = cityEscorts.sort((a, b) => {
+          // Prioritize bosted/premium ads
+          if (a.isPremium && !b.isPremium) return -1
+          if (!a.isPremium && b.isPremium) return 1
+          return 0
+        })
+        
+        setFeaturedEscorts(sortedEscorts.slice(0, 6))
+      } catch (error) {
+        console.error('Error loading escorts:', error)
+        // Fallback to local data
+        const advertiserProfiles = getAllProfiles()
+        const combinedEscorts = [...defaultEscorts, ...advertiserProfiles]
+        const cityEscorts = combinedEscorts.filter(
+          escort => escort.location.toLowerCase() === currentCity.name.toLowerCase()
+        )
+        setFeaturedEscorts(cityEscorts.slice(0, 6))
+      }
     }
 
     loadFeaturedEscorts()

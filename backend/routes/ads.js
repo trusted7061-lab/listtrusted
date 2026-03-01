@@ -255,97 +255,131 @@ router.get('/ads/coin-cost', (req, res) => {
 });
 
 // Post new ad
-router.post('/ads/create', [
-  body('title').notEmpty().trim().isLength({ max: 100 }).withMessage('Valid title required'),
-  body('description').notEmpty().trim().isLength({ max: 2000 }).withMessage('Valid description required'),
-  body('category').isIn(['escort-service', 'companion', 'events', 'other']).withMessage('Invalid category'),
-  body('timeSlot').isIn(['morning', 'afternoon', 'night']).withMessage('Invalid time slot'),
-  body('location').notEmpty().trim().withMessage('Location required'),
-  body('city').notEmpty().trim().withMessage('City required'),
-  body('contact.phone').isMobilePhone('any').withMessage('Valid phone required'),
-  body('contact.whatsapp').optional().isMobilePhone('any').withMessage('Valid whatsapp number'),
-  body('contact.email').isEmail().withMessage('Valid email required')
-], authMiddleware, async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-
+router.post('/ads/create', authMiddleware, async (req, res) => {
   try {
-    const { title, description, category, timeSlot, location, city, state, contact, pricing, images } = req.body;
-    
+    // Handle both new form format and file uploads
+    const {
+      title,
+      description,
+      city,
+      state,
+      area,
+      contact,
+      profileInfo,
+      services,
+      optionalInfo,
+      boost
+    } = req.body;
+
+    // Validate required fields
+    if (!title || !description || !city || !state) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+
     // Get user wallet
     let wallet = await Wallet.findOne({ userId: req.userId });
     if (!wallet) {
       wallet = new Wallet({ userId: req.userId });
       await wallet.save();
     }
-    
-    // Determine coin cost
-    const coinCost = { 'morning': 5, 'afternoon': 8, 'night': 10 }[timeSlot];
-    
-    // Check if user has enough coins
-    let isPremium = false;
-    if (wallet.coins >= coinCost) {
-      isPremium = true;
-      wallet.coins -= coinCost;
-      wallet.totalCoinsSpent += coinCost;
+
+    // Handle boost coin deduction if applicable
+    let coinsUsed = 0;
+    let boostInfo = null;
+
+    if (boost) {
+      const boostCost = boost.type === 'superTurbo' ? 200 : 100;
       
+      if (wallet.coins < boostCost) {
+        return res.status(402).json({
+          message: 'Insufficient coins for boost',
+          coinsNeeded: boostCost,
+          coinsAvailable: wallet.coins
+        });
+      }
+
+      coinsUsed = boostCost;
+      wallet.coins -= coinsUsed;
+      wallet.totalCoinsSpent += coinsUsed;
+
       wallet.transactions.push({
         type: 'spend',
-        coins: -coinCost,
-        description: `Posted ad: ${title} (${timeSlot})`,
+        coins: coinsUsed,
+        description: `Ad boost: ${boost.type} for ${boost.duration} days`,
         reference: 'ad-posting',
         paymentMethod: 'system',
         status: 'completed'
       });
+
+      boostInfo = {
+        type: boost.type,
+        duration: boost.duration,
+        timeSlot: boost.timeSlot,
+        costCoins: boostCost,
+        activatedAt: new Date(),
+        endsAt: new Date(Date.now() + boost.duration * 24 * 60 * 60 * 1000)
+      };
     }
-    
-    // Create ad posting
-    const now = new Date();
-    const expiryDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000); // 30 days expiry
-    
+
+    // Process images if uploaded via multipart form
+    const images = [];
+    if (req.files && req.files.length > 0) {
+      req.files.forEach(file => {
+        images.push({
+          url: file.path || `/uploads/${file.filename}`,
+          uploadedAt: new Date()
+        });
+      });
+    }
+
+    // Create ad posting with new format
     const adPosting = new AdPosting({
       userId: req.userId,
       title,
       description,
-      category,
-      timeSlot,
-      location,
       city,
       state,
-      contact,
-      pricing,
-      images: images || [],
-      coinsUsed: isPremium ? coinCost : 0,
-      isPremium,
-      startDate: now,
-      endDate: now,
-      expiresAt: expiryDate,
-      status: 'pending', // Needs admin approval
-      adminApprovalStatus: 'pending',
+      area: area || '',
+      contact: typeof contact === 'string' ? JSON.parse(contact) : contact,
+      profileInfo: typeof profileInfo === 'string' ? JSON.parse(profileInfo) : profileInfo,
+      services: typeof services === 'string' ? JSON.parse(services) : services,
+      optionalInfo: typeof optionalInfo === 'string' ? JSON.parse(optionalInfo) : optionalInfo,
+      images,
+      boost: boostInfo,
+      status: boostInfo ? 'approved' : 'pending', // Auto-approve if they paid for boost
+      adminApprovalStatus: boostInfo ? 'approved' : 'pending',
+      ...(boostInfo && {
+        approvedBy: req.userId, // Mark as self-approved when boosted
+        approvedAt: new Date()
+      }),
+      coinsUsed,
+      isPremium: !!boostInfo,
+      startDate: new Date(),
+      endDate: boostInfo ? new Date(Date.now() + boostInfo.duration * 24 * 60 * 60 * 1000) : new Date(),
+      expiresAt: boostInfo ? new Date(Date.now() + boostInfo.duration * 24 * 60 * 60 * 1000) : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
       metadata: {
         ipAddress: req.ip || req.connection.remoteAddress,
         userAgent: req.headers['user-agent'],
-        deviceType: 'mobile' // Can be enhanced
+        deviceType: req.headers['device-type'] || 'web'
       }
     });
-    
+
     await adPosting.save();
     await wallet.save();
-    
+
     res.status(201).json({
       success: true,
       adId: adPosting._id,
-      message: isPremium 
-        ? `Ad posted with premium placement (${coinCost} coins used)`
+      message: boostInfo
+        ? `Ad posted and live with ${boost.type} boost!`
         : 'Ad posted. It will appear after admin approval.',
-      isPremium,
-      coinsUsed: coinCost,
-      remainingCoins: wallet.coins,
-      status: 'pending'
+      status: adPosting.status,
+      boost: boostInfo,
+      coinsUsed,
+      remainingCoins: wallet.coins
     });
   } catch (error) {
+    console.error('Error creating ad:', error);
     res.status(500).json({ message: 'Failed to post ad', error: error.message });
   }
 });
@@ -743,6 +777,81 @@ router.get('/admin/advertiser-coin-requests', adminMiddleware, async (req, res) 
     });
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch advertiser coin requests', error: error.message });
+  }
+});
+
+// ==========================================
+// GET ADS BY CITY (Public endpoint)
+// ==========================================
+router.get('/city/:city', async (req, res) => {
+  try {
+    const { city } = req.params;
+    const { area, page = 1, limit = 20, sort = 'newest' } = req.query;
+
+    // Build query
+    const query = {
+      city: new RegExp(city, 'i'), // Case-insensitive search
+      status: 'approved',
+      adminApprovalStatus: 'approved'
+    };
+
+    // Add area filter if provided
+    if (area) {
+      query.area = area;
+    }
+
+    // Determine sort order
+    let sortObj = { createdAt: -1 }; // Default: newest first
+    if (sort === 'featured') {
+      sortObj = { isPremium: -1, createdAt: -1 }; // Featured (with boost) first
+    } else if (sort === 'popular') {
+      sortObj = { views: -1, createdAt: -1 }; // Most viewed first
+    }
+
+    // Get total count
+    const total = await AdPosting.countDocuments(query);
+
+    // Fetch ads with pagination
+    const ads = await AdPosting.find(query)
+      .sort(sortObj)
+      .skip((page - 1) * limit)
+      .limit(parseInt(limit))
+      .populate('userId', 'displayName businessName profilePicture');
+
+    // Format response with user info
+    const formattedAds = ads.map(ad => ({
+      id: ad._id,
+      title: ad.title,
+      description: ad.description,
+      images: ad.images,
+      area: ad.area,
+      city: ad.city,
+      state: ad.state,
+      contact: ad.contact,
+      profileInfo: ad.profileInfo,
+      services: ad.services,
+      views: ad.views,
+      isPremium: ad.isPremium,
+      boost: ad.boost,
+      advertiser: {
+        id: ad.userId?._id,
+        name: ad.userId?.displayName || ad.userId?.businessName,
+        profilePicture: ad.userId?.profilePicture
+      },
+      createdAt: ad.createdAt
+    }));
+
+    res.json({
+      success: true,
+      total,
+      page: parseInt(page),
+      limit: parseInt(limit),
+      totalPages: Math.ceil(total / limit),
+      ads: formattedAds
+    });
+  } catch (error) {
+    console.error('Error fetching ads by city:', error);
+    res.status(500).json({ message: 'Failed to fetch ads', error: error.message });
   }
 });
 
