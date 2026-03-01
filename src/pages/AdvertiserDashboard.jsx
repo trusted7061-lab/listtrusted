@@ -25,14 +25,19 @@ export default function AdvertiserDashboard() {
   const [loadingAds, setLoadingAds] = useState(true)
   const [deleteId, setDeleteId] = useState(null)
   const [toast, setToast] = useState('')
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isChecking, setIsChecking] = useState(true)
 
   useEffect(() => {
     const stored = localStorage.getItem('currentUser')
     if (!stored) {
-      navigate('/sign-in')
+      setIsAuthenticated(false)
+      setIsChecking(false)
       return
     }
     setUser(JSON.parse(stored))
+    setIsAuthenticated(true)
+    setIsChecking(false)
     fetchAds()
   }, [])
 
@@ -114,7 +119,30 @@ export default function AdvertiserDashboard() {
         <meta name="robots" content="noindex" />
       </Helmet>
 
-      <div className="min-h-screen bg-dark-bg">
+      {isChecking ? (
+        // Loading state
+        <div className="min-h-screen bg-dark-bg flex items-center justify-center">
+          <p className="text-gray-400">Loading dashboard...</p>
+        </div>
+      ) : !isAuthenticated ? (
+        // Not logged in
+        <div className="min-h-screen bg-dark-bg flex items-center justify-center">
+          <div className="card-glass rounded-xl p-8 max-w-md w-full mx-4 text-center">
+            <h2 className="font-serif text-2xl font-bold text-white mb-4">Login Required</h2>
+            <p className="text-gray-400 mb-6">Please sign in to access your advertiser dashboard.</p>
+            <div className="space-y-3">
+              <Link to="/signin" className="block btn-gold px-6 py-3 rounded-lg text-sm font-semibold">
+                Sign In
+              </Link>
+              <Link to="/advertiser-signup" className="block btn-outline px-6 py-3 rounded-lg text-sm font-semibold">
+                Create Account
+              </Link>
+            </div>
+          </div>
+        </div>
+      ) : (
+        // Authenticated - Show dashboard
+        <div className="min-h-screen bg-dark-bg">
         {/* Top bar */}
         <div className="bg-dark-card border-b border-gold/10 px-6 py-4 flex items-center justify-between">
           <Link to="/" className="font-serif text-xl font-bold text-gold">TrustedEsco</Link>
@@ -247,6 +275,7 @@ export default function AdvertiserDashboard() {
           </motion.div>
         </div>
       </div>
+      )}
 
       {/* Toast */}
       {toast && (
