@@ -125,7 +125,7 @@ export default function PostAd() {
     setTimeout(() => setToast(''), 3000)
   }
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault()
 
     if (!formData.state || !formData.city) {
@@ -153,57 +153,15 @@ export default function PostAd() {
       return
     }
 
-    setLoading(true)
-    const token = localStorage.getItem('authToken')
-    const currentUser = localStorage.getItem('currentUser')
-
-    try {
-      // Create FormData for file upload
-      const uploadFormData = new FormData()
-      imagePreview.forEach((img, index) => {
-        uploadFormData.append('images', img.file)
-      })
-      uploadFormData.append('title', formData.title)
-      uploadFormData.append('description', formData.description)
-      uploadFormData.append('city', formData.city)
-      uploadFormData.append('state', formData.state)
-      uploadFormData.append('area', formData.area)
-      uploadFormData.append('contact', JSON.stringify({
-        phone: formData.phone,
-        whatsapp: formData.whatsapp
-      }))
-      uploadFormData.append('profileInfo', JSON.stringify({
-        name: formData.name,
-        age: formData.age,
-        gender: formData.gender,
-        nationality: formData.nationality,
-        ethnicity: formData.ethnicity,
-        bodyType: formData.bodyType,
-        hairColor: formData.hairColor,
-        breastSize: formData.breastSize,
-        breastType: formData.breastType
-      }))
-      uploadFormData.append('services', JSON.stringify(formData.services))
-      uploadFormData.append('optionalInfo', JSON.stringify(formData.optionalInfo))
-
-      const res = await fetch(`${API_BASE}/ads/create`, {
-        method: 'POST',
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-        body: uploadFormData
-      })
-
-      const data = await res.json()
-      if (res.ok) {
-        showToast('Ad posted successfully!')
-        setTimeout(() => navigate('/advertiser-dashboard'), 2000)
-      } else {
-        showToast(data.message || 'Failed to post ad')
+    // All validations passed, navigate to promote page with form data
+    navigate('/promote-ad', {
+      state: {
+        adData: {
+          ...formData,
+          images: imagePreview
+        }
       }
-    } catch (error) {
-      showToast('Error: ' + error.message)
-    } finally {
-      setLoading(false)
-    }
+    })
   }
 
   return (
@@ -598,10 +556,9 @@ export default function PostAd() {
             >
               <button
                 type="submit"
-                disabled={loading}
-                className="flex-1 btn-gold px-8 py-3.5 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="flex-1 btn-gold px-8 py-3.5 rounded-lg font-semibold transition-all hover:shadow-lg"
               >
-                {loading ? 'Posting...' : 'Post Your Ad'}
+                Next
               </button>
             </motion.div>
           </form>

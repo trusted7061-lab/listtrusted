@@ -27,6 +27,7 @@ import AdminLogin from './pages/AdminLogin'
 import SuperAdminDashboard from './pages/SuperAdminDashboard'
 import CoinPurchase from './pages/CoinPurchase'
 import PostAd from './pages/PostAd'
+import PromoteAd from './pages/PromoteAd'
 import PrivacyPolicy from './pages/PrivacyPolicy'
 import Terms from './pages/Terms'
 import NotFound from './pages/NotFound'
@@ -79,6 +80,7 @@ function App() {
               <Route path="/post-requirement" element={<PostRequirement />} />
               <Route path="/coin-purchase" element={<CoinPurchase />} />
               <Route path="/post-ad" element={<PostAd />} />
+              <Route path="/promote-ad" element={<PromoteAd />} />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin/dashboard" element={<SuperAdminDashboard />} />
               <Route path="*" element={<NotFound />} />
