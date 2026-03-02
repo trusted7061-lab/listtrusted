@@ -551,6 +551,7 @@ function Location() {
       try {
         // Get all profiles including advertiser profiles
         const advertiserProfiles = getAllProfiles()
+        console.log('📦 AdvertiserProfiles count:', advertiserProfiles.length)
 
         // Fetch advertiser ads from backend
         let backendAds = []
@@ -576,9 +577,9 @@ function Location() {
             }
           }
           
-          console.log(`Loaded ${backendAds.length} ads for ${currentCity.name}`)
+          console.log(`✅ Loaded ${backendAds.length} backend ads for ${currentCity.name}`)
         } catch (err) {
-          console.error('Failed to fetch advertiser ads:', err)
+          console.error('❌ Failed to fetch advertiser ads:', err)
         }
 
         // Convert backend ads to escort format
@@ -602,11 +603,20 @@ function Location() {
 
         // Combine default escorts with advertiser profiles and ads
         const combinedEscorts = [...defaultEscorts, ...advertiserProfiles, ...adsAsEscorts]
+        console.log('🔀 Combined escorts count:', combinedEscorts.length)
+        console.log('🏙️ Current City:', currentCity.name)
         
         // Filter escorts by current city
         const cityEscorts = combinedEscorts.filter(
-          escort => escort.location.toLowerCase() === currentCity.name.toLowerCase()
+          escort => {
+            const match = escort.location && escort.location.toLowerCase() === currentCity.name.toLowerCase()
+            if (!match && escort.location) {
+              // console.log(`❌ No match: "${escort.location.toLowerCase()}" vs "${currentCity.name.toLowerCase()}"`)
+            }
+            return match
+          }
         )
+        console.log(`🎯 Filtered escorts for ${currentCity.name}:`, cityEscorts.length)
         
         // Get up to 6 featured escorts (prioritize advertiser ads with boost)
         const sortedEscorts = cityEscorts.sort((a, b) => {
@@ -616,6 +626,7 @@ function Location() {
           return 0
         })
         
+        console.log('⭐ Featured escorts after sorting:', sortedEscorts.slice(0, 6).map(e => e.name))
         setFeaturedEscorts(sortedEscorts.slice(0, 6))
       } catch (error) {
         console.error('Error loading escorts:', error)
