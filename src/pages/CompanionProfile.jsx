@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
+import { defaultEscorts } from '../services/escortData'
 
 export default function CompanionProfile() {
   const { slug } = useParams()
@@ -9,6 +10,7 @@ export default function CompanionProfile() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
+  const [isDefaultProfile, setIsDefaultProfile] = useState(false)
 
   useEffect(() => {
     const loadAdData = async () => {
@@ -19,20 +21,65 @@ export default function CompanionProfile() {
         // Extract ID from slug (slug format: name-id, get everything after last hyphen)
         const lastHyphenIndex = slug.lastIndexOf('-')
         const adId = slug.substring(lastHyphenIndex + 1)
+        const nameFromSlug = slug.substring(0, lastHyphenIndex)
 
         const API_BASE = import.meta.env.VITE_API_URL || 'https://trustedescort-backend.onrender.com/api'
-        const response = await fetch(`${API_BASE}/ads/${adId}`)
-
-        if (!response.ok) {
-          throw new Error(`Failed to fetch ad: ${response.status}`)
+        
+        try {
+          // Try to fetch from backend first
+          const response = await fetch(`${API_BASE}/ads/${adId}`)
+          
+          if (response.ok) {
+            const data = await response.json()
+            if (data.success && data.ad) {
+              setAd(data.ad)
+              return
+            }
+          }
+        } catch (err) {
+          console.warn('Failed to fetch from backend:', err)
         }
 
-        const data = await response.json()
-        if (data.success && data.ad) {
-          setAd(data.ad)
-        } else {
-          throw new Error('Invalid ad data received')
+        // If backend fails, try to find in defaultEscorts
+        console.log('Checking defaultEscorts for:', { nameFromSlug, adId })
+        const defaultProfile = defaultEscorts.find(
+          escort => 
+            escort.id === adId || 
+            escort.name.toLowerCase().replace(/\s+/g, '-') === nameFromSlug
+        )
+
+        if (defaultProfile) {
+          setIsDefaultProfile(true)
+          // Format default profile to match backend ad format
+          const formattedProfile = {
+            id: defaultProfile.id,
+            profileInfo: {
+              name: defaultProfile.name,
+              age: defaultProfile.age,
+              bodyType: defaultProfile.bodyType
+            },
+            city: defaultProfile.city || defaultProfile.location,
+            area: defaultProfile.area || defaultProfile.location,
+            state: 'India',
+            images: [
+              { url: defaultProfile.image }
+            ],
+            services: defaultProfile.services || [],
+            description: defaultProfile.description || `Experience with ${defaultProfile.name}. Available for ${(defaultProfile.services || []).join(', ')}`,
+            contact: { phone: defaultProfile.phone || '' },
+            advertiser: {
+              name: 'Trusted Escort',
+              id: 'admin'
+            },
+            views: defaultProfile.reviews || 0,
+            isPremium: defaultProfile.isPremium || false,
+            createdAt: new Date().toISOString()
+          }
+          setAd(formattedProfile)
+          return
         }
+
+        throw new Error('Profile not found in database or default profiles')
       } catch (err) {
         console.error('Error loading ad:', err)
         setError(err.message)
@@ -242,10 +289,17 @@ export default function CompanionProfile() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
-            className="mt-8 bg-green-900/20 border border-green-500/30 rounded-lg p-4 text-center"
+            className={`mt-8 rounded-lg p-4 text-center ${
+              isDefaultProfile 
+                ? 'bg-blue-900/20 border border-blue-500/30' 
+                : 'bg-green-900/20 border border-green-500/30'
+            }`}
           >
-            <p className="text-green-400">
-              ✓ This is a verified and approved profile on Trusted Escort
+            <p className={isDefaultProfile ? 'text-blue-400' : 'text-green-400'}>
+              {isDefaultProfile 
+                ? '✓ Featured Profile on Trusted Escort - Connect directly for real companions'
+                : '✓ This is a verified and approved profile on Trusted Escort'
+              }
             </p>
           </motion.div>
         </div>

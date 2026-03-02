@@ -917,54 +917,59 @@ router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Check if valid MongoDB ObjectId
-    if (!require('mongoose').Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ success: false, message: 'Invalid ad ID' });
+    // Try to fetch as MongoDB ObjectId first
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      const ad = await AdPosting.findById(id)
+        .populate('userId', 'displayName businessName email phone profilePicture')
+        .exec();
+
+      if (ad) {
+        return res.json({
+          success: true,
+          ad: {
+            id: ad._id,
+            title: ad.title,
+            description: ad.description,
+            images: ad.images,
+            area: ad.area,
+            city: ad.city,
+            state: ad.state,
+            contact: ad.contact,
+            profileInfo: ad.profileInfo,
+            services: ad.services,
+            views: ad.views,
+            isPremium: ad.isPremium,
+            boost: ad.boost,
+            status: ad.status,
+            adminApprovalStatus: ad.adminApprovalStatus,
+            advertiser: {
+              id: ad.userId?._id,
+              name: ad.userId?.displayName || ad.userId?.businessName,
+              email: ad.userId?.email,
+              phone: ad.userId?.phone,
+              profilePicture: ad.userId?.profilePicture
+            },
+            createdAt: ad.createdAt,
+            updatedAt: ad.updatedAt
+          }
+        });
+      }
     }
 
-    const ad = await AdPosting.findById(id)
-      .populate('userId', 'displayName businessName email phone profilePicture')
-      .exec();
-
-    if (!ad) {
-      return res.status(404).json({ success: false, message: 'Ad not found' });
-    }
-
-    // Format and return
-    const formattedAd = {
-      id: ad._id,
-      title: ad.title,
-      description: ad.description,
-      images: ad.images,
-      area: ad.area,
-      city: ad.city,
-      state: ad.state,
-      contact: ad.contact,
-      profileInfo: ad.profileInfo,
-      services: ad.services,
-      views: ad.views,
-      isPremium: ad.isPremium,
-      boost: ad.boost,
-      status: ad.status,
-      adminApprovalStatus: ad.adminApprovalStatus,
-      advertiser: {
-        id: ad.userId?._id,
-        name: ad.userId?.displayName || ad.userId?.businessName,
-        email: ad.userId?.email,
-        phone: ad.userId?.phone,
-        profilePicture: ad.userId?.profilePicture
-      },
-      createdAt: ad.createdAt,
-      updatedAt: ad.updatedAt
-    };
-
-    res.json({
-      success: true,
-      ad: formattedAd
+    // If not found and ID is just a number, this is likely a default profile
+    // Return 404 which frontend can handle by showing local defaultEscorts data
+    res.status(404).json({ 
+      success: false, 
+      message: 'Ad not found. This may be a default profile.',
+      isDefaultProfile: true
     });
   } catch (error) {
     console.error('Error fetching ad by ID:', error);
-    res.status(500).json({ success: false, message: 'Failed to fetch ad', error: error.message });
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to fetch ad', 
+      error: error.message 
+    });
   }
 });
 
