@@ -429,6 +429,22 @@ export default function CompanionProfile() {
                   >
                     📞 Call Now
                   </motion.button>
+                  
+                  {/* Phone Number Display */}
+                  {ad.contact?.phone && (
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      onClick={() => {
+                        navigator.clipboard.writeText(ad.contact.phone);
+                        alert('Phone number copied!');
+                      }}
+                      className="bg-dark-hover border border-gold/30 rounded-lg p-4 text-center cursor-pointer hover:border-gold transition"
+                    >
+                      <p className="text-gray-400 text-xs uppercase tracking-wider mb-2">Direct Contact</p>
+                      <p className="text-gold font-bold text-xl">☎️ {ad.contact.phone}</p>
+                      <p className="text-gray-500 text-xs mt-2">Click to copy</p>
+                    </motion.div>
+                  )}
                 </div>
               </motion.div>
 

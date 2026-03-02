@@ -5,6 +5,7 @@ import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import AgeVerificationModal from './components/AgeVerificationModal'
 import WhatsAppButton from './components/WhatsAppButton'
+import PWAInstallPrompt from './components/PWAInstallPrompt'
 import Home from './pages/Home'
 import HomeSimple from './pages/HomeSimple'
 import Escorts from './pages/Companions'
@@ -92,6 +93,7 @@ function App() {
         </div>
         
         <WhatsAppButton />
+        <PWAInstallPrompt />
       </Router>
     </HelmetProvider>
   )
