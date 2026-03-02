@@ -23,65 +23,114 @@ export default function CompanionProfile() {
         const adId = slug.substring(lastHyphenIndex + 1)
         const nameFromSlug = slug.substring(0, lastHyphenIndex)
 
-        const API_BASE = import.meta.env.VITE_API_URL || 'https://trustedescort-backend.onrender.com/api'
-        
-        try {
-          // Try to fetch from backend first
-          const response = await fetch(`${API_BASE}/ads/${adId}`)
-          
-          if (response.ok) {
-            const data = await response.json()
-            if (data.success && data.ad) {
-              setAd(data.ad)
-              return
-            }
-          }
-        } catch (err) {
-          console.warn('Failed to fetch from backend:', err)
-        }
+        console.log('Loading profile:', { slug, adId, nameFromSlug })
 
-        // If backend fails, try to find in defaultEscorts
-        console.log('Checking defaultEscorts for:', { nameFromSlug, adId })
-        const defaultProfile = defaultEscorts.find(
+        // STEP 1: Try to find in defaultEscorts first (faster, more reliable)
+        let foundProfile = defaultEscorts.find(
           escort => 
-            escort.id === adId || 
-            escort.name.toLowerCase().replace(/\s+/g, '-') === nameFromSlug
+            String(escort.id) === String(adId) || 
+            escort.name.toLowerCase().replace(/\s+/g, '-') === nameFromSlug.toLowerCase()
         )
 
-        if (defaultProfile) {
+        if (foundProfile) {
+          console.log('✅ Found in defaultEscorts:', foundProfile.name)
           setIsDefaultProfile(true)
-          // Format default profile to match backend ad format
+          // Format default profile
           const formattedProfile = {
-            id: defaultProfile.id,
+            id: foundProfile.id,
             profileInfo: {
-              name: defaultProfile.name,
-              age: defaultProfile.age,
-              bodyType: defaultProfile.bodyType
+              name: foundProfile.name,
+              age: foundProfile.age,
+              bodyType: foundProfile.bodyType
             },
-            city: defaultProfile.city || defaultProfile.location,
-            area: defaultProfile.area || defaultProfile.location,
+            city: foundProfile.city || foundProfile.location,
+            area: foundProfile.area || foundProfile.location,
             state: 'India',
             images: [
-              { url: defaultProfile.image }
+              { url: foundProfile.image }
             ],
-            services: defaultProfile.services || [],
-            description: defaultProfile.description || `Experience with ${defaultProfile.name}. Available for ${(defaultProfile.services || []).join(', ')}`,
-            contact: { phone: defaultProfile.phone || '' },
+            services: foundProfile.services || [],
+            description: foundProfile.description || `Experience with ${foundProfile.name}. Available for ${(foundProfile.services || []).join(', ')}`,
+            contact: { phone: foundProfile.phone || '' },
             advertiser: {
               name: 'Trusted Escort',
               id: 'admin'
             },
-            views: defaultProfile.reviews || 0,
-            isPremium: defaultProfile.isPremium || false,
+            views: foundProfile.reviews || 0,
+            isPremium: foundProfile.isPremium || false,
             createdAt: new Date().toISOString()
           }
           setAd(formattedProfile)
+          setLoading(false)
           return
         }
 
-        throw new Error('Profile not found in database or default profiles')
+        // STEP 2: Try backend if not in defaults
+        console.log('Not found in defaults, trying backend...')
+        const API_BASE = import.meta.env.VITE_API_URL || 'https://trustedescort-backend.onrender.com/api'
+        
+        try {
+          const response = await fetch(`${API_BASE}/ads/${adId}`, {
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          })
+          
+          if (response.ok) {
+            const data = await response.json()
+            if (data.success && data.ad) {
+              console.log('✅ Found in backend:', data.ad.profileInfo?.name)
+              setAd(data.ad)
+              setIsDefaultProfile(false)
+              setLoading(false)
+              return
+            }
+          }
+        } catch (backendErr) {
+          console.warn('Backend fetch error (expected for default profiles):', backendErr.message)
+        }
+
+        // STEP 3: If we reach here, try one more time with exact name matching
+        console.log('Trying name-based search...')
+        const nameMatch = defaultEscorts.find(
+          escort => escort.name.toLowerCase() === nameFromSlug.toLowerCase().replace(/-/g, ' ')
+        )
+
+        if (nameMatch) {
+          console.log('✅ Found via name match:', nameMatch.name)
+          setIsDefaultProfile(true)
+          const formattedProfile = {
+            id: nameMatch.id,
+            profileInfo: {
+              name: nameMatch.name,
+              age: nameMatch.age,
+              bodyType: nameMatch.bodyType
+            },
+            city: nameMatch.city || nameMatch.location,
+            area: nameMatch.area || nameMatch.location,
+            state: 'India',
+            images: [{ url: nameMatch.image }],
+            services: nameMatch.services || [],
+            description: nameMatch.description || `Experience with ${nameMatch.name}. Available for ${(nameMatch.services || []).join(', ')}`,
+            contact: { phone: nameMatch.phone || '' },
+            advertiser: {
+              name: 'Trusted Escort',
+              id: 'admin'
+            },
+            views: nameMatch.reviews || 0,
+            isPremium: nameMatch.isPremium || false,
+            createdAt: new Date().toISOString()
+          }
+          setAd(formattedProfile)
+          setLoading(false)
+          return
+        }
+
+        // If nothing found, show error
+        throw new Error(`Profile "${nameFromSlug}" not found`)
       } catch (err) {
-        console.error('Error loading ad:', err)
+        console.error('❌ Error loading ad:', err)
         setError(err.message)
       } finally {
         setLoading(false)
