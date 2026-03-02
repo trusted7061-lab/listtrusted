@@ -146,10 +146,10 @@ export default function CompanionProfile() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black flex items-center justify-center">
+      <div className="min-h-screen bg-dark-bg flex items-center justify-center">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-pink-500"></div>
-          <p className="text-white mt-4">Loading profile...</p>
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-gold"></div>
+          <p className="text-gray-300 mt-4">Loading profile...</p>
         </div>
       </div>
     )
@@ -157,15 +157,19 @@ export default function CompanionProfile() {
 
   if (error || !ad) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black py-12">
-        <div className="max-w-4xl mx-auto px-4">
-          <div className="bg-red-900/20 border border-red-500 rounded-lg p-6 text-center">
-            <h1 className="text-2xl font-bold text-white mb-2">Profile Not Found</h1>
-            <p className="text-gray-300">{error || 'The escort profile you are looking for does not exist or has been removed.'}</p>
-            <a href="/" className="inline-block mt-4 px-6 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded-lg transition">
-              Back to Home
+      <div className="min-h-screen bg-dark-bg py-12">
+        <div className="max-w-2xl mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-dark-card border border-gold/20 rounded-2xl p-8 text-center"
+          >
+            <h1 className="text-3xl font-serif font-bold text-white mb-3">Profile Not Found</h1>
+            <p className="text-gray-300 text-lg mb-6">{error || 'The escort profile you are looking for does not exist.'}</p>
+            <a href="/escorts" className="inline-block px-8 py-3 bg-gold hover:bg-gold/90 text-black font-bold rounded-lg transition">
+              Back to Escorts
             </a>
-          </div>
+          </motion.div>
         </div>
       </div>
     )
@@ -226,195 +230,179 @@ export default function CompanionProfile() {
         </script>
       </Helmet>
 
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-black">
+      <div className="min-h-screen bg-dark-bg">
         {/* Sticky Header */}
-        <div className="bg-gradient-to-r from-pink-900/40 to-red-900/40 border-b border-pink-500/30 sticky top-0 z-50 backdrop-blur-lg">
+        <div className="bg-dark-card border-b border-gold/20 sticky top-0 z-50 backdrop-blur-lg">
           <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-            <a href="/" className="text-white font-bold text-xl hover:text-pink-400 transition">
-              🔥 Trusted Escort
+            <a href="/" className="text-white font-serif text-2xl font-bold hover:text-gold transition">
+              TrustedEsco
             </a>
             <div className="flex items-center gap-3">
-              <a href="/escorts" className="text-gray-300 hover:text-white transition">← Back</a>
-              <button onClick={() => setShowContactModal(true)} className="px-4 py-2 bg-gradient-to-r from-pink-600 to-red-600 text-white rounded-lg font-semibold hover:from-pink-700 hover:to-red-700 transition transform hover:scale-105">
-                📞 Contact
-              </button>
+              <a href="/escorts" className="text-gray-300 hover:text-gold transition text-sm">← Back</a>
+              {ad.contact?.phone && (
+                <a
+                  href={`https://wa.me/${ad.contact.phone}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2 bg-gold hover:bg-gold/90 text-black rounded-lg font-semibold transition transform hover:scale-105"
+                >
+                  Contact Now
+                </a>
+              )}
             </div>
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 py-12">
+        <div className="max-w-6xl mx-auto px-4 py-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="grid grid-cols-1 lg:grid-cols-3 gap-8"
+            className="grid grid-cols-1 lg:grid-cols-3 gap-12"
           >
             {/* Main Content - Left Side */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Main Image with Badge */}
+            <div className="lg:col-span-2 space-y-8">
+              {/* Main Image - Full Height */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="relative bg-gray-900 rounded-3xl overflow-hidden shadow-2xl border border-pink-500/20"
+                className="relative bg-dark-card rounded-2xl overflow-hidden border border-gold/20 shadow-xl"
               >
                 <img
-                  src={ad.images?.[selectedImageIndex]?.url || 'https://via.placeholder.com/800x900'}
-                  alt={`${ad.profileInfo?.name} - Image ${selectedImageIndex + 1}`}
-                  className="w-full h-auto object-cover max-h-[650px]"
+                  src={ad.images?.[selectedImageIndex]?.url || 'https://via.placeholder.com/600x800'}
+                  alt={`${ad.profileInfo?.name}`}
+                  className="w-full h-auto object-contain"
                 />
                 {ad.isPremium && (
-                  <div className="absolute top-4 right-4 bg-yellow-500 text-black px-4 py-2 rounded-full font-bold text-sm animate-pulse">
+                  <div className="absolute top-5 right-5 bg-gold text-black px-4 py-2 rounded-lg font-bold text-sm">
                     ⭐ PREMIUM
                   </div>
                 )}
-                <div className="absolute bottom-4 right-4 bg-black/70 backdrop-blur-sm px-3 py-1 rounded-full text-white text-sm">
+                <div className="absolute bottom-4 right-4 bg-dark-bg/80 backdrop-blur-sm px-3 py-1 rounded-lg text-gold text-sm font-semibold">
                   {selectedImageIndex + 1} / {ad.images?.length || 1}
                 </div>
               </motion.div>
 
-              {/* Tagline */}
-              <div className="bg-gradient-to-r from-pink-900/30 to-red-900/30 border border-pink-500/30 rounded-xl p-5 text-center">
-                <p className="text-gray-200 text-lg font-semibold">
-                  {ad.profileInfo?.name}: Premium {ad.profileInfo?.bodyType} Companion in {ad.city}
-                </p>
-                <p className="text-gray-400 mt-2 text-sm">✓ Available 24/7 | ✓ Verified & Safe | ✓ Discreet Service</p>
-              </div>
+              {/* Image Thumbnails */}
+              {ad.images && ad.images.length > 1 && (
+                <div className="flex gap-3 overflow-x-auto pb-2">
+                  {ad.images.map((image, idx) => (
+                    <motion.button
+                      key={idx}
+                      onClick={() => setSelectedImageIndex(idx)}
+                      whileHover={{ scale: 1.05 }}
+                      className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition ${
+                        idx === selectedImageIndex ? 'border-gold' : 'border-dark-hover'
+                      }`}
+                    >
+                      <img src={image.url} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
+                    </motion.button>
+                  ))}
+                </div>
+              )}
 
-              {/* Description Section */}
+              {/* About Section */}
               {ad.description && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="bg-gradient-to-br from-gray-800/50 to-gray-700/50 rounded-2xl p-8 border border-gray-600/30 backdrop-blur-sm"
+                  className="bg-dark-card border border-gold/20 rounded-2xl p-8"
                 >
-                  <h2 className="text-3xl font-bold text-white mb-4">✨ About Me</h2>
-                  <p className="text-gray-300 leading-relaxed text-lg whitespace-pre-wrap">{ad.description}</p>
+                  <h2 className="text-3xl font-serif font-bold text-white mb-6">About Me</h2>
+                  <p className="text-gray-300 leading-relaxed text-base whitespace-pre-wrap">{ad.description}</p>
                 </motion.div>
               )}
 
-              {/* Services Section */}
+              {/* Services */}
               {ad.services && ad.services.length > 0 && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
-                  className="bg-gradient-to-br from-purple-900/30 to-blue-900/30 rounded-2xl p-8 border border-purple-500/30"
+                  className="bg-dark-card border border-gold/20 rounded-2xl p-8"
                 >
-                  <h3 className="text-2xl font-bold text-white mb-6">💎 Services Offered</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <h3 className="text-2xl font-serif font-bold text-white mb-6">Services Available</h3>
+                  <div className="grid grid-cols-2 gap-4">
                     {ad.services.map((service, idx) => (
                       <motion.div
                         key={idx}
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.3 + idx * 0.08 }}
-                        className="flex items-center gap-3 p-3 bg-purple-900/30 rounded-lg border border-purple-500/20 hover:border-purple-500/50 transition"
+                        className="flex items-center gap-3 p-3 bg-dark-hover rounded-lg border border-gold/10 hover:border-gold/30 transition"
                       >
-                        <span className="text-pink-400 text-xl">✓</span>
-                        <span className="text-gray-200 font-semibold">{service}</span>
+                        <span className="text-gold text-lg">✓</span>
+                        <span className="text-gray-200">{service}</span>
                       </motion.div>
                     ))}
                   </div>
                 </motion.div>
               )}
 
-              {/* Stats Grid */}
+              {/* Stats */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
-                className="grid grid-cols-2 md:grid-cols-4 gap-4"
+                className="grid grid-cols-3 gap-4"
               >
-                <div className="bg-gradient-to-br from-cyan-900/30 to-blue-900/30 rounded-xl p-5 border border-cyan-500/30 text-center hover:border-cyan-500/60 transition">
-                  <p className="text-3xl font-bold text-cyan-400">{ad.views || 0}</p>
+                <div className="bg-dark-card border border-gold/20 rounded-lg p-5 text-center">
+                  <p className="text-3xl font-bold text-gold">{ad.views || 0}</p>
                   <p className="text-gray-400 text-sm mt-2">Profile Views</p>
                 </div>
-                <div className="bg-gradient-to-br from-yellow-900/30 to-orange-900/30 rounded-xl p-5 border border-yellow-500/30 text-center hover:border-yellow-500/60 transition">
-                  <p className="text-3xl font-bold text-yellow-400">100+</p>
-                  <p className="text-gray-400 text-sm mt-2">Happy Clients</p>
+                <div className="bg-dark-card border border-gold/20 rounded-lg p-5 text-center">
+                  <p className="text-3xl font-bold text-gold">★★★★★</p>
+                  <p className="text-gray-400 text-sm mt-2">5 Star Rating</p>
                 </div>
-                <div className="bg-gradient-to-br from-pink-900/30 to-red-900/30 rounded-xl p-5 border border-pink-500/30 text-center hover:border-pink-500/60 transition">
-                  <p className="text-3xl font-bold text-pink-400">{ad.rating || 5}★</p>
-                  <p className="text-gray-400 text-sm mt-2">Average Rating</p>
-                </div>
-                <div className="bg-gradient-to-br from-green-900/30 to-emerald-900/30 rounded-xl p-5 border border-green-500/30 text-center hover:border-green-500/60 transition">
-                  <p className="text-3xl font-bold text-green-400">24/7</p>
+                <div className="bg-dark-card border border-gold/20 rounded-lg p-5 text-center">
+                  <p className="text-3xl font-bold text-gold">24/7</p>
                   <p className="text-gray-400 text-sm mt-2">Available</p>
-                </div>
-              </motion.div>
-
-              {/* Safety Notice */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-                className="bg-gradient-to-r from-blue-900/30 to-blue-800/30 border border-blue-500/40 rounded-2xl p-6"
-              >
-                <h3 className="text-xl font-bold text-blue-300 mb-4">🛡️ Safety & Privacy</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <p className="text-gray-300 flex items-start gap-2">
-                    <span className="text-green-400 mt-1">✓</span> All profiles verified & screened
-                  </p>
-                  <p className="text-gray-300 flex items-start gap-2">
-                    <span className="text-green-400 mt-1">✓</span> Private & discreet service
-                  </p>
-                  <p className="text-gray-300 flex items-start gap-2">
-                    <span className="text-green-400 mt-1">✓</span> 100% safe transactions
-                  </p>
-                  <p className="text-gray-300 flex items-start gap-2">
-                    <span className="text-green-400 mt-1">✓</span> Respectful treatment
-                  </p>
                 </div>
               </motion.div>
             </div>
 
-            {/* Sidebar - Contact Info */}
+            {/* Sidebar */}
             <div className="space-y-6">
               {/* Profile Card */}
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.2 }}
-                className="bg-gradient-to-br from-pink-900/40 to-red-900/40 border border-pink-500/40 rounded-3xl p-8 sticky top-24"
+                className="bg-dark-card border border-gold/30 rounded-2xl p-8 sticky top-24"
               >
-                {/* Name & Age Badge */}
+                {/* Name */}
                 <div className="text-center mb-6">
-                  <h1 className="text-5xl font-black text-white mb-3">{ad.profileInfo?.name}</h1>
-                  <div className="inline-block bg-gradient-to-r from-pink-600 to-red-600 text-white px-6 py-3 rounded-full font-bold text-2xl">
-                    {ad.profileInfo?.age} Yrs
+                  <h1 className="text-4xl font-serif font-bold text-white mb-3">{ad.profileInfo?.name}</h1>
+                  <div className="inline-block bg-gold/20 border border-gold text-gold px-6 py-2 rounded-lg font-bold text-xl">
+                    {ad.profileInfo?.age} Years
                   </div>
                 </div>
 
-                {/* Rating */}
-                <div className="text-center mb-6 pb-6 border-b border-pink-500/30">
-                  <p className="text-5xl font-bold text-pink-400">{ad.rating || 4.9}★</p>
-                  <p className="text-gray-300 text-sm mt-2">5 Star Rating</p>
-                </div>
-
-                {/* Body Type & Location */}
-                <div className="space-y-4 mb-6">
-                  <div className="bg-gray-900/50 rounded-lg p-4">
-                    <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider">Body Type</p>
-                    <p className="text-white font-bold text-lg mt-1">{ad.profileInfo?.bodyType}</p>
+                {/* Info Grid */}
+                <div className="space-y-4 mb-6 pb-6 border-b border-gold/20">
+                  <div>
+                    <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">Body Type</p>
+                    <p className="text-white font-semibold text-lg">{ad.profileInfo?.bodyType}</p>
                   </div>
-                  <div className="bg-gray-900/50 rounded-lg p-4">
-                    <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider">📍 Location</p>
-                    <p className="text-white font-bold text-lg mt-1">{ad.city}, {ad.state}</p>
+                  <div>
+                    <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">📍 Location</p>
+                    <p className="text-white font-semibold text-lg">{ad.city}, {ad.state}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">Rating</p>
+                    <p className="text-gold font-bold text-lg">{ad.rating || 4.9} / 5.0 ⭐</p>
                   </div>
                 </div>
 
                 {/* Verification Badge */}
                 <div className={`text-center rounded-lg p-4 mb-6 border ${
                   isDefaultProfile 
-                    ? 'bg-blue-900/30 border-blue-500/30' 
-                    : 'bg-green-900/30 border-green-500/30'
+                    ? 'bg-gold/10 border-gold/30' 
+                    : 'bg-gold/10 border-gold/30'
                 }`}>
-                  <p className={isDefaultProfile ? 'text-blue-400 font-semibold' : 'text-green-400 font-semibold'}>
-                    {isDefaultProfile 
-                      ? '✓ Featured Profile'
-                      : '✓ Verified Member'
-                    }
+                  <p className="text-gold font-semibold text-sm">
+                    ✓ {isDefaultProfile ? 'Featured Profile' : 'Verified Member'}
                   </p>
                 </div>
 
@@ -426,66 +414,58 @@ export default function CompanionProfile() {
                       href={`https://wa.me/${ad.contact.phone}?text=Hi%20${encodeURIComponent(ad.profileInfo?.name || 'there')},%20I%20am%20interested%20in%20your%20services.`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold py-4 rounded-xl transition transform shadow-lg flex items-center justify-center gap-2"
+                      className="w-full bg-gold hover:bg-gold/90 text-black font-bold py-3 rounded-lg transition flex items-center justify-center gap-2"
                     >
-                      <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421-7.403h-.004a9.87 9.87 0 00-5.031 1.378c-3.055 2.116-4.922 5.488-4.922 9.52C1.5 23.487 5.487 27.5 10.514 27.5c2.102 0 4.142-.547 5.972-1.585h.005c4.031-2.582 6.771-6.986 6.771-12.187 0-7.530-6.288-13.66-14.036-13.66" />
                       </svg>
-                      WhatsApp Chat
+                      WhatsApp
                     </motion.a>
                   )}
                   <motion.button
                     whileHover={{ scale: 1.05 }}
-                    onClick={() => setShowContactModal(true)}
-                    className="w-full bg-gradient-to-r from-pink-600 to-red-600 hover:from-pink-700 hover:to-red-700 text-white font-bold py-4 rounded-xl transition transform shadow-lg"
+                    onClick={() => window.location.href = `tel:${ad.contact?.phone}`}
+                    className="w-full bg-dark-hover border border-gold/20 hover:border-gold text-gold font-bold py-3 rounded-lg transition"
                   >
-                    📞 Call Me Now
+                    📞 Call Now
                   </motion.button>
                 </div>
               </motion.div>
 
-              {/* Quick Info Card */}
+              {/* Quick Info */}
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.3 }}
-                className="bg-gray-800/40 border border-gray-700/30 rounded-xl p-5 space-y-4"
+                className="bg-dark-card border border-gold/20 rounded-xl p-5 space-y-3 text-sm"
               >
-                <div className="text-center">
-                  <p className="text-gray-400 text-xs font-semibold uppercase">Response Time</p>
-                  <p className="text-green-400 font-bold mt-1">Usually within 5 min</p>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400">Response Time</span>
+                  <span className="text-gold font-semibold">Usually 5 min</span>
                 </div>
-                <div className="text-center border-t border-gray-700/30 pt-4">
-                  <p className="text-gray-400 text-xs font-semibold uppercase">Member Since</p>
-                  <p className="text-white font-bold mt-1">{new Date(ad.createdAt).toLocaleDateString()}</p>
+                <div className="border-t border-gold/20 pt-3 flex justify-between items-center">
+                  <span className="text-gray-400">Member Since</span>
+                  <span className="text-gold font-semibold">{new Date(ad.createdAt).toLocaleDateString()}</span>
                 </div>
+              </motion.div>
+
+              {/* Safety Notice */}
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.4 }}
+                className="bg-dark-card border border-gold/20 rounded-xl p-5"
+              >
+                <h4 className="text-gold font-bold text-sm mb-3">🛡️ Safety Verified</h4>
+                <ul className="space-y-2 text-xs text-gray-300">
+                  <li>✓ Verified profile</li>
+                  <li>✓ Discreet service</li>
+                  <li>✓ Safe & secure</li>
+                </ul>
               </motion.div>
             </div>
           </motion.div>
         </div>
-
-        {/* Footer CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
-          className="mt-12 bg-gradient-to-r from-pink-900/40 to-red-900/40 border-t border-pink-500/30 py-8"
-        >
-          <div className="max-w-7xl mx-auto px-4 text-center">
-            <h3 className="text-2xl font-bold text-white mb-4">Ready to Meet {ad.profileInfo?.name}?</h3>
-            <p className="text-gray-300 mb-6">Contact now for an unforgettable experience</p>
-            {ad.contact?.phone && (
-              <a
-                href={`https://wa.me/${ad.contact.phone}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block px-10 py-4 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl transition transform hover:scale-105 shadow-lg"
-              >
-                💬 Start Chat on WhatsApp
-              </a>
-            )}
-          </div>
-        </motion.div>
       </div>
     </>
   )
