@@ -14,6 +14,7 @@ function Footer() {
     { title: 'Quick Links', items: [
       { name: 'Home', path: '/' },
       { name: 'Escorts', path: '/escorts' },
+      { name: 'Blog', path: '/blog' },
       { name: 'About', path: '/about' },
       { name: 'Contact', path: '/contact' },
     ]},
