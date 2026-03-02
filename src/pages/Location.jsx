@@ -629,14 +629,33 @@ function Location() {
         console.log('⭐ Featured escorts after sorting:', sortedEscorts.slice(0, 6).map(e => e.name))
         setFeaturedEscorts(sortedEscorts.slice(0, 6))
       } catch (error) {
-        console.error('Error loading escorts:', error)
+        console.error('❌ Error loading escorts:', error)
         // Fallback to local data
         const advertiserProfiles = getAllProfiles()
         const combinedEscorts = [...defaultEscorts, ...advertiserProfiles]
+        
+        console.log('⚠️ Using fallback - Combined escorts:', combinedEscorts.length)
+        console.log('🏙️ Filtering for city:', currentCity.name)
+        
         const cityEscorts = combinedEscorts.filter(
-          escort => escort.location.toLowerCase() === currentCity.name.toLowerCase()
+          escort => {
+            if (!escort.location) {
+              console.warn('⚠️ Escort missing location:', escort.name)
+              return false
+            }
+            return escort.location.toLowerCase() === currentCity.name.toLowerCase()
+          }
         )
-        setFeaturedEscorts(cityEscorts.slice(0, 6))
+        
+        console.log('🎯 Fallback filtered escorts:', cityEscorts.length)
+        
+        if (cityEscorts.length > 0) {
+          setFeaturedEscorts(cityEscorts.slice(0, 6))
+        } else {
+          // Last resort: show ALL escorts from this city
+          console.log('🆘 No escorts found, showing any available escorts')
+          setFeaturedEscorts(defaultEscorts.slice(0, 6))
+        }
       }
     }
 
@@ -644,7 +663,7 @@ function Location() {
     
     // Listen for profile updates
     const handleProfileUpdate = () => {
-      console.log('Profiles updated, reloading location escorts')
+      console.log('🔄 Profiles updated, reloading location escorts')
       loadFeaturedEscorts()
     }
     
