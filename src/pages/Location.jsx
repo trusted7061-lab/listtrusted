@@ -759,9 +759,9 @@ function Location() {
     <>
       <Helmet>
         {/* Primary Meta Tags - Enhanced for Voice Search & Long-tail Keywords */}
-        <title>Premium Escorts in {currentCity.name} | Luxury Companion Services | Trusted Escort</title>
-        <meta name="title" content={`Premium Escorts in ${currentCity.name} | Luxury Companion Services | Trusted Escort`} />
-        <meta name="description" content={`Hire premium escorts in ${currentCity.name}. Professional, discreet, and verified companions for business meetings, events, and private occasions. Book elite escorts online at Trusted Escort.`} />
+        <title>{`Escorts in ${currentCity.name} | Trusted Escort`}</title>
+        <meta name="title" content={`Escorts in ${currentCity.name} | Trusted Escort`} />
+        <meta name="description" content={`Verified escorts in ${currentCity.name}. Discreet, professional companions for events & private occasions. Book now at Trusted Escort.`} />
         <meta name="keywords" content={`${currentCity.name} escorts, ${currentCity.name} escort service, premium escorts ${currentCity.name}, elite escorts ${currentCity.name}, luxury companionship ${currentCity.name}, ${currentCity.name} companion services, hire escorts ${currentCity.name}, independent escorts ${currentCity.name}, professional escorts ${currentCity.name}, verified escorts ${currentCity.name}, high class escorts ${currentCity.name}, call girls ${currentCity.name}, best escorts in ${currentCity.name}, trusted escorts`} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
@@ -786,12 +786,16 @@ function Location() {
         <meta name="twitter:creator" content="@TrustedEscort" />
         
         {/* Additional SEO - Local Business Focus */}
-        <meta name="language" content="English" />
-        <meta name="target" content="all" />
+        <meta name="language" content="en" />
+        <meta httpEquiv="Content-Language" content="en-IN" />
+        
+        {/* Hreflang alternate links - self-referential */}
+        <link rel="alternate" hreflang="en-IN" href={`https://trustedescort.in/escorts/in/${normalizedCity}`} />
+        <link rel="alternate" hreflang="en" href={`https://trustedescort.in/escorts/in/${normalizedCity}`} />
+        <link rel="alternate" hreflang="x-default" href={`https://trustedescort.in/escorts/in/${normalizedCity}`} />
         <meta name="revisit-after" content="7 days" />
         <meta name="author" content="Trusted Escort" />
         <meta name="subject" content={`Escort Services in ${currentCity.name}`} />
-        <meta name="rating" content="safe for kids" />
         <meta name="distribution" content="Global" />
         
         {/* Geo-targeting & Local SEO */}

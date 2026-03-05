@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate, useParams } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
@@ -35,6 +35,12 @@ import PrivacyPolicy from './pages/PrivacyPolicy'
 import Terms from './pages/Terms'
 import NotFound from './pages/NotFound'
 
+// Redirect component for old /location/:city URLs
+function LocationRedirect() {
+  const { city } = useParams()
+  return <Navigate to={`/escorts/in/${city}`} replace />
+}
+
 function App() {
   const [isAgeVerified, setIsAgeVerified] = useState(false)
 
@@ -64,6 +70,10 @@ function App() {
               <Route path="/home-simple" element={<HomeSimple />} />
               <Route path="/escorts" element={<Escorts />} />
               <Route path="/escorts/in/:city" element={<Location />} />
+              {/* 301 Redirects: old /location/:city URLs → correct /escorts/in/:city */}
+              <Route path="/location/:city" element={<LocationRedirect />} />
+              <Route path="/locations/:city" element={<LocationRedirect />} />
+              <Route path="/escort/:city" element={<LocationRedirect />} />
               <Route path="/escorts/:slug" element={<CompanionProfile />} />
               <Route path="/booking" element={<Booking />} />
               <Route path="/about" element={<About />} />

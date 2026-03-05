@@ -2,6 +2,33 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "framework": "vite",
+  "redirects": [
+    {
+      "source": "/location/:city",
+      "destination": "/escorts/in/:city",
+      "statusCode": 301
+    },
+    {
+      "source": "/location/:city/",
+      "destination": "/escorts/in/:city",
+      "statusCode": 301
+    },
+    {
+      "source": "/locations/:city",
+      "destination": "/escorts/in/:city",
+      "statusCode": 301
+    },
+    {
+      "source": "/escort/:city",
+      "destination": "/escorts/in/:city",
+      "statusCode": 301
+    },
+    {
+      "source": "/escorts/:city",
+      "destination": "/escorts/in/:city",
+      "statusCode": 301
+    }
+  ],
   "rewrites": [
     {
       "source": "/(.*)",

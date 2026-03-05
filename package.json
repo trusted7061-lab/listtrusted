@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node prerender-locations.js",
     "preview": "vite preview",
     "validate-seo": "node validate-seo-files.js"
   },
