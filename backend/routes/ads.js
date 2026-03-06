@@ -585,6 +585,81 @@ router.get('/admin/all-ads', adminMiddleware, async (req, res) => {
   }
 });
 
+// ==========================================
+// ADMIN COIN REQUEST ENDPOINTS
+// ==========================================
+
+// List all pending coin requests from MongoDB
+router.get('/admin/coin-requests', adminMiddleware, async (req, res) => {
+  try {
+    const wallets = await Wallet.find({
+      transactions: { $elemMatch: { type: 'admin-add', status: 'pending' } }
+    }).populate('userId', 'email displayName businessName phone');
+
+    const requests = [];
+    for (const wallet of wallets) {
+      const pendingTxs = wallet.transactions.filter(
+        t => t.type === 'admin-add' && t.status === 'pending'
+      );
+      for (const tx of pendingTxs) {
+        requests.push({
+          id: tx._id.toString(),
+          walletId: wallet._id.toString(),
+          transactionId: tx._id.toString(),
+          userId: wallet.userId?._id?.toString() || wallet.userId?.toString(),
+          userName: wallet.userId?.displayName || wallet.userId?.businessName || 'Unknown',
+          userEmail: wallet.userId?.email || 'N/A',
+          coinsRequested: tx.coins,
+          createdAt: tx.createdAt,
+          source: 'database'
+        });
+      }
+    }
+
+    res.json({ success: true, requests });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch coin requests', error: error.message });
+  }
+});
+
+// Approve a pending coin request
+router.post('/admin/coin-requests/:walletId/:txId/approve', adminMiddleware, async (req, res) => {
+  try {
+    const wallet = await Wallet.findById(req.params.walletId);
+    if (!wallet) return res.status(404).json({ message: 'Wallet not found' });
+
+    const tx = wallet.transactions.id(req.params.txId);
+    if (!tx) return res.status(404).json({ message: 'Transaction not found' });
+
+    tx.status = 'completed';
+    wallet.coins += tx.coins;
+    wallet.totalCoinsEarned += tx.coins;
+    await wallet.save();
+
+    res.json({ success: true, message: `Approved ${tx.coins} coins`, newBalance: wallet.coins });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to approve coin request', error: error.message });
+  }
+});
+
+// Reject a pending coin request
+router.post('/admin/coin-requests/:walletId/:txId/reject', adminMiddleware, async (req, res) => {
+  try {
+    const wallet = await Wallet.findById(req.params.walletId);
+    if (!wallet) return res.status(404).json({ message: 'Wallet not found' });
+
+    const tx = wallet.transactions.id(req.params.txId);
+    if (!tx) return res.status(404).json({ message: 'Transaction not found' });
+
+    tx.status = 'failed';
+    await wallet.save();
+
+    res.json({ success: true, message: 'Coin request rejected' });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to reject coin request', error: error.message });
+  }
+});
+
 // Approve ad
 router.post('/admin/ads/:adId/approve', adminMiddleware, async (req, res) => {
   try {

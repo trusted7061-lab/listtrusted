@@ -159,12 +159,32 @@ export default function SuperAdminDashboard() {
     }
     setLoading(false)
     fetchDashboardData()
-    // Load localStorage coin requests (from users with local/expired tokens)
-    try {
-      const localReqs = JSON.parse(localStorage.getItem('pendingCoinRequests') || '[]')
-      setPendingCoinRequests(localReqs)
-    } catch {}
+    fetchCoinRequests()
   }, [navigate])
+
+  // Fetch coin requests from backend (real users) + merge localStorage (local-token users)
+  const fetchCoinRequests = async () => {
+    try {
+      const token = localStorage.getItem('authToken')
+      const res = await fetch('https://trustedescort-backend.onrender.com/api/ads/admin/coin-requests', {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      const data = await res.json()
+      const dbRequests = data.success ? data.requests : []
+      // Merge with any localStorage requests (from local-token users on same device)
+      const localReqs = JSON.parse(localStorage.getItem('pendingCoinRequests') || '[]')
+      // Deduplicate by id
+      const allIds = new Set(dbRequests.map(r => r.id))
+      const uniqueLocal = localReqs.filter(r => !allIds.has(r.id))
+      setPendingCoinRequests([...dbRequests, ...uniqueLocal])
+    } catch {
+      // Fallback to localStorage only
+      try {
+        const localReqs = JSON.parse(localStorage.getItem('pendingCoinRequests') || '[]')
+        setPendingCoinRequests(localReqs)
+      } catch {}
+    }
+  }
 
   // Fetch all dashboard data from API
   const fetchDashboardData = async () => {
@@ -308,56 +328,70 @@ export default function SuperAdminDashboard() {
     }
   }
 
-  // Handle localStorage-based coin requests (when advertiser used local/expired token)
+  // Approve a coin request — handles both DB requests and localStorage fallback requests
   const handleApproveCoinRequest = async (req) => {
     try {
-      // Try to add coins via API using admin token
-      let apiSuccess = false
-      if (req.userId) {
-        try {
-          const res = await apiRequest('/ads/admin/coins/add', {
-            method: 'POST',
-            body: JSON.stringify({
-              userId: req.userId,
-              coins: req.coinsRequested,
-              reason: 'Approved coin request'
-            })
-          })
-          if (res.success) apiSuccess = true
-        } catch {}
-      }
-
-      // Remove from pending list
-      const updated = pendingCoinRequests.filter(r => r.id !== req.id)
-      setPendingCoinRequests(updated)
-      localStorage.setItem('pendingCoinRequests', JSON.stringify(updated))
-
-      // Also update the local user's coins in their localStorage if on same device
-      try {
-        const localUsers = JSON.parse(localStorage.getItem('localUsers') || '[]')
-        const idx = localUsers.findIndex(u =>
-          u.id === req.userId || u.email === req.userEmail
+      if (req.source === 'database') {
+        // Real request stored in MongoDB — approve via backend
+        const token = localStorage.getItem('authToken')
+        const res = await fetch(
+          `https://trustedescort-backend.onrender.com/api/ads/admin/coin-requests/${req.walletId}/${req.transactionId}/approve`,
+          { method: 'POST', headers: { Authorization: `Bearer ${token}` } }
         )
-        if (idx !== -1) {
-          localUsers[idx].coins = (localUsers[idx].coins || 0) + req.coinsRequested
-          localStorage.setItem('localUsers', JSON.stringify(localUsers))
-          localStorage.setItem('userCoins', String(localUsers[idx].coins))
+        const data = await res.json()
+        if (!data.success) throw new Error(data.message || 'Failed to approve')
+        // Refresh list from server
+        await fetchCoinRequests()
+        setSuccessMsg(`✅ Approved ${req.coinsRequested} coins for ${req.userName} (synced to database)`)
+      } else {
+        // localStorage-only request (user had a local/fake token)
+        let apiSuccess = false
+        if (req.userId) {
+          try {
+            const res = await apiRequest('/ads/admin/coins/add', {
+              method: 'POST',
+              body: JSON.stringify({
+                userId: req.userId,
+                coins: req.coinsRequested,
+                reason: 'Approved coin request'
+              })
+            })
+            if (res.success) apiSuccess = true
+          } catch {}
         }
-      } catch {}
-
-      setSuccessMsg(`✅ Approved ${req.coinsRequested} coins for ${req.userName}${apiSuccess ? ' (synced to database)' : ' (local only — ask user to re-login)'}`)
+        const updated = pendingCoinRequests.filter(r => r.id !== req.id)
+        setPendingCoinRequests(updated)
+        localStorage.setItem('pendingCoinRequests', JSON.stringify(updated))
+        setSuccessMsg(`✅ Approved ${req.coinsRequested} coins for ${req.userName}${apiSuccess ? ' (synced to database)' : ' (local only — ask user to re-login)'}`)
+      }
       setTimeout(() => setSuccessMsg(''), 5000)
     } catch (err) {
       setError(`Failed to approve: ${err.message}`)
     }
   }
 
-  const handleRejectCoinRequest = (reqId) => {
-    const updated = pendingCoinRequests.filter(r => r.id !== reqId)
-    setPendingCoinRequests(updated)
-    localStorage.setItem('pendingCoinRequests', JSON.stringify(updated))
-    setSuccessMsg('Coin request rejected')
-    setTimeout(() => setSuccessMsg(''), 3000)
+  const handleRejectCoinRequest = async (reqId) => {
+    try {
+      const req = pendingCoinRequests.find(r => r.id === reqId)
+      if (req?.source === 'database') {
+        const token = localStorage.getItem('authToken')
+        const res = await fetch(
+          `https://trustedescort-backend.onrender.com/api/ads/admin/coin-requests/${req.walletId}/${req.transactionId}/reject`,
+          { method: 'POST', headers: { Authorization: `Bearer ${token}` } }
+        )
+        const data = await res.json()
+        if (!data.success) throw new Error(data.message || 'Failed to reject')
+        await fetchCoinRequests()
+      } else {
+        const updated = pendingCoinRequests.filter(r => r.id !== reqId)
+        setPendingCoinRequests(updated)
+        localStorage.setItem('pendingCoinRequests', JSON.stringify(updated))
+      }
+      setSuccessMsg('Coin request rejected')
+      setTimeout(() => setSuccessMsg(''), 3000)
+    } catch (err) {
+      setError(`Failed to reject: ${err.message}`)
+    }
   }
 
   const handleLogout = async () => {
@@ -535,7 +569,7 @@ export default function SuperAdminDashboard() {
             💰 Manage Coins
           </button>
           <button
-            onClick={() => setActiveTab('coin-requests')}
+            onClick={() => { setActiveTab('coin-requests'); fetchCoinRequests() }}
             className={`px-6 py-3 font-semibold text-sm transition border-b-2 relative ${
               activeTab === 'coin-requests'
                 ? 'border-yellow-500 text-yellow-400'
