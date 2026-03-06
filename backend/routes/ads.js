@@ -540,6 +540,51 @@ router.get('/admin/pending-ads', adminMiddleware, async (req, res) => {
   }
 });
 
+// Get ALL ads for admin (all statuses, with optional filter)
+router.get('/admin/all-ads', adminMiddleware, async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 100;
+    const status = req.query.status; // optional: pending | approved | rejected
+
+    const filter = status ? { adminApprovalStatus: status } : {};
+
+    const ads = await AdPosting.find(filter)
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .populate('userId', 'email phone displayName businessName');
+
+    const total = await AdPosting.countDocuments(filter);
+
+    const processedAds = ads.map(ad => ({
+      id: ad._id,
+      title: ad.title || 'Untitled Ad',
+      description: ad.description,
+      category: ad.category,
+      location: ad.location,
+      status: ad.adminApprovalStatus || 'pending',
+      isPremium: ad.isPremium,
+      coinsUsed: ad.coinsUsed || 0,
+      images: ad.images || [],
+      services: ad.services || [],
+      createdAt: ad.createdAt,
+      updatedAt: ad.updatedAt,
+      rejectionReason: ad.rejectionReason,
+      advertiser: {
+        id: ad.userId?._id || ad.userId,
+        name: ad.userId?.displayName || ad.userId?.businessName || 'Unknown',
+        email: ad.userId?.email || 'N/A',
+        phone: ad.userId?.phone || 'N/A'
+      }
+    }));
+
+    res.json({ ads: processedAds, total, page, limit });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch all ads', error: error.message });
+  }
+});
+
 // Approve ad
 router.post('/admin/ads/:adId/approve', adminMiddleware, async (req, res) => {
   try {

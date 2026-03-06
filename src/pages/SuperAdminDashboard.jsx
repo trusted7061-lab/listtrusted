@@ -3,6 +3,80 @@ import { useNavigate } from 'react-router-dom'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5002/api'
 
+// ── Ad Card component ──────────────────────────────────────────────────────────
+function AdCard({ ad, onApprove, onReject, showActions }) {
+  const statusColors = {
+    pending: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
+    approved: 'bg-green-500/20 text-green-400 border-green-500/30',
+    rejected: 'bg-red-500/20 text-red-400 border-red-500/30'
+  }
+
+  return (
+    <div className="bg-gray-900/50 border border-purple-500/20 rounded-lg p-5 hover:border-purple-500/40 transition">
+      <div className="flex flex-wrap justify-between gap-3 mb-3">
+        <div className="flex items-center gap-3">
+          {ad.images?.[0] && (
+            <img
+              src={ad.images[0]}
+              alt="Ad"
+              className="w-16 h-16 object-cover rounded-lg border border-gray-700 flex-shrink-0"
+            />
+          )}
+          <div>
+            <p className="text-white font-semibold text-lg">{ad.title}</p>
+            <p className="text-gray-400 text-sm">{ad.advertiser?.name} · {ad.advertiser?.email}</p>
+            {ad.description && (
+              <p className="text-gray-500 text-xs mt-1 line-clamp-1">{ad.description}</p>
+            )}
+          </div>
+        </div>
+        <span className={`self-start px-3 py-1 rounded-full text-xs font-semibold border ${statusColors[ad.status] || statusColors.pending}`}>
+          {ad.status?.toUpperCase()}
+        </span>
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm mb-4">
+        <div>
+          <p className="text-gray-500 text-xs">Location</p>
+          <p className="text-white">{ad.location || '—'}</p>
+        </div>
+        <div>
+          <p className="text-gray-500 text-xs">Category</p>
+          <p className="text-white">{ad.category || '—'}</p>
+        </div>
+        <div>
+          <p className="text-gray-500 text-xs">Coins Used</p>
+          <p className="text-yellow-400 font-semibold">{ad.coinsUsed || 0} 🪙</p>
+        </div>
+        <div>
+          <p className="text-gray-500 text-xs">Posted</p>
+          <p className="text-white">{new Date(ad.createdAt).toLocaleDateString()}</p>
+        </div>
+      </div>
+      {ad.rejectionReason && (
+        <div className="mb-3 bg-red-900/20 border border-red-500/20 rounded p-2 text-xs text-red-400">
+          ✕ Rejected: {ad.rejectionReason}
+        </div>
+      )}
+      {showActions && (
+        <div className="flex gap-3 pt-3 border-t border-gray-700">
+          <button
+            onClick={() => onApprove(ad.id)}
+            className="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition font-semibold text-sm"
+          >
+            ✓ Approve
+          </button>
+          <button
+            onClick={() => onReject(ad.id)}
+            className="flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition font-semibold text-sm"
+          >
+            ✕ Reject & Refund
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
 async function apiRequest(endpoint, options = {}) {
   const url = `${API_BASE_URL}${endpoint}`
   const token = localStorage.getItem('authToken')
@@ -40,8 +114,10 @@ export default function SuperAdminDashboard() {
   const [successMsg, setSuccessMsg] = useState('')
 
   // Real data from API
-  const [ads, setAds] = useState([])
+  const [ads, setAds] = useState([])          // all ads
   const [advertisers, setAdvertisers] = useState([])
+  const [adFilter, setAdFilter] = useState('all')  // all | pending | approved | rejected
+  const [selectedAdvertiserAds, setSelectedAdvertiserAds] = useState(null) // for detail modal
   const [stats, setStats] = useState({
     totalAds: 0,
     pendingAds: 0,
@@ -99,7 +175,7 @@ export default function SuperAdminDashboard() {
       // Then fetch dashboard data
       const [statsData, adsData, usersData] = await Promise.all([
         apiRequest('/ads/admin/stats'),
-        apiRequest('/ads/admin/pending-ads?limit=50'),
+        apiRequest('/ads/admin/all-ads?limit=200'),
         apiRequest('/ads/admin/users?limit=100')
       ])
 
@@ -115,22 +191,7 @@ export default function SuperAdminDashboard() {
       }
 
       if (adsData && adsData.ads) {
-        const processedAds = adsData.ads.map(ad => ({
-          id: ad._id,
-          title: ad.title || 'Untitled Ad',
-          advertiser: {
-            id: ad.userId?._id || ad.userId,
-            name: ad.userId?.displayName || 'Unknown User',
-            email: ad.userId?.email || 'N/A'
-          },
-          status: ad.adminApprovalStatus || 'pending',
-          coins: ad.coinsUsed || 0,
-          location: ad.location || 'Multiple',
-          createdAt: new Date(ad.createdAt).toLocaleDateString(),
-          category: ad.category,
-          isPremium: ad.isPremium
-        }))
-        setAds(processedAds)
+        setAds(adsData.ads)
       }
 
       if (usersData && usersData.users) {
@@ -138,11 +199,16 @@ export default function SuperAdminDashboard() {
           id: user.id,
           name: user.displayName || user.businessName || 'Unknown',
           email: user.email,
+          phone: user.phone || 'N/A',
           coins: user.coins || 0,
-          adsCount: user.totalAds || 0,
-          pendingAds: user.pendingAds || 0,
-          approvedAds: user.approvedAds || 0,
-          status: user.coins > 0 ? 'active' : 'inactive'
+          totalCoinsEarned: user.totalCoinsEarned || 0,
+          totalCoinsSpent: user.totalCoinsSpent || 0,
+          adsCount: user.adsCount?.total || 0,
+          pendingAds: user.adsCount?.pending || 0,
+          approvedAds: user.adsCount?.approved || 0,
+          rejectedAds: user.adsCount?.rejected || 0,
+          recentAds: user.recentAds || [],
+          status: (user.adsCount?.approved || 0) > 0 ? 'active' : (user.coins > 0 ? 'registered' : 'inactive')
         }))
         setAdvertisers(processedUsers)
       }
@@ -186,7 +252,7 @@ export default function SuperAdminDashboard() {
       })
 
       if (response.success) {
-        setAds(ads.filter(ad => ad.id !== adId))
+        setAds(ads.map(ad => ad.id === adId ? { ...ad, status: 'rejected', rejectionReason: reason } : ad))
         setStats(prev => ({
           ...prev,
           pendingAds: Math.max(0, prev.pendingAds - 1),
@@ -357,7 +423,7 @@ export default function SuperAdminDashboard() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-6 border-b border-purple-500/30">
+        <div className="flex gap-2 mb-6 border-b border-purple-500/30 flex-wrap">
           <button
             onClick={() => setActiveTab('ads')}
             className={`px-6 py-3 font-semibold text-sm transition border-b-2 ${
@@ -367,6 +433,26 @@ export default function SuperAdminDashboard() {
             }`}
           >
             📝 Pending Ads ({stats.pendingAds})
+          </button>
+          <button
+            onClick={() => setActiveTab('all-ads')}
+            className={`px-6 py-3 font-semibold text-sm transition border-b-2 ${
+              activeTab === 'all-ads'
+                ? 'border-purple-500 text-purple-400'
+                : 'border-transparent text-gray-400 hover:text-gray-200'
+            }`}
+          >
+            📋 All Ads ({stats.totalAds})
+          </button>
+          <button
+            onClick={() => setActiveTab('live')}
+            className={`px-6 py-3 font-semibold text-sm transition border-b-2 ${
+              activeTab === 'live'
+                ? 'border-purple-500 text-purple-400'
+                : 'border-transparent text-gray-400 hover:text-gray-200'
+            }`}
+          >
+            🟢 Live Ads ({stats.approvedAds})
           </button>
           <button
             onClick={() => setActiveTab('advertisers')}
@@ -396,45 +482,64 @@ export default function SuperAdminDashboard() {
             <h3 className="text-xl font-bold text-white mb-4">Pending Ads for Approval</h3>
             {ads.filter(ad => ad.status === 'pending').length === 0 ? (
               <div className="bg-gray-900/50 border border-gray-700 rounded-lg p-8 text-center">
-                <p className="text-gray-400">No pending ads to review</p>
+                <p className="text-gray-400 text-lg">✅ No pending ads — all caught up!</p>
               </div>
             ) : (
               ads.filter(ad => ad.status === 'pending').map(ad => (
-                <div key={ad.id} className="bg-gray-900/50 border border-purple-500/20 rounded-lg p-6 hover:border-purple-500/50 transition">
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-                    <div>
-                      <p className="text-gray-400 text-sm">Ad Title</p>
-                      <p className="text-white font-semibold">{ad.title}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-400 text-sm">Advertiser</p>
-                      <p className="text-white font-semibold">{ad.advertiser.name}</p>
-                      <p className="text-xs text-gray-500">{ad.advertiser.email}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-400 text-sm">Location</p>
-                      <p className="text-white font-semibold">{ad.location}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-400 text-sm">Coins Used</p>
-                      <p className="text-white font-semibold text-lg text-yellow-400">{ad.coins} 🪙</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-3 pt-4 border-t border-gray-700">
-                    <button
-                      onClick={() => handleApproveAd(ad.id)}
-                      className="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition font-semibold"
-                    >
-                      ✓ Approve
-                    </button>
-                    <button
-                      onClick={() => handleRejectAd(ad.id)}
-                      className="flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition font-semibold"
-                    >
-                      ✕ Reject & Refund Coins
-                    </button>
-                  </div>
-                </div>
+                <AdCard key={ad.id} ad={ad} onApprove={handleApproveAd} onReject={handleRejectAd} showActions />
+              ))
+            )}
+          </div>
+        )}
+
+        {activeTab === 'all-ads' && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
+              <h3 className="text-xl font-bold text-white">All Ads</h3>
+              <div className="flex gap-2">
+                {['all', 'pending', 'approved', 'rejected'].map(f => (
+                  <button
+                    key={f}
+                    onClick={() => setAdFilter(f)}
+                    className={`px-3 py-1 rounded-full text-xs font-semibold capitalize transition ${
+                      adFilter === f
+                        ? 'bg-purple-600 text-white'
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    {f} ({f === 'all' ? ads.length : ads.filter(a => a.status === f).length})
+                  </button>
+                ))}
+              </div>
+            </div>
+            {(adFilter === 'all' ? ads : ads.filter(a => a.status === adFilter)).length === 0 ? (
+              <div className="bg-gray-900/50 border border-gray-700 rounded-lg p-8 text-center">
+                <p className="text-gray-400">No ads found</p>
+              </div>
+            ) : (
+              (adFilter === 'all' ? ads : ads.filter(a => a.status === adFilter)).map(ad => (
+                <AdCard
+                  key={ad.id}
+                  ad={ad}
+                  onApprove={handleApproveAd}
+                  onReject={handleRejectAd}
+                  showActions={ad.status === 'pending'}
+                />
+              ))
+            )}
+          </div>
+        )}
+
+        {activeTab === 'live' && (
+          <div className="space-y-4">
+            <h3 className="text-xl font-bold text-white mb-4">Live / Approved Ads</h3>
+            {ads.filter(ad => ad.status === 'approved').length === 0 ? (
+              <div className="bg-gray-900/50 border border-gray-700 rounded-lg p-8 text-center">
+                <p className="text-gray-400">No live ads yet</p>
+              </div>
+            ) : (
+              ads.filter(ad => ad.status === 'approved').map(ad => (
+                <AdCard key={ad.id} ad={ad} onApprove={handleApproveAd} onReject={handleRejectAd} showActions={false} />
               ))
             )}
           </div>
@@ -443,44 +548,63 @@ export default function SuperAdminDashboard() {
         {activeTab === 'advertisers' && (
           <div className="space-y-4">
             <h3 className="text-xl font-bold text-white mb-4">Advertiser Management</h3>
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto rounded-xl border border-purple-500/20">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-purple-500/30">
+                  <tr className="bg-purple-900/30 border-b border-purple-500/30">
                     <th className="text-left p-4 text-purple-400">Name</th>
                     <th className="text-left p-4 text-purple-400">Email</th>
-                    <th className="text-right p-4 text-purple-400">Coins Balance</th>
-                    <th className="text-right p-4 text-purple-400">Active Ads</th>
+                    <th className="text-right p-4 text-purple-400">Coins</th>
+                    <th className="text-center p-4 text-purple-400">Total Ads</th>
+                    <th className="text-center p-4 text-purple-400">Pending</th>
+                    <th className="text-center p-4 text-purple-400">Live</th>
                     <th className="text-center p-4 text-purple-400">Status</th>
-                    <th className="text-center p-4 text-purple-400">Action</th>
+                    <th className="text-center p-4 text-purple-400">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {advertisers.map(adv => (
                     <tr key={adv.id} className="border-b border-gray-700 hover:bg-gray-900/50 transition">
                       <td className="p-4 text-white font-semibold">{adv.name}</td>
-                      <td className="p-4 text-gray-400">{adv.email}</td>
+                      <td className="p-4 text-gray-400 text-sm">{adv.email}</td>
                       <td className="p-4 text-right text-yellow-400 font-bold">{adv.coins} 🪙</td>
-                      <td className="p-4 text-right text-white">{adv.adsCount}</td>
+                      <td className="p-4 text-center text-white">{adv.adsCount}</td>
+                      <td className="p-4 text-center">
+                        <span className={`font-semibold ${adv.pendingAds > 0 ? 'text-yellow-400' : 'text-gray-500'}`}>
+                          {adv.pendingAds}
+                        </span>
+                      </td>
+                      <td className="p-4 text-center">
+                        <span className={`font-semibold ${adv.approvedAds > 0 ? 'text-green-400' : 'text-gray-500'}`}>
+                          {adv.approvedAds}
+                        </span>
+                      </td>
                       <td className="p-4 text-center">
                         <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
                           adv.status === 'active'
                             ? 'bg-green-500/20 text-green-400'
+                            : adv.status === 'registered'
+                            ? 'bg-blue-500/20 text-blue-400'
                             : 'bg-gray-500/20 text-gray-400'
                         }`}>
                           {adv.status}
                         </span>
                       </td>
                       <td className="p-4 text-center">
-                        <button
-                          onClick={() => {
-                            setSelectedAdvertiser(adv)
-                            setShowCoinModal(true)
-                          }}
-                          className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-sm transition"
-                        >
-                          Add Coins
-                        </button>
+                        <div className="flex gap-2 justify-center">
+                          <button
+                            onClick={() => setSelectedAdvertiserAds(adv)}
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs transition"
+                          >
+                            View Ads
+                          </button>
+                          <button
+                            onClick={() => { setSelectedAdvertiser(adv); setShowCoinModal(true) }}
+                            className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-xs transition"
+                          >
+                            Add Coins
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -495,7 +619,7 @@ export default function SuperAdminDashboard() {
             <h3 className="text-xl font-bold text-white mb-4">Coin Management</h3>
             <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-6 mb-6">
               <p className="text-blue-300 mb-2">💡 Quick Add Coins</p>
-              <p className="text-gray-400 text-sm">Select an advertiser from the Advertisers tab and click "Add Coins" to distribute coins.</p>
+              <p className="text-gray-400 text-sm">Select an advertiser from the Advertisers tab and click "Add Coins", or use the cards below.</p>
             </div>
             {advertisers.map(adv => (
               <div key={adv.id} className="bg-gray-900/50 border border-gray-700 rounded-lg p-6">
@@ -503,17 +627,19 @@ export default function SuperAdminDashboard() {
                   <div>
                     <p className="text-white font-semibold text-lg">{adv.name}</p>
                     <p className="text-gray-400 text-sm">{adv.email}</p>
+                    <div className="flex gap-4 mt-2 text-xs text-gray-500">
+                      <span>Total ads: <span className="text-white">{adv.adsCount}</span></span>
+                      <span>Pending: <span className="text-yellow-400">{adv.pendingAds}</span></span>
+                      <span>Live: <span className="text-green-400">{adv.approvedAds}</span></span>
+                    </div>
                   </div>
                   <div className="text-right">
                     <p className="text-gray-400 text-sm">Current Balance</p>
-                    <p className="text-yellow-400 font-bold text-2xl">{adv.coins}</p>
+                    <p className="text-yellow-400 font-bold text-2xl">{adv.coins} 🪙</p>
                   </div>
                 </div>
                 <button
-                  onClick={() => {
-                    setSelectedAdvertiser(adv)
-                    setShowCoinModal(true)
-                  }}
+                  onClick={() => { setSelectedAdvertiser(adv); setShowCoinModal(true) }}
                   className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-6 py-2 rounded-lg transition font-semibold"
                 >
                   + Add Coins
@@ -523,6 +649,49 @@ export default function SuperAdminDashboard() {
           </div>
         )}
       </div>
+
+      {/* Advertiser Ads Detail Modal */}
+      {selectedAdvertiserAds && (
+        <div className="fixed inset-0 bg-black/70 flex items-start justify-center z-50 p-4 overflow-y-auto">
+          <div className="bg-gradient-to-br from-gray-900 to-black border border-purple-500/30 rounded-xl p-6 max-w-3xl w-full mt-8 mb-8">
+            <div className="flex justify-between items-start mb-6">
+              <div>
+                <h3 className="text-2xl font-bold text-white">{selectedAdvertiserAds.name}&apos;s Ads</h3>
+                <p className="text-gray-400 text-sm">{selectedAdvertiserAds.email}</p>
+                <div className="flex gap-4 mt-2 text-sm">
+                  <span className="text-gray-400">Total: <span className="text-white font-semibold">{selectedAdvertiserAds.adsCount}</span></span>
+                  <span className="text-yellow-400">Pending: <span className="font-semibold">{selectedAdvertiserAds.pendingAds}</span></span>
+                  <span className="text-green-400">Live: <span className="font-semibold">{selectedAdvertiserAds.approvedAds}</span></span>
+                  <span className="text-pink-400">Coins: <span className="font-semibold">{selectedAdvertiserAds.coins} 🪙</span></span>
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedAdvertiserAds(null)}
+                className="text-gray-400 hover:text-white text-2xl leading-none"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
+              {ads.filter(ad => ad.advertiser?.id?.toString() === selectedAdvertiserAds.id?.toString()).length === 0 ? (
+                <p className="text-gray-400 text-center py-8">No ads found for this advertiser</p>
+              ) : (
+                ads
+                  .filter(ad => ad.advertiser?.id?.toString() === selectedAdvertiserAds.id?.toString())
+                  .map(ad => (
+                    <AdCard
+                      key={ad.id}
+                      ad={ad}
+                      onApprove={handleApproveAd}
+                      onReject={handleRejectAd}
+                      showActions={ad.status === 'pending'}
+                    />
+                  ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Coin Modal */}
       {showCoinModal && (
