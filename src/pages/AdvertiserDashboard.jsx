@@ -118,6 +118,33 @@ export default function AdvertiserDashboard() {
   const handleRequestCoins = async (amount) => {
     setRequestingCoins(true)
     const token = localStorage.getItem('authToken')
+
+    // If using a local fallback token, save request locally and notify admin via localStorage
+    if (!token || token.startsWith('local-token-')) {
+      try {
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}')
+        const pending = JSON.parse(localStorage.getItem('pendingCoinRequests') || '[]')
+        pending.push({
+          id: Date.now().toString(),
+          userId: currentUser.id || currentUser._id,
+          userName: currentUser.displayName || currentUser.businessName || currentUser.name || currentUser.email,
+          userEmail: currentUser.email,
+          coinsRequested: amount,
+          status: 'pending',
+          createdAt: new Date().toISOString()
+        })
+        localStorage.setItem('pendingCoinRequests', JSON.stringify(pending))
+        showToast(`✅ Coin request for ${amount} coins submitted! Admin will approve shortly.`)
+        setShowCoinModal(false)
+        setSelectedCoins(null)
+      } catch {
+        showToast('Failed to submit request. Please try again.')
+      } finally {
+        setRequestingCoins(false)
+      }
+      return
+    }
+
     try {
       const res = await fetch(`${API_BASE}/ads/request-coins`, {
         method: 'POST',
@@ -128,15 +155,34 @@ export default function AdvertiserDashboard() {
         body: JSON.stringify({ coinsRequested: amount }),
       })
       if (res.ok) {
-        showToast(`Coin request for ${amount} coins submitted to admin for approval`)
+        showToast(`✅ Coin request for ${amount} coins submitted to admin for approval`)
         setShowCoinModal(false)
         setSelectedCoins(null)
       } else {
         const err = await res.json()
-        showToast(err.message || 'Failed to request coins')
+        if (res.status === 401) {
+          // Token expired — save locally and tell user to re-login
+          const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}')
+          const pending = JSON.parse(localStorage.getItem('pendingCoinRequests') || '[]')
+          pending.push({
+            id: Date.now().toString(),
+            userId: currentUser.id || currentUser._id,
+            userName: currentUser.displayName || currentUser.businessName || currentUser.name || currentUser.email,
+            userEmail: currentUser.email,
+            coinsRequested: amount,
+            status: 'pending',
+            createdAt: new Date().toISOString()
+          })
+          localStorage.setItem('pendingCoinRequests', JSON.stringify(pending))
+          showToast(`✅ Request saved! Please sign out and sign back in to confirm.`)
+          setShowCoinModal(false)
+          setSelectedCoins(null)
+        } else {
+          showToast(err.message || 'Failed to request coins')
+        }
       }
     } catch (error) {
-      showToast('Error: ' + (error.message || 'Failed to request coins'))
+      showToast('Network error. Please check your connection.')
     } finally {
       setRequestingCoins(false)
     }

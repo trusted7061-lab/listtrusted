@@ -133,6 +133,9 @@ export default function SuperAdminDashboard() {
   const [coinAmount, setCoinAmount] = useState('')
   const [coinReason, setCoinReason] = useState('bonus')
 
+  // Pending coin requests submitted via localStorage fallback
+  const [pendingCoinRequests, setPendingCoinRequests] = useState([])
+
   // Check authentication
   useEffect(() => {
     const token = localStorage.getItem('authToken')
@@ -156,6 +159,11 @@ export default function SuperAdminDashboard() {
     }
     setLoading(false)
     fetchDashboardData()
+    // Load localStorage coin requests (from users with local/expired tokens)
+    try {
+      const localReqs = JSON.parse(localStorage.getItem('pendingCoinRequests') || '[]')
+      setPendingCoinRequests(localReqs)
+    } catch {}
   }, [navigate])
 
   // Fetch all dashboard data from API
@@ -298,6 +306,58 @@ export default function SuperAdminDashboard() {
     } catch (err) {
       setError(`Failed to add coins: ${err.message}`)
     }
+  }
+
+  // Handle localStorage-based coin requests (when advertiser used local/expired token)
+  const handleApproveCoinRequest = async (req) => {
+    try {
+      // Try to add coins via API using admin token
+      let apiSuccess = false
+      if (req.userId) {
+        try {
+          const res = await apiRequest('/ads/admin/coins/add', {
+            method: 'POST',
+            body: JSON.stringify({
+              userId: req.userId,
+              coins: req.coinsRequested,
+              reason: 'Approved coin request'
+            })
+          })
+          if (res.success) apiSuccess = true
+        } catch {}
+      }
+
+      // Remove from pending list
+      const updated = pendingCoinRequests.filter(r => r.id !== req.id)
+      setPendingCoinRequests(updated)
+      localStorage.setItem('pendingCoinRequests', JSON.stringify(updated))
+
+      // Also update the local user's coins in their localStorage if on same device
+      try {
+        const localUsers = JSON.parse(localStorage.getItem('localUsers') || '[]')
+        const idx = localUsers.findIndex(u =>
+          u.id === req.userId || u.email === req.userEmail
+        )
+        if (idx !== -1) {
+          localUsers[idx].coins = (localUsers[idx].coins || 0) + req.coinsRequested
+          localStorage.setItem('localUsers', JSON.stringify(localUsers))
+          localStorage.setItem('userCoins', String(localUsers[idx].coins))
+        }
+      } catch {}
+
+      setSuccessMsg(`✅ Approved ${req.coinsRequested} coins for ${req.userName}${apiSuccess ? ' (synced to database)' : ' (local only — ask user to re-login)'}`)
+      setTimeout(() => setSuccessMsg(''), 5000)
+    } catch (err) {
+      setError(`Failed to approve: ${err.message}`)
+    }
+  }
+
+  const handleRejectCoinRequest = (reqId) => {
+    const updated = pendingCoinRequests.filter(r => r.id !== reqId)
+    setPendingCoinRequests(updated)
+    localStorage.setItem('pendingCoinRequests', JSON.stringify(updated))
+    setSuccessMsg('Coin request rejected')
+    setTimeout(() => setSuccessMsg(''), 3000)
   }
 
   const handleLogout = async () => {
@@ -474,6 +534,21 @@ export default function SuperAdminDashboard() {
           >
             💰 Manage Coins
           </button>
+          <button
+            onClick={() => setActiveTab('coin-requests')}
+            className={`px-6 py-3 font-semibold text-sm transition border-b-2 relative ${
+              activeTab === 'coin-requests'
+                ? 'border-yellow-500 text-yellow-400'
+                : 'border-transparent text-gray-400 hover:text-gray-200'
+            }`}
+          >
+            🪙 Coin Requests
+            {pendingCoinRequests.length > 0 && (
+              <span className="ml-2 bg-yellow-500 text-black text-xs font-bold px-2 py-0.5 rounded-full">
+                {pendingCoinRequests.length}
+              </span>
+            )}
+          </button>
         </div>
 
         {/* Tab Content */}
@@ -646,6 +721,50 @@ export default function SuperAdminDashboard() {
                 </button>
               </div>
             ))}
+          </div>
+        )}
+
+        {activeTab === 'coin-requests' && (
+          <div className="space-y-4">
+            <h3 className="text-xl font-bold text-white mb-4">
+              Pending Coin Requests
+              {pendingCoinRequests.length > 0 && <span className="ml-3 text-yellow-400 text-base">({pendingCoinRequests.length} pending)</span>}
+            </h3>
+            {pendingCoinRequests.length === 0 ? (
+              <div className="bg-gray-900/50 border border-gray-700 rounded-lg p-8 text-center">
+                <p className="text-gray-400">No pending coin requests</p>
+              </div>
+            ) : (
+              pendingCoinRequests.map(req => (
+                <div key={req.id} className="bg-gray-900/50 border border-yellow-500/20 rounded-lg p-6">
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <p className="text-white font-semibold text-lg">{req.userName}</p>
+                      <p className="text-gray-400 text-sm">{req.userEmail}</p>
+                      <p className="text-gray-500 text-xs mt-1">{new Date(req.createdAt).toLocaleString()}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-yellow-400 font-bold text-2xl">{req.coinsRequested} 🪙</p>
+                      <p className="text-gray-400 text-xs">Requested</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => handleApproveCoinRequest(req)}
+                      className="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold transition"
+                    >
+                      ✓ Approve & Add Coins
+                    </button>
+                    <button
+                      onClick={() => handleRejectCoinRequest(req.id)}
+                      className="flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold transition"
+                    >
+                      ✕ Reject
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         )}
       </div>

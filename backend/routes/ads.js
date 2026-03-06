@@ -248,7 +248,7 @@ router.post('/wallet/confirm-purchase', [
 
 // Request coins from admin (Advertiser)
 router.post('/request-coins', [
-  body('coinsRequested').isIn([200, 500, 1000]).withMessage('Invalid coin amount')
+  body('coinsRequested').isInt({ min: 1 }).withMessage('Invalid coin amount')
 ], authMiddleware, async (req, res) => {
   try {
     const { coinsRequested } = req.body;
