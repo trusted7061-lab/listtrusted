@@ -67,6 +67,16 @@ export default function PromoteAd() {
     fetchCoinBalance()
   }, [location.state, navigate])
 
+  const getLocalCoins = () => {
+    const userCoins = localStorage.getItem('userCoins')
+    if (userCoins && parseInt(userCoins) > 0) return parseInt(userCoins)
+    try {
+      const stored = JSON.parse(localStorage.getItem('currentUser') || '{}')
+      if (stored.coins) return stored.coins
+    } catch {}
+    return 0
+  }
+
   const fetchCoinBalance = async () => {
     const token = localStorage.getItem('authToken')
     if (!token) return
@@ -76,10 +86,15 @@ export default function PromoteAd() {
       })
       if (res.ok) {
         const data = await res.json()
-        setCoinBalance(data.coins || 0)
+        const coinVal = data.coins || 0
+        setCoinBalance(coinVal)
+        localStorage.setItem('userCoins', String(coinVal))
+      } else {
+        setCoinBalance(getLocalCoins())
       }
     } catch (err) {
       console.error('Failed to fetch coin balance:', err)
+      setCoinBalance(getLocalCoins())
     }
   }
 

@@ -70,6 +70,17 @@ export default function AdvertiserDashboard() {
     }
   }
 
+  const getLocalCoins = () => {
+    // Try userCoins first, then check currentUser object
+    const userCoins = localStorage.getItem('userCoins')
+    if (userCoins && parseInt(userCoins) > 0) return parseInt(userCoins)
+    try {
+      const stored = JSON.parse(localStorage.getItem('currentUser') || '{}')
+      if (stored.coins) return stored.coins
+    } catch {}
+    return 0
+  }
+
   const fetchCoins = async () => {
     setLoadingCoins(true)
     const token = localStorage.getItem('authToken')
@@ -79,15 +90,14 @@ export default function AdvertiserDashboard() {
       })
       if (res.ok) {
         const data = await res.json()
-        setCoins(data.coins || 0)
+        const coinVal = data.coins || 0
+        setCoins(coinVal)
+        localStorage.setItem('userCoins', String(coinVal))
       } else {
-        // Fallback to localStorage
-        const userCoins = localStorage.getItem('userCoins') || '0'
-        setCoins(parseInt(userCoins))
+        setCoins(getLocalCoins())
       }
     } catch {
-      const userCoins = localStorage.getItem('userCoins') || '0'
-      setCoins(parseInt(userCoins))
+      setCoins(getLocalCoins())
     } finally {
       setLoadingCoins(false)
     }

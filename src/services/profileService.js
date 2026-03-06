@@ -34,11 +34,17 @@ export const registerUser = async (userData) => {
       isVerified: true,
       isEmailVerified: !!userData.email,
       isPhoneVerified: !!userData.phone,
+      coins: userData.userType === 'advertiser' ? 500 : 0,
       createdAt: new Date().toISOString()
     }
     
     users.push(newUser)
     localStorage.setItem('localUsers', JSON.stringify(users))
+    
+    // Store coins locally for advertiser
+    if (userData.userType === 'advertiser') {
+      localStorage.setItem('userCoins', '500')
+    }
     
     // Auto-login the user
     localStorage.setItem('currentUser', JSON.stringify(newUser))
@@ -111,6 +117,11 @@ export const loginUser = async (identifier, password) => {
     // Store user data
     localStorage.setItem('currentUser', JSON.stringify(user))
     localStorage.setItem('authToken', 'local-token-' + user.id)
+    
+    // Restore coin balance from stored user
+    if (user.coins) {
+      localStorage.setItem('userCoins', String(user.coins))
+    }
     
     // Dispatch custom event to notify login
     window.dispatchEvent(new CustomEvent('authChanged', {

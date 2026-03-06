@@ -104,9 +104,17 @@ export default function Account() {
       })
       if (res.ok) {
         const data = await res.json()
-        setCoins(data.coins || 0)
+        const coinVal = data.coins || 0
+        setCoins(coinVal)
+        localStorage.setItem('userCoins', String(coinVal))
+      } else {
+        const local = localStorage.getItem('userCoins')
+        if (local) setCoins(parseInt(local))
       }
-    } catch {}
+    } catch {
+      const local = localStorage.getItem('userCoins')
+      if (local) setCoins(parseInt(local))
+    }
   }
 
   const showToast = (msg) => {
