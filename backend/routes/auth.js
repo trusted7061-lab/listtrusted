@@ -196,18 +196,18 @@ router.post('/verify', [
     user.otpExpires = undefined;
     await user.save();
 
-    // Grant 300 coins to advertiser on first verification
+    // Grant 500 coins to advertiser on first verification
     if (user.userType === 'advertiser') {
       const existingWallet = await Wallet.findOne({ userId: user._id });
       if (!existingWallet) {
-        // First time advertiser - grant 300 coins
+        // First time advertiser - grant 500 coins
         const wallet = new Wallet({
           userId: user._id,
-          coins: 300,
-          totalCoinsEarned: 300,
+          coins: 500,
+          totalCoinsEarned: 500,
           transactions: [{
             type: 'admin-add',
-            coins: 300,
+            coins: 500,
             description: 'Welcome bonus for new advertiser',
             reference: 'manual',
             status: 'completed',
@@ -653,15 +653,15 @@ router.post('/google', async (req, res) => {
       });
       await user.save();
 
-      // Grant 300 coins if registering as advertiser
+      // Grant 500 coins if registering as advertiser
       if (user.userType === 'advertiser') {
         const wallet = new Wallet({
           userId: user._id,
-          coins: 300,
-          totalCoinsEarned: 300,
+          coins: 500,
+          totalCoinsEarned: 500,
           transactions: [{
             type: 'admin-add',
-            coins: 300,
+            coins: 500,
             description: 'Welcome bonus for new advertiser',
             reference: 'manual',
             status: 'completed',
@@ -893,6 +893,104 @@ router.get('/admin/me', async (req, res) => {
     });
   } catch (error) {
     res.status(401).json({ message: 'Invalid or expired token' });
+  }
+});
+
+// ==========================================
+// PROFILE UPDATE
+// ==========================================
+router.put('/profile', async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ message: 'Not authorized' });
+    }
+
+    const token = authHeader.split(' ')[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const user = await User.findById(decoded.userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const { displayName, businessName, phone, location, description } = req.body;
+
+    if (displayName !== undefined) user.displayName = displayName;
+    if (businessName !== undefined) user.businessName = businessName;
+    if (location !== undefined) user.location = location;
+    if (description !== undefined) user.description = description;
+
+    // Only update phone if provided and not already taken
+    if (phone && phone !== user.phone) {
+      const cleanedPhone = phone.replace(/[\s\-\+]/g, '').replace(/^91/, '');
+      const existingPhone = await User.findOne({ phone: cleanedPhone, _id: { $ne: user._id } });
+      if (existingPhone) {
+        return res.status(400).json({ message: 'Phone number already in use' });
+      }
+      user.phone = cleanedPhone;
+    }
+
+    await user.save();
+
+    // Update localStorage-compatible response
+    const updatedUser = user.toObject();
+    delete updatedUser.passwordHash;
+    delete updatedUser.otp;
+    delete updatedUser.otpExpires;
+    delete updatedUser.refreshToken;
+
+    res.json({ message: 'Profile updated successfully', user: updatedUser });
+  } catch (err) {
+    if (err.name === 'JsonWebTokenError') {
+      return res.status(401).json({ message: 'Invalid token' });
+    }
+    res.status(500).json({ message: 'Failed to update profile', error: err.message });
+  }
+});
+
+// Change password
+router.put('/change-password', async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ message: 'Not authorized' });
+    }
+
+    const token = authHeader.split(' ')[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const user = await User.findById(decoded.userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: 'Current password and new password are required' });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: 'New password must be at least 6 characters' });
+    }
+
+    // Verify current password
+    const isMatch = await bcrypt.compare(currentPassword, user.passwordHash);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Current password is incorrect' });
+    }
+
+    // Hash and save new password
+    user.passwordHash = await bcrypt.hash(newPassword, 12);
+    await user.save();
+
+    res.json({ message: 'Password changed successfully' });
+  } catch (err) {
+    if (err.name === 'JsonWebTokenError') {
+      return res.status(401).json({ message: 'Invalid token' });
+    }
+    res.status(500).json({ message: 'Failed to change password', error: err.message });
   }
 });
 

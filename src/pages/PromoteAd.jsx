@@ -47,6 +47,7 @@ export default function PromoteAd() {
   const [loading, setLoading] = useState(false)
   const [toast, setToast] = useState('')
   const [adData, setAdData] = useState(null)
+  const [coinBalance, setCoinBalance] = useState(0)
   
   const [formData, setFormData] = useState({
     boostType: 'turbo', // turbo or superTurbo
@@ -62,7 +63,25 @@ export default function PromoteAd() {
       // If no ad data, redirect back
       navigate('/post-ad')
     }
+    // Fetch coin balance
+    fetchCoinBalance()
   }, [location.state, navigate])
+
+  const fetchCoinBalance = async () => {
+    const token = localStorage.getItem('authToken')
+    if (!token) return
+    try {
+      const res = await fetch(`${API_BASE}/ads/wallet/balance`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setCoinBalance(data.coins || 0)
+      }
+    } catch (err) {
+      console.error('Failed to fetch coin balance:', err)
+    }
+  }
 
   const handleBoostSelect = (type) => {
     setFormData(prev => ({ ...prev, boostType: type }))
@@ -198,7 +217,7 @@ export default function PromoteAd() {
           >
             <div className="flex items-center gap-2">
               <span className="text-2xl">💰</span>
-              <span className="text-white font-semibold">0 Coins</span>
+              <span className="text-white font-semibold">{coinBalance} Coins</span>
             </div>
             <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
               + Add Coins

@@ -74,7 +74,7 @@ export default function AdvertiserDashboard() {
     setLoadingCoins(true)
     const token = localStorage.getItem('authToken')
     try {
-      const res = await fetch(`${API_BASE}/wallet/balance`, {
+      const res = await fetch(`${API_BASE}/ads/wallet/balance`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (res.ok) {

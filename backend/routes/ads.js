@@ -1,10 +1,24 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
+const multer = require('multer');
 const { body, validationResult } = require('express-validator');
 const Wallet = require('../models/Wallet');
 const AdPosting = require('../models/AdPosting');
 const User = require('../models/User');
+
+// Configure multer for file uploads (memory storage for flexibility)
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB per file
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'), false);
+    }
+  }
+});
 
 const router = express.Router();
 
@@ -273,7 +287,7 @@ router.post('/request-coins', [
 // ==========================================
 
 // Get coin cost for time slot
-router.get('/ads/coin-cost', (req, res) => {
+router.get('/coin-cost', (req, res) => {
   const timeSlot = req.query.timeSlot; // morning, afternoon, night
   
   const costMap = {
@@ -298,7 +312,7 @@ router.get('/ads/coin-cost', (req, res) => {
 });
 
 // Post new ad
-router.post('/ads/create', authMiddleware, async (req, res) => {
+router.post('/create', authMiddleware, upload.array('images', 15), async (req, res) => {
   try {
     // Handle both new form format and file uploads
     const {
@@ -306,13 +320,15 @@ router.post('/ads/create', authMiddleware, async (req, res) => {
       description,
       city,
       state,
-      area,
-      contact,
-      profileInfo,
-      services,
-      optionalInfo,
-      boost
+      area
     } = req.body;
+
+    // Parse JSON-stringified fields from FormData
+    const contact = typeof req.body.contact === 'string' ? JSON.parse(req.body.contact) : req.body.contact;
+    const profileInfo = typeof req.body.profileInfo === 'string' ? JSON.parse(req.body.profileInfo) : req.body.profileInfo;
+    const services = typeof req.body.services === 'string' ? JSON.parse(req.body.services) : req.body.services;
+    const optionalInfo = typeof req.body.optionalInfo === 'string' ? JSON.parse(req.body.optionalInfo) : req.body.optionalInfo;
+    const boost = req.body.boost ? (typeof req.body.boost === 'string' ? JSON.parse(req.body.boost) : req.body.boost) : null;
 
     // Validate required fields
     if (!title || !description || !city || !state) {
@@ -368,8 +384,11 @@ router.post('/ads/create', authMiddleware, async (req, res) => {
     const images = [];
     if (req.files && req.files.length > 0) {
       req.files.forEach(file => {
+        // Store as base64 data URI (for deployments without persistent disk)
+        const base64 = file.buffer.toString('base64');
+        const dataUri = `data:${file.mimetype};base64,${base64}`;
         images.push({
-          url: file.path || `/uploads/${file.filename}`,
+          url: dataUri,
           uploadedAt: new Date()
         });
       });
@@ -383,10 +402,10 @@ router.post('/ads/create', authMiddleware, async (req, res) => {
       city,
       state,
       area: area || '',
-      contact: typeof contact === 'string' ? JSON.parse(contact) : contact,
-      profileInfo: typeof profileInfo === 'string' ? JSON.parse(profileInfo) : profileInfo,
-      services: typeof services === 'string' ? JSON.parse(services) : services,
-      optionalInfo: typeof optionalInfo === 'string' ? JSON.parse(optionalInfo) : optionalInfo,
+      contact: contact || {},
+      profileInfo: profileInfo || {},
+      services: services || [],
+      optionalInfo: optionalInfo || [],
       images,
       boost: boostInfo,
       status: boostInfo ? 'approved' : 'pending', // Auto-approve if they paid for boost
@@ -428,7 +447,7 @@ router.post('/ads/create', authMiddleware, async (req, res) => {
 });
 
 // Get user's ads
-router.get('/ads/my-ads', authMiddleware, async (req, res) => {
+router.get('/my-ads', authMiddleware, async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
@@ -448,7 +467,7 @@ router.get('/ads/my-ads', authMiddleware, async (req, res) => {
 });
 
 // Delete/deactivate user's own ad
-router.delete('/ads/:adId', authMiddleware, async (req, res) => {
+router.delete('/:adId', authMiddleware, async (req, res) => {
   try {
     const ad = await AdPosting.findById(req.params.adId);
     
