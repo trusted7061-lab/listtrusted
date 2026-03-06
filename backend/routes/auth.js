@@ -223,7 +223,7 @@ router.post('/verify', [
     const accessToken = jwt.sign(
       { userId: user._id }, 
       process.env.JWT_SECRET, 
-      { expiresIn: '15m' }
+      { expiresIn: '30d' }
     );
     
     const refreshToken = jwt.sign(
@@ -294,7 +294,7 @@ router.post('/verify-email', [
     const accessToken = jwt.sign(
       { userId: user._id }, 
       process.env.JWT_SECRET, 
-      { expiresIn: '15m' }
+      { expiresIn: '30d' }
     );
 
     res.json({
@@ -389,7 +389,7 @@ router.post('/login', [
     const accessToken = jwt.sign(
       { userId: user._id }, 
       process.env.JWT_SECRET, 
-      { expiresIn: '15m' }
+      { expiresIn: '30d' }
     );
     
     const refreshToken = jwt.sign(
@@ -677,7 +677,7 @@ router.post('/google', async (req, res) => {
     const accessToken = jwt.sign(
       { userId: user._id },
       process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN || '15m' }
+      { expiresIn: '30d' }
     );
 
     const refreshToken = jwt.sign(
@@ -711,6 +711,36 @@ router.post('/google', async (req, res) => {
       return res.status(401).json({ message: 'Invalid or expired Google token' });
     }
     res.status(500).json({ message: 'Google authentication failed' });
+  }
+});
+
+// ==========================================
+// REFRESH TOKEN
+// ==========================================
+router.post('/refresh-token', async (req, res) => {
+  try {
+    const { refreshToken: token } = req.body;
+    if (!token) {
+      return res.status(400).json({ message: 'Refresh token required' });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET);
+    const user = await User.findById(decoded.userId);
+
+    if (!user || user.refreshToken !== token) {
+      return res.status(401).json({ message: 'Invalid refresh token' });
+    }
+
+    // Generate new access token
+    const accessToken = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: '30d' }
+    );
+
+    res.json({ token: accessToken });
+  } catch (err) {
+    res.status(401).json({ message: 'Invalid or expired refresh token' });
   }
 });
 
