@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
 import { locationsData, getAreasForCity } from '../services/locationsData'
 
-const API_BASE = import.meta.env.DEV ? '/api' : (import.meta.env.VITE_API_URL || 'http://localhost:5002/api')
+const API_BASE = import.meta.env.DEV ? '/api' : (import.meta.env.VITE_API_URL || 'https://trustedescort-backend.onrender.com/api')
 
 const SERVICES = [
   'Anal Sex', 'French kiss', 'Girlfriend Experience (GFE)', 'Handjob',

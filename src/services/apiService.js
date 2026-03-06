@@ -1,7 +1,7 @@
 // API service for communicating with the backend
 const API_BASE_URL = import.meta.env.DEV
   ? '/api'  // Use proxy in development
-  : (import.meta.env.VITE_API_URL || 'http://localhost:5002/api'); // Use full URL in production
+  : (import.meta.env.VITE_API_URL || 'https://trustedescort-backend.onrender.com/api'); // Use full URL in production
 
 // Helper function to make API requests
 const apiRequest = async (endpoint, options = {}) => {
