@@ -1,6 +1,34 @@
 // Profile management service using backend API
 import { authAPI } from './apiService'
 
+// ============ CORE UTILITIES ============
+
+// Storage keys (defined here so all functions can use them)
+const PROFILES_KEY = 'advertiserProfiles'
+const USERS_KEY = 'localUsers'
+const TRANSACTIONS_KEY = 'coinTransactions'
+
+// Safe localStorage getter — prevents JSON.parse crashes from corrupted data
+const safeGet = (key, fallback = []) => {
+  try {
+    const val = localStorage.getItem(key)
+    if (val === null) return fallback
+    return JSON.parse(val) ?? fallback
+  } catch {
+    return fallback
+  }
+}
+
+// Hash a password using SHA-256 (browser crypto API, async)
+const hashPassword = async (password) => {
+  const encoder = new TextEncoder()
+  const data = encoder.encode(password)
+  const hash = await crypto.subtle.digest('SHA-256', data)
+  return Array.from(new Uint8Array(hash))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('')
+}
+
 // Helper: Check if identifier is email or phone
 const isEmail = (identifier) => identifier && identifier.includes('@')
 const isPhone = (identifier) => identifier && /^[6-9]\d{9}$/.test(identifier.replace(/[\s\-\+]/g, '').replace(/^91/, ''))
@@ -21,16 +49,21 @@ export const registerUser = async (userData) => {
     // Fallback to localStorage for development
     console.warn('Backend registration failed, using localStorage fallback:', error.message)
     
-    const users = JSON.parse(localStorage.getItem('localUsers') || '[]')
+    const users = safeGet(USERS_KEY)
     const identifier = userData.email || userData.phone
     const existingUser = users.find(u => u.email === userData.email || u.phone === userData.phone)
     if (existingUser) {
       throw new Error('User already exists')
     }
-    
+
+    // Hash password before storing — never save plain text
+    const passwordHash = userData.password ? await hashPassword(userData.password) : null
+    const { password: _pw, ...safeUserData } = userData
+
     const newUser = {
       id: Date.now().toString(),
-      ...userData,
+      ...safeUserData,
+      passwordHash,
       isVerified: true,
       isEmailVerified: !!userData.email,
       isPhoneVerified: !!userData.phone,
@@ -39,7 +72,7 @@ export const registerUser = async (userData) => {
     }
     
     users.push(newUser)
-    localStorage.setItem('localUsers', JSON.stringify(users))
+    localStorage.setItem(USERS_KEY, JSON.stringify(users))
     
     // Store coins locally for advertiser
     if (userData.userType === 'advertiser') {
@@ -95,7 +128,7 @@ export const loginUser = async (identifier, password) => {
     // Fallback to localStorage when backend is unavailable
     console.warn('Backend login failed, using localStorage fallback:', error.message)
     
-    const users = JSON.parse(localStorage.getItem('localUsers') || '[]')
+    const users = safeGet(USERS_KEY)
     const user = users.find(u => 
       (u.email && u.email.toLowerCase() === identifier.toLowerCase()) || 
       (u.phone && u.phone === identifier)
@@ -109,9 +142,24 @@ export const loginUser = async (identifier, password) => {
       throw new Error('Invalid email/phone or password')
     }
     
-    // Verify password for local users
-    if (user.password && user.password !== password) {
-      throw new Error('Invalid email/phone or password')
+    // Verify password — support hashed (new) and legacy plain-text (old)
+    if (user.passwordHash) {
+      const inputHash = await hashPassword(password)
+      if (user.passwordHash !== inputHash) {
+        throw new Error('Invalid email/phone or password')
+      }
+    } else if (user.password) {
+      if (user.password !== password) {
+        throw new Error('Invalid email/phone or password')
+      }
+      // Migrate legacy plain-text password to hash
+      const allUsers = safeGet(USERS_KEY)
+      const idx = allUsers.findIndex(u => u.id === user.id)
+      if (idx !== -1) {
+        allUsers[idx].passwordHash = await hashPassword(password)
+        delete allUsers[idx].password
+        localStorage.setItem(USERS_KEY, JSON.stringify(allUsers))
+      }
     }
     
     // Store user data
@@ -263,7 +311,9 @@ export const completeLoginWithVerification = async (identifier, code) => {
 
 export const logoutUser = () => {
   localStorage.removeItem('authToken')
+  localStorage.removeItem('refreshToken')
   localStorage.removeItem('currentUser')
+  localStorage.removeItem('userCoins')
 
   // Dispatch custom event to notify logout
   window.dispatchEvent(new CustomEvent('authChanged', {
@@ -279,7 +329,7 @@ export const getCurrentUser = () => {
 export const isAuthenticated = () => {
   const token = localStorage.getItem('authToken')
   const user = getCurrentUser()
-  return token && user
+  return !!(token && user)
 }
 
 // Verify code (supports email or phone)
@@ -365,7 +415,7 @@ export const updateUserProfile = async (profileData) => {
     }
     
     // Update user data in localStorage
-    const users = JSON.parse(localStorage.getItem(USERS_KEY) || '[]')
+    const users = safeGet(USERS_KEY)
     const userIndex = users.findIndex(u => u.id === user.id)
     
     if (userIndex !== -1) {
@@ -384,8 +434,6 @@ export const updateUserProfile = async (profileData) => {
 
 // Legacy profile management functions (using localStorage)
 // TODO: Move these to backend API
-const PROFILES_KEY = 'advertiserProfiles'
-const USERS_KEY = 'localUsers'
 
 // Create or update a profile/ad
 export const createProfile = (profileData, adId = null) => {
@@ -394,7 +442,7 @@ export const createProfile = (profileData, adId = null) => {
     throw new Error('User must be logged in to create a profile')
   }
 
-  const profiles = JSON.parse(localStorage.getItem(PROFILES_KEY) || '[]')
+  const profiles = safeGet(PROFILES_KEY)
 
   // Only update existing ad if adId is explicitly provided
   // Otherwise always create a new ad (allows multiple ads per user)
@@ -441,7 +489,7 @@ export const getUserAds = (userId = null) => {
   const user = userId ? { id: userId } : getCurrentUser()
   if (!user) return []
   
-  const profiles = JSON.parse(localStorage.getItem(PROFILES_KEY) || '[]')
+  const profiles = safeGet(PROFILES_KEY)
   return profiles.filter(p => p.userId === user.id)
 }
 
@@ -457,7 +505,7 @@ export const updateAdStatus = (adId, status) => {
     throw new Error('User must be logged in to update ad status')
   }
 
-  const profiles = JSON.parse(localStorage.getItem(PROFILES_KEY) || '[]')
+  const profiles = safeGet(PROFILES_KEY)
   const adIndex = profiles.findIndex(p => p.id === adId && p.userId === user.id)
 
   if (adIndex === -1) {
@@ -480,7 +528,7 @@ export const deleteAd = (adId) => {
     throw new Error('User must be logged in to delete an ad')
   }
 
-  const profiles = JSON.parse(localStorage.getItem(PROFILES_KEY) || '[]')
+  const profiles = safeGet(PROFILES_KEY)
   const updatedProfiles = profiles.filter(p => !(p.id === adId && p.userId === user.id))
   
   localStorage.setItem(PROFILES_KEY, JSON.stringify(updatedProfiles))
@@ -496,7 +544,7 @@ export const duplicateAd = (adId) => {
     throw new Error('User must be logged in to duplicate an ad')
   }
 
-  const profiles = JSON.parse(localStorage.getItem(PROFILES_KEY) || '[]')
+  const profiles = safeGet(PROFILES_KEY)
   const originalAd = profiles.find(p => p.id === adId && p.userId === user.id)
 
   if (!originalAd) {
@@ -526,12 +574,12 @@ export const duplicateAd = (adId) => {
 
 // Get ad by ID
 export const getAdById = (adId) => {
-  const profiles = JSON.parse(localStorage.getItem(PROFILES_KEY) || '[]')
+  const profiles = safeGet(PROFILES_KEY)
   return profiles.find(p => p.id === adId)
 }
 
 export const getProfile = (userId) => {
-  const profiles = JSON.parse(localStorage.getItem(PROFILES_KEY) || '[]')
+  const profiles = safeGet(PROFILES_KEY)
   return profiles.find(p => p.userId === userId)
 }
 
@@ -542,8 +590,7 @@ export const getCurrentUserProfile = () => {
 }
 
 export const getAllProfiles = () => {
-  // Only return active profiles for public display
-  const profiles = JSON.parse(localStorage.getItem(PROFILES_KEY) || '[]')
+  const profiles = safeGet(PROFILES_KEY)
   return profiles.filter(p => p.status !== 'paused' && p.status !== 'expired')
 }
 
@@ -554,7 +601,7 @@ export const getProfilesByLocation = (location) => {
 }
 
 export const deleteProfile = (profileId) => {
-  const profiles = JSON.parse(localStorage.getItem(PROFILES_KEY) || '[]')
+  const profiles = safeGet(PROFILES_KEY)
   const updatedProfiles = profiles.filter(p => p.id !== profileId)
   localStorage.setItem(PROFILES_KEY, JSON.stringify(updatedProfiles))
   
@@ -569,7 +616,7 @@ export const deleteUserAccount = () => {
   }
   
   // Delete user's profile
-  const profiles = JSON.parse(localStorage.getItem(PROFILES_KEY) || '[]')
+  const profiles = safeGet(PROFILES_KEY)
   const updatedProfiles = profiles.filter(p => p.userId !== user.id)
   localStorage.setItem(PROFILES_KEY, JSON.stringify(updatedProfiles))
   
@@ -577,7 +624,7 @@ export const deleteUserAccount = () => {
   window.dispatchEvent(new CustomEvent('profilesUpdated', { detail: { deletedUser: user.id } }))
   
   // Delete user account
-  const users = JSON.parse(localStorage.getItem(USERS_KEY) || '[]')
+  const users = safeGet(USERS_KEY)
   const updatedUsers = users.filter(u => u.id !== user.id)
   localStorage.setItem(USERS_KEY, JSON.stringify(updatedUsers))
   
@@ -630,7 +677,6 @@ const COIN_PACKAGES = [
   { id: 'pack-1000', coins: 1000, price: 1199, popular: false, savings: '40%' }
 ]
 
-const TRANSACTIONS_KEY = 'coinTransactions'
 const UPI_ID = '7980393546@ybl'
 
 // Get coin packages
@@ -643,8 +689,7 @@ export const getUPIId = () => UPI_ID
 export const getUserCoins = () => {
   const user = getCurrentUser()
   if (!user) return 0
-  
-  const users = JSON.parse(localStorage.getItem(USERS_KEY) || '[]')
+  const users = safeGet(USERS_KEY)
   const currentUser = users.find(u => u.id === user.id)
   return currentUser?.coins || 0
 }
@@ -654,7 +699,7 @@ export const addCoins = (amount, transactionId, packageId) => {
   const user = getCurrentUser()
   if (!user) throw new Error('User not logged in')
   
-  const users = JSON.parse(localStorage.getItem(USERS_KEY) || '[]')
+  const users = safeGet(USERS_KEY)
   const userIndex = users.findIndex(u => u.id === user.id)
   
   if (userIndex === -1) throw new Error('User not found')
@@ -663,15 +708,16 @@ export const addCoins = (amount, transactionId, packageId) => {
   users[userIndex].coins = (users[userIndex].coins || 0) + amount
   localStorage.setItem(USERS_KEY, JSON.stringify(users))
   
-  // Update current user in session
-  const updatedUser = { ...user, coins: users[userIndex].coins }
-  localStorage.setItem('currentUser', JSON.stringify(updatedUser))
+  // Sync all coin keys
+  const newBalance = users[userIndex].coins
+  localStorage.setItem('userCoins', String(newBalance))
+  localStorage.setItem('currentUser', JSON.stringify({ ...user, coins: newBalance }))
   
   // Record transaction
-  const transactions = JSON.parse(localStorage.getItem(TRANSACTIONS_KEY) || '[]')
+  const transactions = safeGet(TRANSACTIONS_KEY)
   transactions.push({
     id: Date.now().toString(),
-    oderId: `TXN${Date.now()}`,
+    orderId: `TXN${Date.now()}`,
     userId: user.id,
     type: 'credit',
     amount,
@@ -683,9 +729,9 @@ export const addCoins = (amount, transactionId, packageId) => {
   localStorage.setItem(TRANSACTIONS_KEY, JSON.stringify(transactions))
   
   // Dispatch event for UI update
-  window.dispatchEvent(new CustomEvent('coinsUpdated', { detail: { coins: users[userIndex].coins } }))
+  window.dispatchEvent(new CustomEvent('coinsUpdated', { detail: { coins: newBalance } }))
   
-  return users[userIndex].coins
+  return newBalance
 }
 
 // Deduct coins from user account
@@ -696,7 +742,7 @@ export const deductCoins = (amount, reason = 'ad_promotion') => {
   const currentCoins = getUserCoins()
   if (currentCoins < amount) throw new Error('Insufficient coins')
   
-  const users = JSON.parse(localStorage.getItem(USERS_KEY) || '[]')
+  const users = safeGet(USERS_KEY)
   const userIndex = users.findIndex(u => u.id === user.id)
   
   if (userIndex === -1) throw new Error('User not found')
@@ -705,12 +751,13 @@ export const deductCoins = (amount, reason = 'ad_promotion') => {
   users[userIndex].coins = currentCoins - amount
   localStorage.setItem(USERS_KEY, JSON.stringify(users))
   
-  // Update current user in session
-  const updatedUser = { ...user, coins: users[userIndex].coins }
-  localStorage.setItem('currentUser', JSON.stringify(updatedUser))
+  // Sync all coin keys
+  const newBalance = users[userIndex].coins
+  localStorage.setItem('userCoins', String(newBalance))
+  localStorage.setItem('currentUser', JSON.stringify({ ...user, coins: newBalance }))
   
   // Record transaction
-  const transactions = JSON.parse(localStorage.getItem(TRANSACTIONS_KEY) || '[]')
+  const transactions = safeGet(TRANSACTIONS_KEY)
   transactions.push({
     id: Date.now().toString(),
     userId: user.id,
@@ -723,9 +770,9 @@ export const deductCoins = (amount, reason = 'ad_promotion') => {
   localStorage.setItem(TRANSACTIONS_KEY, JSON.stringify(transactions))
   
   // Dispatch event for UI update
-  window.dispatchEvent(new CustomEvent('coinsUpdated', { detail: { coins: users[userIndex].coins } }))
+  window.dispatchEvent(new CustomEvent('coinsUpdated', { detail: { coins: newBalance } }))
   
-  return users[userIndex].coins
+  return newBalance
 }
 
 // Get user's transaction history
@@ -733,7 +780,7 @@ export const getCoinTransactions = () => {
   const user = getCurrentUser()
   if (!user) return []
   
-  const transactions = JSON.parse(localStorage.getItem(TRANSACTIONS_KEY) || '[]')
+  const transactions = safeGet(TRANSACTIONS_KEY)
   return transactions.filter(t => t.userId === user.id).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
 }
 
@@ -758,7 +805,7 @@ export const createRequirement = (requirementData) => {
     throw new Error('You must be logged in to post a requirement')
   }
 
-  const requirements = JSON.parse(localStorage.getItem(REQUIREMENTS_KEY) || '[]')
+  const requirements = safeGet(REQUIREMENTS_KEY)
   
   const newRequirement = {
     id: `req-${Date.now()}`,
@@ -784,7 +831,7 @@ export const createRequirement = (requirementData) => {
 
 // Get all active requirements
 export const getAllRequirements = () => {
-  const requirements = JSON.parse(localStorage.getItem(REQUIREMENTS_KEY) || '[]')
+  const requirements = safeGet(REQUIREMENTS_KEY)
   const now = new Date()
   
   // Filter out expired requirements and return active ones
@@ -798,7 +845,7 @@ export const getUserRequirements = () => {
   const user = getCurrentUser()
   if (!user) return []
   
-  const requirements = JSON.parse(localStorage.getItem(REQUIREMENTS_KEY) || '[]')
+  const requirements = safeGet(REQUIREMENTS_KEY)
   return requirements
     .filter(r => r.userId === user.id)
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
@@ -809,7 +856,7 @@ export const updateRequirementStatus = (reqId, status) => {
   const user = getCurrentUser()
   if (!user) return false
   
-  const requirements = JSON.parse(localStorage.getItem(REQUIREMENTS_KEY) || '[]')
+  const requirements = safeGet(REQUIREMENTS_KEY)
   const index = requirements.findIndex(r => r.id === reqId && r.userId === user.id)
   
   if (index !== -1) {
@@ -827,7 +874,7 @@ export const deleteRequirement = (reqId) => {
   const user = getCurrentUser()
   if (!user) return false
   
-  const requirements = JSON.parse(localStorage.getItem(REQUIREMENTS_KEY) || '[]')
+  const requirements = safeGet(REQUIREMENTS_KEY)
   const filtered = requirements.filter(r => !(r.id === reqId && r.userId === user.id))
   
   if (filtered.length !== requirements.length) {
@@ -850,7 +897,7 @@ export const getRequirementsByLocation = (location) => {
 
 // Increment view count
 export const incrementRequirementViews = (reqId) => {
-  const requirements = JSON.parse(localStorage.getItem(REQUIREMENTS_KEY) || '[]')
+  const requirements = safeGet(REQUIREMENTS_KEY)
   const index = requirements.findIndex(r => r.id === reqId)
   
   if (index !== -1) {
