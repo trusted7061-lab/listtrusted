@@ -193,9 +193,12 @@ export const googleAuth = async (credential) => {
       localStorage.setItem('refreshToken', response.refreshToken)
     }
 
-    // Store user data
+    // Store user data + coins
     const userData = response.user
     localStorage.setItem('currentUser', JSON.stringify(userData))
+    if (typeof userData?.coins === 'number') {
+      localStorage.setItem('userCoins', String(userData.coins))
+    }
 
     // Dispatch custom event to notify login
     window.dispatchEvent(new CustomEvent('authChanged', {
@@ -212,7 +215,7 @@ export const googleAuth = async (credential) => {
       const { email, name, picture, sub: googleId } = payload
       
       // Check if user already exists locally
-      const users = JSON.parse(localStorage.getItem('localUsers') || '[]')
+      const users = safeGet('localUsers')
       let user = users.find(u => u.email === email || u.googleId === googleId)
       
       if (!user) {
@@ -227,16 +230,20 @@ export const googleAuth = async (credential) => {
           isEmailVerified: true,
           isGoogleUser: true,
           userType: 'user',
+          coins: 0,
           createdAt: new Date().toISOString()
         }
         users.push(user)
         localStorage.setItem('localUsers', JSON.stringify(users))
       }
-      
-      // Store user data and auth token
+
+      // Store user data, token and coins
       localStorage.setItem('currentUser', JSON.stringify(user))
       localStorage.setItem('authToken', 'local-google-token-' + user.id)
-      
+      if (typeof user.coins === 'number') {
+        localStorage.setItem('userCoins', String(user.coins))
+      }
+
       // Dispatch auth event
       window.dispatchEvent(new CustomEvent('authChanged', {
         detail: { user, isAuthenticated: true }
@@ -294,9 +301,12 @@ export const completeLoginWithVerification = async (identifier, code) => {
       localStorage.setItem('authToken', response.token)
     }
 
-    // Store user data
+    // Store user data + coins (verify endpoint now returns coins)
     const userData = response.user
     localStorage.setItem('currentUser', JSON.stringify(userData))
+    if (typeof userData?.coins === 'number') {
+      localStorage.setItem('userCoins', String(userData.coins))
+    }
 
     // Dispatch custom event to notify login
     window.dispatchEvent(new CustomEvent('authChanged', {

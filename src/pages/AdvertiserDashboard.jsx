@@ -45,6 +45,18 @@ export default function AdvertiserDashboard() {
     setIsChecking(false)
     fetchAds()
     fetchCoins()
+
+    // Re-fetch coins when admin adds them (same session)
+    const onCoinsUpdated = () => fetchCoins()
+    window.addEventListener('coinsUpdated', onCoinsUpdated)
+
+    // Poll wallet balance every 30 seconds (catches admin-added coins from other sessions)
+    const pollInterval = setInterval(() => fetchCoins(), 30000)
+
+    return () => {
+      window.removeEventListener('coinsUpdated', onCoinsUpdated)
+      clearInterval(pollInterval)
+    }
   }, [])
 
   const fetchAds = async () => {

@@ -29,7 +29,32 @@ const isEmail = (identifier) => identifier && identifier.includes('@');
 const isPhone = (identifier) => identifier && /^[6-9]\d{9}$/.test(identifier.replace(/[\s\-\+]/g, '').replace(/^91/, ''));
 
 // Helper: Clean phone number
-const cleanPhone = (phone) => phone.replace(/[\s\-\+]/g, '').replace(/^91/, '');
+const cleanPhone = (phone) => phone.replace(/[\s\-\+]/g, '').replace(/^91/, '')
+
+// Helper: Get or create wallet, return coin balance
+// For new advertisers this also grants the 500-coin welcome bonus
+const getOrCreateWallet = async (userId, isNewAdvertiser = false) => {
+  let wallet = await Wallet.findOne({ userId })
+  if (!wallet) {
+    const startCoins = isNewAdvertiser ? 500 : 0
+    wallet = new Wallet({
+      userId,
+      coins: startCoins,
+      totalCoinsEarned: startCoins,
+      transactions: isNewAdvertiser ? [{
+        type: 'admin-add',
+        coins: 500,
+        description: 'Welcome bonus for new advertiser',
+        reference: 'manual',
+        status: 'completed',
+        paymentMethod: 'system',
+        createdAt: new Date()
+      }] : []
+    })
+    await wallet.save()
+  }
+  return wallet
+};
 
 // ==========================================
 // REGISTER - Support email or phone
@@ -197,26 +222,12 @@ router.post('/verify', [
     await user.save();
 
     // Grant 500 coins to advertiser on first verification
+    let walletCoins = 0
     if (user.userType === 'advertiser') {
-      const existingWallet = await Wallet.findOne({ userId: user._id });
-      if (!existingWallet) {
-        // First time advertiser - grant 500 coins
-        const wallet = new Wallet({
-          userId: user._id,
-          coins: 500,
-          totalCoinsEarned: 500,
-          transactions: [{
-            type: 'admin-add',
-            coins: 500,
-            description: 'Welcome bonus for new advertiser',
-            reference: 'manual',
-            status: 'completed',
-            paymentMethod: 'system',
-            createdAt: new Date()
-          }]
-        });
-        await wallet.save();
-      }
+      const existingWallet = await Wallet.findOne({ userId: user._id })
+      const isNew = !existingWallet
+      const wallet = await getOrCreateWallet(user._id, isNew)
+      walletCoins = wallet.coins
     }
 
     // Generate token
@@ -247,7 +258,8 @@ router.post('/verify', [
         displayName: user.displayName,
         userType: user.userType,
         isEmailVerified: user.isEmailVerified,
-        isPhoneVerified: user.isPhoneVerified
+        isPhoneVerified: user.isPhoneVerified,
+        coins: walletCoins
       }
     });
   } catch (err) {
@@ -401,6 +413,12 @@ router.post('/login', [
     user.refreshToken = refreshToken;
     await user.save();
 
+    // Fetch wallet balance to include in login response
+    const wallet = user.userType === 'advertiser'
+      ? await getOrCreateWallet(user._id, false)
+      : await Wallet.findOne({ userId: user._id })
+    const walletCoins = wallet?.coins || 0
+
     res.json({
       message: 'Login successful',
       token: accessToken,
@@ -413,7 +431,8 @@ router.post('/login', [
         displayName: user.displayName,
         userType: user.userType,
         isEmailVerified: user.isEmailVerified,
-        isPhoneVerified: user.isPhoneVerified
+        isPhoneVerified: user.isPhoneVerified,
+        coins: walletCoins
       }
     });
 
@@ -690,6 +709,10 @@ router.post('/google', async (req, res) => {
     user.refreshToken = refreshToken;
     await user.save();
 
+    // Fetch wallet coins for response
+    const wallet = await getOrCreateWallet(user._id, false)
+    const walletCoins = wallet?.coins || 0
+
     res.json({
       message: 'Login successful',
       accessToken,
@@ -701,7 +724,8 @@ router.post('/google', async (req, res) => {
         profilePicture: user.profilePicture,
         userType: user.userType,
         authProvider: user.authProvider,
-        isEmailVerified: user.isEmailVerified
+        isEmailVerified: user.isEmailVerified,
+        coins: walletCoins
       }
     });
 
