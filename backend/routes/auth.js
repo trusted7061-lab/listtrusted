@@ -303,20 +303,43 @@ router.post('/verify-email', [
     user.otpExpires = undefined;
     await user.save();
 
+    // Grant 500 coins to advertiser on first verification (same as /verify)
+    let walletCoins = 0;
+    if (user.userType === 'advertiser') {
+      const existingWallet = await Wallet.findOne({ userId: user._id });
+      const isNew = !existingWallet;
+      const wallet = await getOrCreateWallet(user._id, isNew);
+      walletCoins = wallet.coins;
+    }
+
     const accessToken = jwt.sign(
       { userId: user._id }, 
       process.env.JWT_SECRET, 
       { expiresIn: '30d' }
     );
 
+    const refreshToken = jwt.sign(
+      { userId: user._id }, 
+      process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET, 
+      { expiresIn: '7d' }
+    );
+
+    user.refreshToken = refreshToken;
+    await user.save();
+
     res.json({
       token: accessToken,
+      refreshToken,
       user: {
         id: user._id,
         email: user.email,
         phone: user.phone,
         businessName: user.businessName,
-        userType: user.userType
+        displayName: user.displayName,
+        userType: user.userType,
+        isEmailVerified: user.isEmailVerified,
+        isPhoneVerified: user.isPhoneVerified,
+        coins: walletCoins
       }
     });
   } catch (err) {
@@ -383,7 +406,7 @@ router.post('/login', [
         sent = result.success;
       }
 
-      return res.status(403).json({
+      return res.status(200).json({
         requiresVerification: true,
         verificationMethod: user.primaryLoginMethod,
         identifier: user.email || user.phone,
@@ -622,7 +645,7 @@ router.post('/resend-verification', [
 // ==========================================
 router.post('/google', async (req, res) => {
   try {
-    const { credential } = req.body;
+    const { credential, userType: requestedUserType } = req.body;
 
     if (!credential) {
       return res.status(400).json({ message: 'Google credential is required' });
@@ -660,6 +683,8 @@ router.post('/google', async (req, res) => {
       }
     } else {
       // Create new user with Google
+      // Use advertiser type if signing up from advertiser page
+      const finalUserType = (requestedUserType === 'advertiser') ? 'advertiser' : 'user';
       user = new User({
         email: email.toLowerCase(),
         googleId,
@@ -668,12 +693,12 @@ router.post('/google', async (req, res) => {
         profilePicture: picture,
         isEmailVerified: true, // Google emails are verified
         isVerified: true,
-        userType: 'user'
+        userType: finalUserType
       });
       await user.save();
 
       // Grant 500 coins if registering as advertiser
-      if (user.userType === 'advertiser') {
+      if (finalUserType === 'advertiser') {
         const wallet = new Wallet({
           userId: user._id,
           coins: 500,

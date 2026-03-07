@@ -50,7 +50,7 @@ export default function AdvertiserSignup() {
     setGoogleLoading(true)
     setError('')
     try {
-      await googleAuth(response.credential)
+      await googleAuth(response.credential, 'advertiser')
       navigate('/advertiser-dashboard')
     } catch (err) {
       setError(err.message || 'Google sign-up failed.')

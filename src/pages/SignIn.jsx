@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
-import { loginUser, googleAuth } from '../services/profileService'
+import { loginUser, googleAuth, completeLoginWithVerification } from '../services/profileService'
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '659176711562-sa17ejtofqclu20c6ib55qrf3hgfkmjq.apps.googleusercontent.com'
 
@@ -14,6 +14,11 @@ export default function SignIn() {
   const [googleLoading, setGoogleLoading] = useState(false)
   const [error, setError] = useState('')
   const [showPass, setShowPass] = useState(false)
+  // Verification step state
+  const [verifyStep, setVerifyStep] = useState(false)
+  const [verifyIdentifier, setVerifyIdentifier] = useState('')
+  const [verifyCode, setVerifyCode] = useState('')
+  const [verifyLoading, setVerifyLoading] = useState(false)
 
   useEffect(() => {
     const loadGSI = () => {
@@ -66,12 +71,37 @@ export default function SignIn() {
     setLoading(true)
     setError('')
     try {
-      await loginUser(form.identifier, form.password)
+      const result = await loginUser(form.identifier, form.password)
+      // Check if verification is required
+      if (result && result.requiresVerification) {
+        setVerifyIdentifier(result.identifier || form.identifier)
+        setVerifyStep(true)
+        setError('')
+        return
+      }
       navigate('/advertiser-dashboard')
     } catch (err) {
       setError(err.message || 'Sign-in failed. Please check your credentials.')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleVerifySubmit = async (e) => {
+    e.preventDefault()
+    if (!verifyCode || verifyCode.length !== 6) {
+      setError('Please enter the 6-digit verification code.')
+      return
+    }
+    setVerifyLoading(true)
+    setError('')
+    try {
+      await completeLoginWithVerification(verifyIdentifier, verifyCode)
+      navigate('/advertiser-dashboard')
+    } catch (err) {
+      setError(err.message || 'Verification failed. Please try again.')
+    } finally {
+      setVerifyLoading(false)
     }
   }
 
@@ -97,6 +127,49 @@ export default function SignIn() {
           </div>
 
           <div className="card-glass p-8 rounded-2xl">
+            {verifyStep ? (
+              /* Verification step */
+              <>
+                <div className="text-center mb-6">
+                  <div className="text-4xl mb-3">🔐</div>
+                  <h2 className="font-serif text-xl font-semibold text-white mb-2">Verify Your Account</h2>
+                  <p className="text-gray-400 text-sm">We sent a 6-digit code to <span className="text-gold font-medium">{verifyIdentifier}</span></p>
+                </div>
+                <form onSubmit={handleVerifySubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-gray-300 text-xs mb-1.5">Verification Code</label>
+                    <input
+                      type="text"
+                      maxLength={6}
+                      placeholder="Enter 6-digit code"
+                      value={verifyCode}
+                      onChange={e => setVerifyCode(e.target.value.replace(/\D/g, ''))}
+                      className="w-full px-4 py-3 rounded-lg bg-dark-bg border border-gold/20 text-white placeholder-gray-600 focus:outline-none focus:border-gold text-sm text-center tracking-widest text-lg transition-colors"
+                      autoFocus
+                    />
+                  </div>
+                  {error && (
+                    <div className="bg-red-500/10 border border-red-500/30 rounded-lg px-4 py-3">
+                      <p className="text-red-400 text-xs">{error}</p>
+                    </div>
+                  )}
+                  <button
+                    type="submit"
+                    disabled={verifyLoading}
+                    className="btn-gold w-full py-3 rounded-lg text-sm font-semibold disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    {verifyLoading ? 'Verifying…' : 'Verify & Sign In'}
+                  </button>
+                </form>
+                <button
+                  onClick={() => { setVerifyStep(false); setError(''); setVerifyCode(''); }}
+                  className="w-full text-center text-gray-500 hover:text-gold text-xs mt-4 cursor-pointer"
+                >
+                  ← Back to sign in
+                </button>
+              </>
+            ) : (
+            <>
             {/* Google Sign In */}
             <div className="mb-6">
               <p className="text-gray-400 text-xs text-center mb-3">Sign in with Google</p>
@@ -168,6 +241,8 @@ export default function SignIn() {
                 No account? <span className="text-gold">Sign up free</span>
               </Link>
             </div>
+            </>
+            )}
           </div>
         </motion.div>
       </div>

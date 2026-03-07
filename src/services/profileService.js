@@ -181,9 +181,9 @@ export const loginUser = async (identifier, password) => {
 }
 
 // Google OAuth Sign In/Up
-export const googleAuth = async (credential) => {
+export const googleAuth = async (credential, userType) => {
   try {
-    const response = await authAPI.googleAuth(credential)
+    const response = await authAPI.googleAuth(credential, userType)
 
     // Store auth tokens
     if (response.accessToken) {

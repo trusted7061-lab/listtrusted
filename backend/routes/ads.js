@@ -98,7 +98,24 @@ router.get('/wallet/balance', authMiddleware, async (req, res) => {
     let wallet = await Wallet.findOne({ userId: req.userId });
     
     if (!wallet) {
-      wallet = new Wallet({ userId: req.userId });
+      // Check if user is an advertiser — grant welcome bonus if so
+      const user = await User.findById(req.userId);
+      const isAdvertiser = user && user.userType === 'advertiser';
+      const startCoins = isAdvertiser ? 500 : 0;
+      wallet = new Wallet({
+        userId: req.userId,
+        coins: startCoins,
+        totalCoinsEarned: startCoins,
+        transactions: isAdvertiser ? [{
+          type: 'admin-add',
+          coins: 500,
+          description: 'Welcome bonus for new advertiser',
+          reference: 'manual',
+          status: 'completed',
+          paymentMethod: 'system',
+          createdAt: new Date()
+        }] : []
+      });
       await wallet.save();
     }
     
@@ -788,29 +805,46 @@ router.post('/admin/coins/add', [
   body('coins').isInt({ min: 1 }).withMessage('Valid coins required'),
   body('reason').notEmpty().trim().withMessage('Reason required')
 ], adminMiddleware, async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ success: false, errors: errors.array() });
+  }
+
   try {
-    const { userId, coins, reason } = req.body;
+    const { userId, reason } = req.body;
+    const coinsToAdd = parseInt(req.body.coins, 10);
+
+    // Verify the target user exists
+    const targetUser = await User.findById(userId);
+    if (!targetUser) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
     
     let wallet = await Wallet.findOne({ userId });
     if (!wallet) {
-      wallet = new Wallet({ userId });
+      wallet = new Wallet({ userId, coins: 0, totalCoinsEarned: 0 });
     }
     
-    wallet.coins += coins;
-    wallet.totalCoinsEarned += coins;
+    wallet.coins += coinsToAdd;
+    wallet.totalCoinsEarned += coinsToAdd;
     wallet.transactions.push({
       type: 'admin-add',
-      coins,
-      description: `Admin added ${coins} coins - ${reason}`,
+      coins: coinsToAdd,
+      description: `Admin added ${coinsToAdd} coins - ${reason}`,
       reference: 'manual',
-      status: 'completed'
+      status: 'completed',
+      paymentMethod: 'system',
+      createdAt: new Date()
     });
     
     await wallet.save();
+
+    console.log(`[ADMIN] Added ${coinsToAdd} coins to user ${userId} (${targetUser.email || targetUser.phone}). New balance: ${wallet.coins}`);
     
-    res.json({ success: true, message: `${coins} coins added to user`, wallet });
+    res.json({ success: true, message: `${coinsToAdd} coins added to user`, newBalance: wallet.coins });
   } catch (error) {
-    res.status(500).json({ message: 'Failed to add coins', error: error.message });
+    console.error('[ADMIN] Failed to add coins:', error);
+    res.status(500).json({ success: false, message: 'Failed to add coins', error: error.message });
   }
 });
 

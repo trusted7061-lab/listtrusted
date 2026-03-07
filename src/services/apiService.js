@@ -74,10 +74,10 @@ export const authAPI = {
   },
 
   // Google OAuth login/signup
-  googleAuth: async (credential) => {
+  googleAuth: async (credential, userType) => {
     return apiRequest('/auth/google', {
       method: 'POST',
-      body: JSON.stringify({ credential }),
+      body: JSON.stringify({ credential, userType }),
     });
   },
 

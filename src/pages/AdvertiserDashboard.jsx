@@ -50,8 +50,8 @@ export default function AdvertiserDashboard() {
     const onCoinsUpdated = () => fetchCoins()
     window.addEventListener('coinsUpdated', onCoinsUpdated)
 
-    // Poll wallet balance every 30 seconds (catches admin-added coins from other sessions)
-    const pollInterval = setInterval(() => fetchCoins(), 30000)
+    // Poll wallet balance every 15 seconds (catches admin-added coins from other sessions)
+    const pollInterval = setInterval(() => fetchCoins(), 15000)
 
     return () => {
       window.removeEventListener('coinsUpdated', onCoinsUpdated)
@@ -119,29 +119,10 @@ export default function AdvertiserDashboard() {
     setRequestingCoins(true)
     const token = localStorage.getItem('authToken')
 
-    // If using a local fallback token, save request locally and notify admin via localStorage
+    // If using a local fallback token, user needs to sign in properly to use API features
     if (!token || token.startsWith('local-token-')) {
-      try {
-        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}')
-        const pending = JSON.parse(localStorage.getItem('pendingCoinRequests') || '[]')
-        pending.push({
-          id: Date.now().toString(),
-          userId: currentUser.id || currentUser._id,
-          userName: currentUser.displayName || currentUser.businessName || currentUser.name || currentUser.email,
-          userEmail: currentUser.email,
-          coinsRequested: amount,
-          status: 'pending',
-          createdAt: new Date().toISOString()
-        })
-        localStorage.setItem('pendingCoinRequests', JSON.stringify(pending))
-        showToast(`✅ Coin request for ${amount} coins submitted! Admin will approve shortly.`)
-        setShowCoinModal(false)
-        setSelectedCoins(null)
-      } catch {
-        showToast('Failed to submit request. Please try again.')
-      } finally {
-        setRequestingCoins(false)
-      }
+      showToast('⚠️ Please sign out and sign in again to request coins. Your session needs to be refreshed.')
+      setRequestingCoins(false)
       return
     }
 
@@ -161,20 +142,8 @@ export default function AdvertiserDashboard() {
       } else {
         const err = await res.json()
         if (res.status === 401) {
-          // Token expired — save locally and tell user to re-login
-          const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}')
-          const pending = JSON.parse(localStorage.getItem('pendingCoinRequests') || '[]')
-          pending.push({
-            id: Date.now().toString(),
-            userId: currentUser.id || currentUser._id,
-            userName: currentUser.displayName || currentUser.businessName || currentUser.name || currentUser.email,
-            userEmail: currentUser.email,
-            coinsRequested: amount,
-            status: 'pending',
-            createdAt: new Date().toISOString()
-          })
-          localStorage.setItem('pendingCoinRequests', JSON.stringify(pending))
-          showToast(`✅ Request saved! Please sign out and sign back in to confirm.`)
+          // Token expired — ask user to re-login
+          showToast('⚠️ Your session has expired. Please sign out and sign in again to request coins.')
           setShowCoinModal(false)
           setSelectedCoins(null)
         } else {
@@ -440,7 +409,7 @@ export default function AdvertiserDashboard() {
               ))}
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex gap-3 mb-4">
               <button
                 onClick={() => {
                   setShowCoinModal(false)
@@ -461,6 +430,20 @@ export default function AdvertiserDashboard() {
               >
                 {requestingCoins ? 'Submitting...' : 'Submit Request'}
               </button>
+            </div>
+
+            {/* WhatsApp option */}
+            <div className="border-t border-gold/10 pt-4">
+              <p className="text-gray-500 text-xs text-center mb-3">Or request coins directly via WhatsApp</p>
+              <a
+                href={`https://wa.me/919229604907?text=${encodeURIComponent(`Hi Admin, I am an advertiser on TrustedEsco.\n\nI would like to request ${selectedCoins || ''} coins for my account.\n\nMy email: ${user?.email || 'N/A'}\nMy name: ${user?.displayName || user?.businessName || 'N/A'}\n\nPlease approve my coin request. Thank you!`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-lg bg-green-600 hover:bg-green-500 text-white font-semibold transition-colors text-sm"
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421-7.403h-.004a9.87 9.87 0 00-4.947 1.347l-.355.199-3.682.993 1.012-3.678-.235-.374A9.86 9.86 0 015.031 3.284c5.432 0 9.873 4.441 9.873 9.873 0 2.65-.997 5.151-2.813 7.06l-.262.214-3.822-1.02.667 2.989.261-.042a9.908 9.908 0 004.761-1.486l.327-.206 3.957 1.06-1.274-4.648.23-.365a9.884 9.884 0 001.395-5.159c0-5.432-4.441-9.873-9.873-9.873"/></svg>
+                Request via WhatsApp
+              </a>
             </div>
           </motion.div>
         </div>
