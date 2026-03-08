@@ -820,7 +820,16 @@ router.post('/refresh-token', async (req, res) => {
       { expiresIn: '30d' }
     );
 
-    res.json({ token: accessToken });
+    // Generate new refresh token to keep the session alive
+    const newRefreshToken = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET,
+      { expiresIn: '90d' }
+    );
+    user.refreshToken = newRefreshToken;
+    await user.save();
+
+    res.json({ token: accessToken, accessToken, refreshToken: newRefreshToken });
   } catch (err) {
     res.status(401).json({ message: 'Invalid or expired refresh token' });
   }

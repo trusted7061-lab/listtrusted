@@ -113,6 +113,9 @@ export const loginUser = async (identifier, password) => {
     if (response.token) {
       localStorage.setItem('authToken', response.token)
     }
+    if (response.refreshToken) {
+      localStorage.setItem('refreshToken', response.refreshToken)
+    }
 
     // Store user data
     const userData = response.user
@@ -299,6 +302,9 @@ export const completeLoginWithVerification = async (identifier, code) => {
     // Store auth token
     if (response.token) {
       localStorage.setItem('authToken', response.token)
+    }
+    if (response.refreshToken) {
+      localStorage.setItem('refreshToken', response.refreshToken)
     }
 
     // Store user data + coins (verify endpoint now returns coins)

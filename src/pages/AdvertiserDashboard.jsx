@@ -5,6 +5,47 @@ import { motion } from 'framer-motion'
 
 const API_BASE = import.meta.env.DEV ? '/api' : (import.meta.env.VITE_API_URL || 'https://trustedescort-backend.onrender.com/api')
 
+// Try to refresh the auth token using the stored refresh token
+const tryRefreshToken = async () => {
+  try {
+    const refreshToken = localStorage.getItem('refreshToken')
+    if (!refreshToken) return null
+    const res = await fetch(`${API_BASE}/auth/refresh-token`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refreshToken }),
+    })
+    if (res.ok) {
+      const data = await res.json()
+      if (data.accessToken || data.token) {
+        const newToken = data.accessToken || data.token
+        localStorage.setItem('authToken', newToken)
+        if (data.refreshToken) localStorage.setItem('refreshToken', data.refreshToken)
+        return newToken
+      }
+    }
+  } catch {}
+  return null
+}
+
+// Fetch with automatic token refresh on 401
+const fetchWithRefresh = async (url, options = {}) => {
+  let token = localStorage.getItem('authToken')
+  const config = {
+    ...options,
+    headers: { ...options.headers, Authorization: `Bearer ${token}` },
+  }
+  let res = await fetch(url, config)
+  if (res.status === 401) {
+    const newToken = await tryRefreshToken()
+    if (newToken) {
+      config.headers.Authorization = `Bearer ${newToken}`
+      res = await fetch(url, config)
+    }
+  }
+  return res
+}
+
 const STATUS_LABEL = {
   pending: { label: 'Pending Review', color: 'text-yellow-400 bg-yellow-400/10 border-yellow-400/30' },
   approved: { label: 'Live', color: 'text-green-400 bg-green-400/10 border-green-400/30' },
@@ -61,11 +102,8 @@ export default function AdvertiserDashboard() {
 
   const fetchAds = async () => {
     setLoadingAds(true)
-    const token = localStorage.getItem('authToken')
     try {
-      const res = await fetch(`${API_BASE}/ads/my-ads`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      const res = await fetchWithRefresh(`${API_BASE}/ads/my-ads`)
       if (res.ok) {
         const data = await res.json()
         setAds(data.ads || [])
@@ -95,11 +133,8 @@ export default function AdvertiserDashboard() {
 
   const fetchCoins = async () => {
     setLoadingCoins(true)
-    const token = localStorage.getItem('authToken')
     try {
-      const res = await fetch(`${API_BASE}/ads/wallet/balance`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      const res = await fetchWithRefresh(`${API_BASE}/ads/wallet/balance`)
       if (res.ok) {
         const data = await res.json()
         const coinVal = data.coins || 0
@@ -127,12 +162,9 @@ export default function AdvertiserDashboard() {
     }
 
     try {
-      const res = await fetch(`${API_BASE}/ads/request-coins`, {
+      const res = await fetchWithRefresh(`${API_BASE}/ads/request-coins`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ coinsRequested: amount }),
       })
       if (res.ok) {
@@ -140,9 +172,8 @@ export default function AdvertiserDashboard() {
         setShowCoinModal(false)
         setSelectedCoins(null)
       } else {
-        const err = await res.json()
+        const err = await res.json().catch(() => ({}))
         if (res.status === 401) {
-          // Token expired — ask user to re-login
           showToast('⚠️ Your session has expired. Please sign out and sign in again to request coins.')
           setShowCoinModal(false)
           setSelectedCoins(null)
@@ -158,11 +189,9 @@ export default function AdvertiserDashboard() {
   }
 
   const handleDelete = async (adId) => {
-    const token = localStorage.getItem('authToken')
     try {
-      const res = await fetch(`${API_BASE}/ads/${adId}`, {
+      const res = await fetchWithRefresh(`${API_BASE}/ads/${adId}`, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
       })
       if (res.ok) {
         setAds(prev => prev.filter(a => (a._id || a.id) !== adId))
