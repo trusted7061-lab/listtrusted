@@ -96,11 +96,11 @@ const adminMiddleware = async (req, res, next) => {
 router.get('/wallet/balance', authMiddleware, async (req, res) => {
   try {
     let wallet = await Wallet.findOne({ userId: req.userId });
+    const user = await User.findById(req.userId);
+    const isAdvertiser = user && user.userType === 'advertiser';
     
     if (!wallet) {
-      // Check if user is an advertiser — grant welcome bonus if so
-      const user = await User.findById(req.userId);
-      const isAdvertiser = user && user.userType === 'advertiser';
+      // No wallet exists — create one (with welcome bonus if advertiser)
       const startCoins = isAdvertiser ? 500 : 0;
       wallet = new Wallet({
         userId: req.userId,
@@ -117,12 +117,15 @@ router.get('/wallet/balance', authMiddleware, async (req, res) => {
         }] : []
       });
       await wallet.save();
-    } else if (wallet.coins === 0 && wallet.totalCoinsEarned === 0 && wallet.transactions.length === 0) {
-      // Wallet exists but is empty and has no history — check if advertiser missed welcome bonus
-      const user = await User.findById(req.userId);
-      if (user && user.userType === 'advertiser') {
+      console.log(`💰 Created wallet for user ${req.userId} (advertiser: ${isAdvertiser}, coins: ${startCoins})`);
+    } else if (isAdvertiser && wallet.coins === 0) {
+      // Wallet exists but advertiser has 0 coins — check if welcome bonus was ever given
+      const hasWelcomeBonus = wallet.transactions.some(
+        t => t.description && t.description.includes('Welcome bonus') && t.status === 'completed'
+      );
+      if (!hasWelcomeBonus) {
         wallet.coins = 500;
-        wallet.totalCoinsEarned = 500;
+        wallet.totalCoinsEarned += 500;
         wallet.transactions.push({
           type: 'admin-add',
           coins: 500,
@@ -133,6 +136,7 @@ router.get('/wallet/balance', authMiddleware, async (req, res) => {
           createdAt: new Date()
         });
         await wallet.save();
+        console.log(`💰 Retroactive welcome bonus granted to user ${req.userId}`);
       }
     }
     
@@ -143,6 +147,7 @@ router.get('/wallet/balance', authMiddleware, async (req, res) => {
       transactions: wallet.transactions.slice(-10) // Last 10 transactions
     });
   } catch (error) {
+    console.error('❌ Wallet balance error:', error);
     res.status(500).json({ message: 'Failed to fetch wallet', error: error.message });
   }
 });
@@ -285,13 +290,22 @@ router.post('/request-coins', [
   body('coinsRequested').isInt({ min: 1 }).withMessage('Invalid coin amount')
 ], authMiddleware, async (req, res) => {
   try {
-    const { coinsRequested } = req.body;
+    // Check validation
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      console.log('❌ Coin request validation failed:', errors.array());
+      return res.status(400).json({ message: 'Invalid coin amount', errors: errors.array() });
+    }
+
+    const coinsRequested = parseInt(req.body.coinsRequested);
+    console.log(`📋 Coin request from user ${req.userId}: ${coinsRequested} coins`);
 
     // Get or create wallet
     let wallet = await Wallet.findOne({ userId: req.userId });
     if (!wallet) {
       wallet = new Wallet({ userId: req.userId });
       await wallet.save();
+      console.log(`  → Created new wallet for user ${req.userId}`);
     }
 
     // Add a pending transaction for admin review
@@ -305,6 +319,7 @@ router.post('/request-coins', [
     });
 
     await wallet.save();
+    console.log(`  ✅ Pending transaction saved. Wallet ${wallet._id}`);
 
     res.json({
       success: true,
@@ -312,6 +327,7 @@ router.post('/request-coins', [
       coinsRequested
     });
   } catch (error) {
+    console.error('❌ Coin request error:', error);
     res.status(500).json({ message: 'Failed to request coins', error: error.message });
   }
 });
@@ -626,6 +642,7 @@ router.get('/admin/all-ads', adminMiddleware, async (req, res) => {
 // List all pending coin requests from MongoDB
 router.get('/admin/coin-requests', adminMiddleware, async (req, res) => {
   try {
+    console.log('📋 Admin fetching coin requests...');
     const wallets = await Wallet.find({
       transactions: { $elemMatch: { type: 'admin-add', status: 'pending' } }
     }).populate('userId', 'email displayName businessName phone');
@@ -650,9 +667,11 @@ router.get('/admin/coin-requests', adminMiddleware, async (req, res) => {
       }
     }
 
+    console.log(`  ✅ Found ${requests.length} pending coin requests`);
     res.json({ success: true, requests });
   } catch (error) {
-    res.status(500).json({ message: 'Failed to fetch coin requests', error: error.message });
+    console.error('❌ Failed to fetch coin requests:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch coin requests', error: error.message });
   }
 });
 
@@ -691,6 +710,30 @@ router.post('/admin/coin-requests/:walletId/:txId/reject', adminMiddleware, asyn
     res.json({ success: true, message: 'Coin request rejected' });
   } catch (error) {
     res.status(500).json({ message: 'Failed to reject coin request', error: error.message });
+  }
+});
+
+// Debug: Check wallet status for a user by email (admin only)
+router.get('/admin/debug-wallet/:email', adminMiddleware, async (req, res) => {
+  try {
+    const user = await User.findOne({ email: req.params.email.toLowerCase() });
+    if (!user) return res.json({ success: false, message: 'User not found' });
+    
+    const wallet = await Wallet.findOne({ userId: user._id });
+    res.json({
+      success: true,
+      user: { id: user._id, email: user.email, userType: user.userType, displayName: user.displayName },
+      wallet: wallet ? {
+        id: wallet._id,
+        coins: wallet.coins,
+        totalCoinsEarned: wallet.totalCoinsEarned,
+        transactionCount: wallet.transactions.length,
+        pendingRequests: wallet.transactions.filter(t => t.status === 'pending').length,
+        recentTransactions: wallet.transactions.slice(-5)
+      } : null
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 

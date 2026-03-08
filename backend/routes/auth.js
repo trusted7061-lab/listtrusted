@@ -646,6 +646,7 @@ router.post('/resend-verification', [
 router.post('/google', async (req, res) => {
   try {
     const { credential, userType: requestedUserType } = req.body;
+    console.log(`🔐 Google auth request. Requested userType: ${requestedUserType || 'not specified'}`);
 
     if (!credential) {
       return res.status(400).json({ message: 'Google credential is required' });
@@ -763,6 +764,7 @@ router.post('/google', async (req, res) => {
     // Fetch wallet coins for response — grant bonus if new advertiser
     const wallet = await getOrCreateWallet(user._id, isNewAdvertiser || (user.userType === 'advertiser'))
     const walletCoins = wallet?.coins || 0
+    console.log(`  ✅ Google auth complete: ${user.email}, type: ${user.userType}, coins: ${walletCoins}, isNewAdvertiser: ${isNewAdvertiser}`);
 
     res.json({
       message: 'Login successful',

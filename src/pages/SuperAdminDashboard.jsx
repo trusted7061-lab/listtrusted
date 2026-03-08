@@ -192,24 +192,27 @@ export default function SuperAdminDashboard() {
     setLoading(false)
     fetchDashboardData()
     fetchCoinRequests()
+
+    // Auto-refresh coin requests every 30 seconds
+    const coinPoll = setInterval(() => fetchCoinRequests(), 30000)
+    return () => clearInterval(coinPoll)
   }, [navigate])
 
   // Fetch coin requests from backend (real users) + merge localStorage (local-token users)
   const fetchCoinRequests = async () => {
     try {
-      const token = localStorage.getItem('authToken')
-      const res = await fetch('https://trustedescort-backend.onrender.com/api/ads/admin/coin-requests', {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      const data = await res.json()
-      const dbRequests = data.success ? data.requests : []
+      // Use apiRequest() so token refresh works on 401
+      const data = await apiRequest('/ads/admin/coin-requests')
+      const dbRequests = data.success ? (data.requests || []) : []
+      console.log(`📋 Fetched ${dbRequests.length} coin requests from database`)
       // Merge with any localStorage requests (from local-token users on same device)
       const localReqs = JSON.parse(localStorage.getItem('pendingCoinRequests') || '[]')
       // Deduplicate by id
       const allIds = new Set(dbRequests.map(r => r.id))
       const uniqueLocal = localReqs.filter(r => !allIds.has(r.id))
       setPendingCoinRequests([...dbRequests, ...uniqueLocal])
-    } catch {
+    } catch (err) {
+      console.error('❌ Failed to fetch coin requests:', err.message)
       // Fallback to localStorage only
       try {
         const localReqs = JSON.parse(localStorage.getItem('pendingCoinRequests') || '[]')
@@ -369,13 +372,10 @@ export default function SuperAdminDashboard() {
   const handleApproveCoinRequest = async (req) => {
     try {
       if (req.source === 'database') {
-        // Real request stored in MongoDB — approve via backend
-        const token = localStorage.getItem('authToken')
-        const res = await fetch(
-          `https://trustedescort-backend.onrender.com/api/ads/admin/coin-requests/${req.walletId}/${req.transactionId}/approve`,
-          { method: 'POST', headers: { Authorization: `Bearer ${token}` } }
-        )
-        const data = await res.json()
+        // Real request stored in MongoDB — approve via backend (uses apiRequest for token refresh)
+        const data = await apiRequest(`/ads/admin/coin-requests/${req.walletId}/${req.transactionId}/approve`, {
+          method: 'POST'
+        })
         if (!data.success) throw new Error(data.message || 'Failed to approve')
         // Refresh list from server
         await fetchCoinRequests()
@@ -411,12 +411,10 @@ export default function SuperAdminDashboard() {
     try {
       const req = pendingCoinRequests.find(r => r.id === reqId)
       if (req?.source === 'database') {
-        const token = localStorage.getItem('authToken')
-        const res = await fetch(
-          `https://trustedescort-backend.onrender.com/api/ads/admin/coin-requests/${req.walletId}/${req.transactionId}/reject`,
-          { method: 'POST', headers: { Authorization: `Bearer ${token}` } }
-        )
-        const data = await res.json()
+        // Use apiRequest for token refresh support
+        const data = await apiRequest(`/ads/admin/coin-requests/${req.walletId}/${req.transactionId}/reject`, {
+          method: 'POST'
+        })
         if (!data.success) throw new Error(data.message || 'Failed to reject')
         await fetchCoinRequests()
       } else {
