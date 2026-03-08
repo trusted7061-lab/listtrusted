@@ -187,6 +187,8 @@ export default function PromoteAd() {
       if (res.ok) {
         showToast('Ad posted successfully!')
         setTimeout(() => navigate('/advertiser-dashboard'), 2000)
+      } else if (res.status === 402) {
+        showToast(`Not enough coins for boost. You have ${coinBalance} coins but need ${data.coinsNeeded}. Try posting without boost!`)
       } else {
         showToast(data.message || 'Failed to post ad')
       }
@@ -217,10 +219,43 @@ export default function PromoteAd() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
+            className="bg-green-500/10 border border-green-500/30 rounded-lg p-4 mb-4"
+          >
+            <p className="text-green-400 text-sm font-semibold">
+              ✅ Your ad will be posted for FREE! Boost is optional — you can skip and publish now.
+            </p>
+          </motion.div>
+
+          {/* Free Publish Button — always visible at top */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6"
+          >
+            <button
+              onClick={handleSkip}
+              disabled={loading}
+              className="w-full px-6 py-4 rounded-xl bg-green-600 hover:bg-green-500 text-white font-bold text-base transition-colors disabled:opacity-50 shadow-lg"
+            >
+              {loading ? 'Publishing...' : '📢 Publish Ad for FREE (No Coins Needed)'}
+            </button>
+          </motion.div>
+
+          {/* Separator */}
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex-1 h-px bg-gold/15" />
+            <span className="text-gray-500 text-xs">or boost your ad for more visibility</span>
+            <div className="flex-1 h-px bg-gold/15" />
+          </div>
+
+          {/* Info Banner */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             className="bg-yellow-400/10 border border-yellow-400/30 rounded-lg p-4 mb-8"
           >
             <p className="text-yellow-400 text-sm">
-              ℹ️ The ad is in the moderation queue. Promote to get it live right now!
+              ℹ️ Want more visibility? Boost your ad to climb to the top of listings!
             </p>
           </motion.div>
 
@@ -361,16 +396,16 @@ export default function PromoteAd() {
               <button
                 onClick={handleSkip}
                 disabled={loading}
-                className="flex-1 px-6 py-3 rounded-lg border border-gold/20 text-gray-400 hover:text-white hover:border-gold/50 transition-colors disabled:opacity-50 font-semibold"
+                className="flex-1 px-6 py-3 rounded-lg bg-green-600 hover:bg-green-500 text-white font-semibold transition-colors disabled:opacity-50"
               >
-                Skip
+                {loading ? 'Publishing...' : 'Publish Free (No Boost)'}
               </button>
               <button
                 onClick={handleNext}
                 disabled={loading}
                 className="flex-1 px-6 py-3 rounded-lg bg-purple-600 hover:bg-purple-700 text-white font-semibold transition-colors disabled:opacity-50"
               >
-                {loading ? 'Processing...' : 'NEXT'}
+                {loading ? 'Processing...' : `Boost (${formData.boostType === 'superTurbo' ? 200 : 100} Coins)`}
               </button>
             </div>
           </motion.div>
