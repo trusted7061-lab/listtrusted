@@ -46,51 +46,8 @@ export const registerUser = async (userData) => {
       identifier: response.identifier || userData.email || userData.phone
     }
   } catch (error) {
-    // Fallback to localStorage for development
-    console.warn('Backend registration failed, using localStorage fallback:', error.message)
-    
-    const users = safeGet(USERS_KEY)
-    const identifier = userData.email || userData.phone
-    const existingUser = users.find(u => u.email === userData.email || u.phone === userData.phone)
-    if (existingUser) {
-      throw new Error('User already exists')
-    }
-
-    // Hash password before storing — never save plain text
-    const passwordHash = userData.password ? await hashPassword(userData.password) : null
-    const { password: _pw, ...safeUserData } = userData
-
-    const newUser = {
-      id: Date.now().toString(),
-      ...safeUserData,
-      passwordHash,
-      isVerified: true,
-      isEmailVerified: !!userData.email,
-      isPhoneVerified: !!userData.phone,
-      coins: userData.userType === 'advertiser' ? 500 : 0,
-      createdAt: new Date().toISOString()
-    }
-    
-    users.push(newUser)
-    localStorage.setItem(USERS_KEY, JSON.stringify(users))
-    
-    // Store coins locally for advertiser
-    if (userData.userType === 'advertiser') {
-      localStorage.setItem('userCoins', '500')
-    }
-    
-    // Auto-login the user
-    localStorage.setItem('currentUser', JSON.stringify(newUser))
-    localStorage.setItem('authToken', 'local-token-' + newUser.id)
-    
-    return {
-      ...newUser,
-      emailSent: !!userData.email,
-      smsSent: !!userData.phone,
-      verificationMethod: userData.email ? 'email' : 'phone',
-      identifier: identifier,
-      message: 'User registered successfully (localStorage fallback)'
-    }
+    console.error('Registration backend error:', error.message)
+    throw new Error(error.message || 'Registration failed. Please check your connection and try again.')
   }
 }
 

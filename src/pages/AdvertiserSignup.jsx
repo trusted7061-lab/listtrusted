@@ -2,20 +2,25 @@ import React, { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
-import { registerUser, googleAuth } from '../services/profileService'
+import { registerUser, googleAuth, completeLoginWithVerification } from '../services/profileService'
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '659176711562-sa17ejtofqclu20c6ib55qrf3hgfkmjq.apps.googleusercontent.com'
+const API_BASE = import.meta.env.DEV ? '/api' : (import.meta.env.VITE_API_URL || 'https://trustedescort-backend.onrender.com/api')
 
 export default function AdvertiserSignup() {
   const navigate = useNavigate()
   const googleBtnRef = useRef(null)
-  const [step, setStep] = useState(1) // 1 = details, 2 = verify
+  const [step, setStep] = useState(1) // 1 = details, 2 = verify OTP
   const [form, setForm] = useState({ name: '', email: '', phone: '', password: '', confirm: '' })
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
   const [error, setError] = useState('')
   const [showPass, setShowPass] = useState(false)
   const [verifyIdentifier, setVerifyIdentifier] = useState('')
+  const [otpCode, setOtpCode] = useState('')
+  const [verifyLoading, setVerifyLoading] = useState(false)
+  const [resending, setResending] = useState(false)
+  const [resendMsg, setResendMsg] = useState('')
 
   useEffect(() => {
     const loadGSI = () => {
@@ -237,19 +242,88 @@ export default function AdvertiserSignup() {
                 </div>
               </>
             ) : (
-              /* Step 2: Verification */
+              /* Step 2: OTP Verification */
               <div className="card-glass p-8 rounded-2xl text-center">
                 <div className="text-4xl mb-4">📧</div>
                 <h2 className="font-serif text-2xl font-semibold text-white mb-3">Verify Your Account</h2>
                 <p className="text-gray-400 text-sm mb-6 leading-relaxed">
-                  We've sent a verification code to <span className="text-gold font-medium">{verifyIdentifier}</span>. Check your inbox and click the link to activate your account.
+                  We've sent a 6-digit verification code to <span className="text-gold font-medium">{verifyIdentifier}</span>.
                 </p>
-                <p className="text-gray-500 text-xs mb-6">Didn't receive it? Check your spam folder or contact support.</p>
-                <Link to="/sign-in" className="btn-gold px-8 py-3 rounded-lg text-sm font-semibold inline-block">
-                  Proceed to Sign In
-                </Link>
+
+                <form onSubmit={async (e) => {
+                  e.preventDefault()
+                  if (!otpCode || otpCode.length !== 6) {
+                    setError('Please enter the 6-digit code.')
+                    return
+                  }
+                  setVerifyLoading(true)
+                  setError('')
+                  try {
+                    await completeLoginWithVerification(verifyIdentifier, otpCode)
+                    navigate('/advertiser-dashboard')
+                  } catch (err) {
+                    setError(err.message || 'Verification failed. Please try again.')
+                  } finally {
+                    setVerifyLoading(false)
+                  }
+                }} className="space-y-4">
+                  <div>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={6}
+                      placeholder="Enter 6-digit code"
+                      value={otpCode}
+                      onChange={e => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                      className="w-full px-4 py-3 rounded-lg bg-dark-bg border border-gold/20 text-white text-center text-2xl tracking-[0.5em] placeholder-gray-600 focus:outline-none focus:border-gold transition-colors"
+                      autoFocus
+                    />
+                  </div>
+
+                  {error && (
+                    <div className="bg-red-500/10 border border-red-500/30 rounded-lg px-4 py-3">
+                      <p className="text-red-400 text-xs">{error}</p>
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={verifyLoading || otpCode.length !== 6}
+                    className="btn-gold w-full py-3 rounded-lg text-sm font-semibold disabled:opacity-60"
+                  >
+                    {verifyLoading ? 'Verifying…' : 'Verify & Continue'}
+                  </button>
+                </form>
+
+                <div className="mt-5 space-y-2">
+                  <button
+                    onClick={async () => {
+                      setResending(true)
+                      setResendMsg('')
+                      try {
+                        await fetch(`${API_BASE}/auth/resend-verification`, {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ identifier: verifyIdentifier }),
+                        })
+                        setResendMsg('✅ New code sent! Check your inbox.')
+                      } catch {
+                        setResendMsg('Failed to resend. Try again.')
+                      } finally {
+                        setResending(false)
+                      }
+                    }}
+                    disabled={resending}
+                    className="text-gold hover:underline text-xs disabled:opacity-50"
+                  >
+                    {resending ? 'Sending…' : "Didn't receive it? Resend code"}
+                  </button>
+                  {resendMsg && <p className="text-gray-400 text-xs">{resendMsg}</p>}
+                </div>
+
+                <p className="text-gray-500 text-xs mt-4">Check your spam folder if you don't see the email.</p>
               </div>
-            )}
+            )}}
           </motion.div>
         </div>
       </div>
