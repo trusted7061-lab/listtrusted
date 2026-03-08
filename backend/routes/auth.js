@@ -806,9 +806,14 @@ router.post('/refresh-token', async (req, res) => {
       return res.status(401).json({ message: 'Invalid refresh token' });
     }
 
-    // Generate new access token
+    // Generate new access token — include role if user is admin
+    const tokenPayload = { userId: user._id };
+    if (user.role === 'admin') {
+      tokenPayload.email = user.email;
+      tokenPayload.role = user.role;
+    }
     const accessToken = jwt.sign(
-      { userId: user._id },
+      tokenPayload,
       process.env.JWT_SECRET,
       { expiresIn: '30d' }
     );
@@ -881,13 +886,13 @@ router.post('/admin/login', [
     const token = jwt.sign(
       { userId: user._id, email: user.email, role: user.role },
       process.env.JWT_SECRET || 'your_jwt_secret_here',
-      { expiresIn: '24h' }
+      { expiresIn: '30d' }
     );
 
     const refreshToken = jwt.sign(
-      { userId: user._id },
+      { userId: user._id, role: user.role },
       process.env.JWT_REFRESH_SECRET || 'your_refresh_secret_here',
-      { expiresIn: '7d' }
+      { expiresIn: '90d' }
     );
 
     user.refreshToken = refreshToken;

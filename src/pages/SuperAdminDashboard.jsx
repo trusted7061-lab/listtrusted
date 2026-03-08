@@ -77,9 +77,31 @@ function AdCard({ ad, onApprove, onReject, showActions }) {
   )
 }
 
+// Try to refresh the auth token using the stored refresh token
+async function tryRefreshToken() {
+  const refreshToken = localStorage.getItem('refreshToken')
+  if (!refreshToken) return null
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/auth/refresh-token`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refreshToken })
+    })
+    if (res.ok) {
+      const data = await res.json()
+      if (data.token) {
+        localStorage.setItem('authToken', data.token)
+        return data.token
+      }
+    }
+  } catch {}
+  return null
+}
+
 async function apiRequest(endpoint, options = {}) {
   const url = `${API_BASE_URL}${endpoint}`
-  const token = localStorage.getItem('authToken')
+  let token = localStorage.getItem('authToken')
 
   const config = {
     headers: {
@@ -91,7 +113,17 @@ async function apiRequest(endpoint, options = {}) {
   }
 
   try {
-    const response = await fetch(url, config)
+    let response = await fetch(url, config)
+
+    // If token expired, try to refresh and retry once
+    if (response.status === 401) {
+      const newToken = await tryRefreshToken()
+      if (newToken) {
+        config.headers.Authorization = `Bearer ${newToken}`
+        response = await fetch(url, config)
+      }
+    }
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({ error: 'Network error' }))
       throw new Error(errorData.message || `HTTP ${response.status}`)
@@ -242,7 +274,12 @@ export default function SuperAdminDashboard() {
       }
     } catch (err) {
       console.error('Failed to fetch dashboard data:', err)
-      setError(`Unable to load data: ${err.message}`)
+      if (err.message?.includes('Token expired') || err.message?.includes('Invalid token') || err.message?.includes('401')) {
+        setError('Session expired. Please login again.')
+        setTimeout(() => navigate('/admin/login'), 2000)
+      } else {
+        setError(`Unable to load data: ${err.message}`)
+      }
     } finally {
       setDataLoading(false)
     }
