@@ -5,11 +5,19 @@ import { motion } from 'framer-motion'
 
 const API_BASE = import.meta.env.DEV ? '/api' : (import.meta.env.VITE_API_URL || 'https://trustedescort-backend.onrender.com/api')
 
+// Check if a token looks like a valid JWT (three dot-separated base64 segments)
+const isValidJWT = (token) => {
+  if (!token || typeof token !== 'string') return false
+  if (token.startsWith('local-token-')) return false
+  const parts = token.split('.')
+  return parts.length === 3 && parts.every(p => p.length > 0)
+}
+
 // Try to refresh the auth token using the stored refresh token
 const tryRefreshToken = async () => {
   try {
     const refreshToken = localStorage.getItem('refreshToken')
-    if (!refreshToken) return null
+    if (!refreshToken || !isValidJWT(refreshToken)) return null
     const res = await fetch(`${API_BASE}/auth/refresh-token`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -28,9 +36,21 @@ const tryRefreshToken = async () => {
   return null
 }
 
-// Fetch with automatic token refresh on 401
+// Fetch with automatic token refresh on 401 or malformed token
 const fetchWithRefresh = async (url, options = {}) => {
   let token = localStorage.getItem('authToken')
+
+  // If token is obviously invalid, try refreshing first instead of sending a bad token
+  if (!isValidJWT(token)) {
+    const newToken = await tryRefreshToken()
+    if (newToken) {
+      token = newToken
+    } else {
+      // No valid token at all — return a fake 401 response
+      return new Response(JSON.stringify({ message: 'No valid session' }), { status: 401 })
+    }
+  }
+
   const config = {
     ...options,
     headers: { ...options.headers, Authorization: `Bearer ${token}` },
@@ -154,11 +174,20 @@ export default function AdvertiserDashboard() {
     setRequestingCoins(true)
     const token = localStorage.getItem('authToken')
 
-    // If using a local fallback token, user needs to sign in properly to use API features
-    if (!token || token.startsWith('local-token-')) {
-      showToast('⚠️ Please sign out and sign in again to request coins. Your session needs to be refreshed.')
-      setRequestingCoins(false)
-      return
+    // If token is missing or not a real JWT, clear session and redirect to sign in
+    if (!isValidJWT(token)) {
+      // Try refreshing first
+      const newToken = await tryRefreshToken()
+      if (!newToken) {
+        showToast('⚠️ Your session is invalid. Redirecting to sign in...')
+        setRequestingCoins(false)
+        setShowCoinModal(false)
+        // Clear bad session data
+        localStorage.removeItem('authToken')
+        localStorage.removeItem('refreshToken')
+        setTimeout(() => navigate('/sign-in'), 1500)
+        return
+      }
     }
 
     try {
@@ -174,9 +203,11 @@ export default function AdvertiserDashboard() {
       } else {
         const err = await res.json().catch(() => ({}))
         if (res.status === 401) {
-          showToast('⚠️ Your session has expired. Please sign out and sign in again to request coins.')
+          showToast('⚠️ Session expired. Redirecting to sign in...')
           setShowCoinModal(false)
-          setSelectedCoins(null)
+          localStorage.removeItem('authToken')
+          localStorage.removeItem('refreshToken')
+          setTimeout(() => navigate('/sign-in'), 1500)
         } else {
           showToast(err.message || 'Failed to request coins')
         }
