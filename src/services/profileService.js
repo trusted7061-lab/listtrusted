@@ -210,53 +210,8 @@ export const googleAuth = async (credential, userType) => {
 
     return userData
   } catch (error) {
-    console.warn('Backend Google auth failed, using localStorage fallback:', error.message)
-    
-    // Decode the Google JWT credential to get user info
-    try {
-      const payload = JSON.parse(atob(credential.split('.')[1]))
-      const { email, name, picture, sub: googleId } = payload
-      
-      // Check if user already exists locally
-      const users = safeGet('localUsers')
-      let user = users.find(u => u.email === email || u.googleId === googleId)
-      
-      if (!user) {
-        // Create new user from Google data
-        user = {
-          id: Date.now().toString(),
-          email,
-          name: name || email.split('@')[0],
-          googleId,
-          profileImage: picture,
-          isVerified: true,
-          isEmailVerified: true,
-          isGoogleUser: true,
-          userType: 'user',
-          coins: 0,
-          createdAt: new Date().toISOString()
-        }
-        users.push(user)
-        localStorage.setItem('localUsers', JSON.stringify(users))
-      }
-
-      // Store user data, token and coins
-      localStorage.setItem('currentUser', JSON.stringify(user))
-      localStorage.setItem('authToken', 'local-google-token-' + user.id)
-      if (typeof user.coins === 'number') {
-        localStorage.setItem('userCoins', String(user.coins))
-      }
-
-      // Dispatch auth event
-      window.dispatchEvent(new CustomEvent('authChanged', {
-        detail: { user, isAuthenticated: true }
-      }))
-      
-      return user
-    } catch (decodeError) {
-      console.error('Failed to decode Google credential:', decodeError)
-      throw new Error('Google sign-in failed. Please try again.')
-    }
+    console.error('Google auth backend error:', error.message)
+    throw new Error('Sign-in failed. Please check your connection and try again.')
   }
 }
 

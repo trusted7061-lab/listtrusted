@@ -93,6 +93,7 @@ export default function AdvertiserDashboard() {
   const [showCoinModal, setShowCoinModal] = useState(false)
   const [selectedCoins, setSelectedCoins] = useState(null)
   const [requestingCoins, setRequestingCoins] = useState(false)
+  const [needsRelogin, setNeedsRelogin] = useState(false)
 
   useEffect(() => {
     const stored = localStorage.getItem('currentUser')
@@ -104,6 +105,16 @@ export default function AdvertiserDashboard() {
     setUser(JSON.parse(stored))
     setIsAuthenticated(true)
     setIsChecking(false)
+
+    // Check if token is a valid JWT — if not, show re-login banner
+    const token = localStorage.getItem('authToken')
+    if (!isValidJWT(token)) {
+      setNeedsRelogin(true)
+      setCoins(0)
+      setLoadingCoins(false)
+      return // skip API calls — they'll all fail
+    }
+
     fetchAds()
     fetchCoins()
 
@@ -170,26 +181,23 @@ export default function AdvertiserDashboard() {
     }
   }
 
-  const handleRequestCoins = async (amount) => {
-    setRequestingCoins(true)
-    const token = localStorage.getItem('authToken')
+  const handleRelogin = () => {
+    localStorage.removeItem('authToken')
+    localStorage.removeItem('refreshToken')
+    localStorage.removeItem('currentUser')
+    localStorage.removeItem('userCoins')
+    navigate('/sign-in')
+  }
 
-    // If token is missing or not a real JWT, clear session and redirect to sign in
-    if (!isValidJWT(token)) {
-      // Try refreshing first
-      const newToken = await tryRefreshToken()
-      if (!newToken) {
-        showToast('⚠️ Your session is invalid. Redirecting to sign in...')
-        setRequestingCoins(false)
-        setShowCoinModal(false)
-        // Clear bad session data
-        localStorage.removeItem('authToken')
-        localStorage.removeItem('refreshToken')
-        setTimeout(() => navigate('/sign-in'), 1500)
-        return
-      }
+  const handleRequestCoins = async (amount) => {
+    if (needsRelogin) {
+      showToast('⚠️ Please sign in again first (see banner above).')
+      setShowCoinModal(false)
+      setRequestingCoins(false)
+      return
     }
 
+    setRequestingCoins(true)
     try {
       const res = await fetchWithRefresh(`${API_BASE}/ads/request-coins`, {
         method: 'POST',
@@ -203,11 +211,9 @@ export default function AdvertiserDashboard() {
       } else {
         const err = await res.json().catch(() => ({}))
         if (res.status === 401) {
-          showToast('⚠️ Session expired. Redirecting to sign in...')
+          setNeedsRelogin(true)
+          showToast('⚠️ Session expired. Please sign in again.')
           setShowCoinModal(false)
-          localStorage.removeItem('authToken')
-          localStorage.removeItem('refreshToken')
-          setTimeout(() => navigate('/sign-in'), 1500)
         } else {
           showToast(err.message || 'Failed to request coins')
         }
@@ -309,6 +315,22 @@ export default function AdvertiserDashboard() {
         </div>
 
         <div className="max-w-6xl mx-auto px-4 py-10">
+          {/* Re-login banner */}
+          {needsRelogin && (
+            <div className="mb-6 bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div>
+                <p className="text-yellow-400 font-semibold text-sm">⚠️ Your session needs to be refreshed</p>
+                <p className="text-gray-400 text-xs mt-1">Please sign in again to request coins and manage your ads. Your data is safe.</p>
+              </div>
+              <button
+                onClick={handleRelogin}
+                className="btn-gold px-6 py-2.5 rounded-lg text-sm font-semibold whitespace-nowrap"
+              >
+                Sign In Again
+              </button>
+            </div>
+          )}
+
           {/* Page heading */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
