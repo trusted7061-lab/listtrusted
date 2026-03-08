@@ -117,6 +117,23 @@ router.get('/wallet/balance', authMiddleware, async (req, res) => {
         }] : []
       });
       await wallet.save();
+    } else if (wallet.coins === 0 && wallet.totalCoinsEarned === 0 && wallet.transactions.length === 0) {
+      // Wallet exists but is empty and has no history — check if advertiser missed welcome bonus
+      const user = await User.findById(req.userId);
+      if (user && user.userType === 'advertiser') {
+        wallet.coins = 500;
+        wallet.totalCoinsEarned = 500;
+        wallet.transactions.push({
+          type: 'admin-add',
+          coins: 500,
+          description: 'Welcome bonus for new advertiser (retroactive)',
+          reference: 'manual',
+          status: 'completed',
+          paymentMethod: 'system',
+          createdAt: new Date()
+        });
+        await wallet.save();
+      }
     }
     
     res.json({

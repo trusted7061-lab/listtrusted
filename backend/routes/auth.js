@@ -672,6 +672,7 @@ router.post('/google', async (req, res) => {
       ]
     });
 
+    let isNewAdvertiser = false;
     if (user) {
       // User exists - update Google info if needed
       if (!user.googleId) {
@@ -679,7 +680,32 @@ router.post('/google', async (req, res) => {
         user.googleId = googleId;
         user.profilePicture = picture;
         user.isEmailVerified = true; // Google emails are verified
-        await user.save();
+      }
+      // Upgrade to advertiser if signing up from advertiser page and currently a regular user
+      if (requestedUserType === 'advertiser' && user.userType !== 'advertiser') {
+        user.userType = 'advertiser';
+        isNewAdvertiser = true;
+      }
+      await user.save();
+
+      // Grant 500 welcome coins if just upgraded to advertiser
+      if (isNewAdvertiser) {
+        const existingWallet = await Wallet.findOne({ userId: user._id });
+        if (!existingWallet || existingWallet.coins === 0) {
+          const wallet = existingWallet || new Wallet({ userId: user._id, coins: 0, totalCoinsEarned: 0 });
+          wallet.coins += 500;
+          wallet.totalCoinsEarned += 500;
+          wallet.transactions.push({
+            type: 'admin-add',
+            coins: 500,
+            description: 'Welcome bonus for new advertiser',
+            reference: 'manual',
+            status: 'completed',
+            paymentMethod: 'system',
+            createdAt: new Date()
+          });
+          await wallet.save();
+        }
       }
     } else {
       // Create new user with Google
@@ -734,8 +760,8 @@ router.post('/google', async (req, res) => {
     user.refreshToken = refreshToken;
     await user.save();
 
-    // Fetch wallet coins for response
-    const wallet = await getOrCreateWallet(user._id, false)
+    // Fetch wallet coins for response — grant bonus if new advertiser
+    const wallet = await getOrCreateWallet(user._id, isNewAdvertiser || (user.userType === 'advertiser'))
     const walletCoins = wallet?.coins || 0
 
     res.json({
