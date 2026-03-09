@@ -53,7 +53,7 @@ export default function SignIn() {
     setGoogleLoading(true)
     setError('')
     try {
-      await googleAuth(response.credential)
+      await googleAuth(response.credential, 'advertiser')
       navigate('/advertiser-dashboard')
     } catch (err) {
       setError(err.message || 'Google sign-in failed.')
@@ -81,7 +81,12 @@ export default function SignIn() {
       }
       navigate('/advertiser-dashboard')
     } catch (err) {
-      setError(err.message || 'Sign-in failed. Please check your credentials.')
+      const msg = err.message || 'Sign-in failed. Please check your credentials.'
+      if (msg.includes('Invalid') || msg.includes('credentials')) {
+        setError('NO_ACCOUNT')
+      } else {
+        setError(msg)
+      }
     } finally {
       setLoading(false)
     }
@@ -220,9 +225,17 @@ export default function SignIn() {
                 </div>
               </div>
 
-              {error && (
+              {error && error !== 'NO_ACCOUNT' && (
                 <div className="bg-red-500/10 border border-red-500/30 rounded-lg px-4 py-3">
                   <p className="text-red-400 text-xs">{error}</p>
+                </div>
+              )}
+
+              {error === 'NO_ACCOUNT' && (
+                <div className="bg-gold/10 border border-gold/30 rounded-lg px-4 py-4 text-center">
+                  <p className="text-gold text-sm font-medium mb-1">Account not found</p>
+                  <p className="text-gray-400 text-xs mb-3">New here? Create a free advertiser account to get started.</p>
+                  <Link to="/advertiser-signup" className="btn-gold inline-block px-6 py-2 rounded-lg text-xs font-semibold">Create Free Account</Link>
                 </div>
               )}
 
@@ -237,8 +250,8 @@ export default function SignIn() {
 
             <div className="flex items-center justify-between mt-5 text-xs">
               <Link to="/forgot-password" className="text-gold hover:underline">Forgot password?</Link>
-              <Link to="/advertiser-signup" className="text-gray-400 hover:text-gold">
-                No account? <span className="text-gold">Sign up free</span>
+              <Link to="/advertiser-signup" className="text-gold hover:underline font-medium">
+                New? Create free account →
               </Link>
             </div>
             </>
