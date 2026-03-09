@@ -69,7 +69,7 @@ export default function CompanionProfile() {
 
         // STEP 2: Try backend if not in defaults
         console.log('Not found in defaults, trying backend...')
-        const API_BASE = import.meta.env.VITE_API_URL || 'https://trustedescort-backend.onrender.com/api'
+        const API_BASE = import.meta.env.VITE_API_URL || 'https://trustedescort.onrender.com/api'
         
         try {
           const response = await fetch(`${API_BASE}/ads/${adId}`, {

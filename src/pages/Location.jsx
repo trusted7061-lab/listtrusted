@@ -556,7 +556,7 @@ function Location() {
         // Fetch advertiser ads from backend
         let backendAds = []
         try {
-          const API_BASE = import.meta.env.VITE_API_URL || 'https://trustedescort-backend.onrender.com/api'
+          const API_BASE = import.meta.env.VITE_API_URL || 'https://trustedescort.onrender.com/api'
           
           // Try with current city name first
           let response = await fetch(`${API_BASE}/ads/city/${currentCity.name}?limit=50&sort=featured`)

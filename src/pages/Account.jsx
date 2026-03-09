@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
 
-const API_BASE = import.meta.env.DEV ? '/api' : (import.meta.env.VITE_API_URL || 'https://trustedescort-backend.onrender.com/api')
+const API_BASE = import.meta.env.DEV ? '/api' : (import.meta.env.VITE_API_URL || 'https://trustedescort.onrender.com/api')
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },

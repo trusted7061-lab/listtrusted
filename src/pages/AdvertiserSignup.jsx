@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import { registerUser, googleAuth, completeLoginWithVerification } from '../services/profileService'
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '659176711562-sa17ejtofqclu20c6ib55qrf3hgfkmjq.apps.googleusercontent.com'
-const API_BASE = import.meta.env.DEV ? '/api' : (import.meta.env.VITE_API_URL || 'https://trustedescort-backend.onrender.com/api')
+const API_BASE = import.meta.env.DEV ? '/api' : (import.meta.env.VITE_API_URL || 'https://trustedescort.onrender.com/api')
 
 export default function AdvertiserSignup() {
   const navigate = useNavigate()

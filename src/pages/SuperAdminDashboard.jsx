@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://trustedescort-backend.onrender.com/api'
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://trustedescort.onrender.com/api'
 
 // ── Ad Card component ──────────────────────────────────────────────────────────
 function AdCard({ ad, onApprove, onReject, showActions }) {

@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
 
-const API_BASE = import.meta.env.DEV ? '/api' : (import.meta.env.VITE_API_URL || 'https://trustedescort-backend.onrender.com/api')
+const API_BASE = import.meta.env.DEV ? '/api' : (import.meta.env.VITE_API_URL || 'https://trustedescort.onrender.com/api')
 
 // Check if a token looks like a valid JWT (three dot-separated base64 segments)
 const isValidJWT = (token) => {
