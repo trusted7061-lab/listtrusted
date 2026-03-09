@@ -168,7 +168,7 @@ export const googleAuth = async (credential, userType) => {
     return userData
   } catch (error) {
     console.error('Google auth backend error:', error.message)
-    throw new Error('Sign-in failed. Please check your connection and try again.')
+    throw new Error(error.message || 'Sign-in failed. Please check your connection and try again.')
   }
 }
 
