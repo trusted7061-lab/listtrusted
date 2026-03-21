@@ -15,22 +15,53 @@ router.get('/', async (req, res) => {
       '@graph': [
         {
           '@type': 'WebSite',
-          '@id': 'https://trustedesco.com/#website',
-          'url': 'https://trustedesco.com',
+          '@id': 'https://trustedescort.in/#website',
+          'url': 'https://trustedescort.in',
           'name': 'Trusted Escort India',
-          'description': 'Find trusted escorts service near me across India',
+          'description': 'Find trusted escorts service near me in India — verified profiles across 75+ cities',
+          'inLanguage': 'en-IN',
           'potentialAction': {
             '@type': 'SearchAction',
-            'target': 'https://trustedesco.com/search?q={search_term_string}',
+            'target': {
+              '@type': 'EntryPoint',
+              'urlTemplate': 'https://trustedescort.in/escorts-service/{search_term_string}/'
+            },
             'query-input': 'required name=search_term_string'
           }
         },
         {
-          '@type': 'LocalBusiness',
-          '@id': 'https://trustedesco.com/#business',
+          '@type': 'WebPage',
+          '@id': 'https://trustedescort.in/#webpage',
+          'url': 'https://trustedescort.in',
+          'name': 'Escorts Service Near Me | Trusted Escort India',
+          'isPartOf': { '@id': 'https://trustedescort.in/#website' },
+          'about': { '@id': 'https://trustedescort.in/#business' },
+          'speakable': {
+            '@type': 'SpeakableSpecification',
+            'cssSelector': ['.speakable-content', '.answer-box p', 'h1', '.hero-answer']
+          }
+        },
+        {
+          '@type': 'Organization',
+          '@id': 'https://trustedescort.in/#organization',
           'name': 'Trusted Escort India',
-          'description': 'Premium escorts service near you across India. Verified escort ads in all major cities.',
-          'url': 'https://trustedesco.com',
+          'url': 'https://trustedescort.in',
+          'logo': {
+            '@type': 'ImageObject',
+            'url': 'https://trustedescort.in/logo.png',
+            'width': 200,
+            'height': 60
+          },
+          'sameAs': ['https://trustedescort.in']
+        },
+        {
+          '@type': 'LocalBusiness',
+          '@id': 'https://trustedescort.in/#business',
+          'name': 'Trusted Escort India',
+          'description': 'India\'s most trusted escort service directory. Verified escort profiles across 75+ cities — Delhi, Mumbai, Bangalore, Hyderabad, Chennai, Kolkata and more.',
+          'url': 'https://trustedescort.in',
+          'image': 'https://trustedescort.in/logo.png',
+          'priceRange': 'Free to browse',
           'areaServed': [
             { '@type': 'City', 'name': 'Delhi' },
             { '@type': 'City', 'name': 'Mumbai' },
@@ -41,7 +72,38 @@ router.get('/', async (req, res) => {
             { '@type': 'City', 'name': 'Pune' },
             { '@type': 'City', 'name': 'Ahmedabad' },
             { '@type': 'City', 'name': 'Goa' },
-            { '@type': 'City', 'name': 'Jaipur' }
+            { '@type': 'City', 'name': 'Jaipur' },
+            { '@type': 'City', 'name': 'Chandigarh' },
+            { '@type': 'City', 'name': 'Lucknow' }
+          ]
+        },
+        {
+          '@type': 'HowTo',
+          'name': 'How to Find Escort Service Near Me in India',
+          'description': 'Step-by-step guide to finding verified escort service listings in your city on Trusted Escort India',
+          'totalTime': 'PT2M',
+          'step': [
+            {
+              '@type': 'HowToStep',
+              'position': 1,
+              'name': 'Choose Your City',
+              'text': 'Browse the city grid below and select your city from 75+ Indian cities. Metro cities like Delhi, Mumbai, Bangalore and Hyderabad have the most listings.',
+              'url': 'https://trustedescort.in/#cities'
+            },
+            {
+              '@type': 'HowToStep',
+              'position': 2,
+              'name': 'Browse Verified Listings',
+              'text': 'View all admin-approved escort service profiles for your selected city. Every listing is manually reviewed before publishing.',
+              'url': 'https://trustedescort.in/escorts-service/'
+            },
+            {
+              '@type': 'HowToStep',
+              'position': 3,
+              'name': 'Contact Directly',
+              'text': 'Tap the Call or WhatsApp button on any listing to contact the advertiser directly — no middlemen, no booking fees.',
+              'url': 'https://trustedescort.in/escorts-service/'
+            }
           ]
         },
         {
@@ -49,10 +111,10 @@ router.get('/', async (req, res) => {
           'mainEntity': [
             {
               '@type': 'Question',
-              'name': 'How do I find escorts service near me?',
+              'name': 'How do I find escorts service near me in India?',
               'acceptedAnswer': {
                 '@type': 'Answer',
-                'text': 'Simply browse our platform to find verified escort service listings near your location. We cover all major cities in India including Delhi, Mumbai, Bangalore, Hyderabad, Chennai, Kolkata, Pune, Goa and more. Every profile is admin-verified before going live.'
+                'text': 'To find escorts service near you in India, visit Trusted Escort India and select your city from 75+ cities. Each city page lists admin-verified escort profiles with direct call and WhatsApp contact. No registration needed to browse.'
               }
             },
             {
@@ -60,23 +122,39 @@ router.get('/', async (req, res) => {
               'name': 'Are escort profiles on Trusted Escort India verified?',
               'acceptedAnswer': {
                 '@type': 'Answer',
-                'text': 'Yes. Every profile and advertisement on our platform is manually reviewed and approved by our admin team before going live, ensuring authenticity, quality and safety.'
+                'text': 'Yes. Every escort profile and advertisement on Trusted Escort India is manually reviewed and approved by our admin team before going live. Fake or unverified listings are rejected. This makes us India\'s most reliable escort service directory.'
               }
             },
             {
               '@type': 'Question',
-              'name': 'Which cities are covered for escort services in India?',
+              'name': 'Which cities in India have escort service listings?',
               'acceptedAnswer': {
                 '@type': 'Answer',
-                'text': 'We cover all major cities in India: Delhi, Mumbai, Bangalore, Hyderabad, Chennai, Kolkata, Pune, Ahmedabad, Jaipur, Goa, Chandigarh, Lucknow, Surat, Indore, and many more.'
+                'text': 'Trusted Escort India covers 75+ cities including Delhi, Mumbai, Bangalore, Hyderabad, Chennai, Kolkata, Pune, Ahmedabad, Jaipur, Goa, Chandigarh, Lucknow, Surat, Indore, Bhopal, Nagpur, Kochi, Coimbatore and many more across all Indian states.'
               }
             },
             {
               '@type': 'Question',
-              'name': 'How do I post an escort service ad?',
+              'name': 'How do I post an escort service ad on Trusted Escort India?',
               'acceptedAnswer': {
                 '@type': 'Answer',
-                'text': 'Register as an advertiser, submit your profile details and photos, and our admin team will review and approve your listing within 24 hours.'
+                'text': 'Register as an advertiser, fill in your profile details and service description, upload photos, select your city, then submit for admin review. Your listing goes live within 24 hours of approval.'
+              }
+            },
+            {
+              '@type': 'Question',
+              'name': 'Is escort service near me available 24/7?',
+              'acceptedAnswer': {
+                '@type': 'Answer',
+                'text': 'Yes. Listings on Trusted Escort India are available to browse 24 hours a day, 7 days a week. Individual escort service availability depends on each advertiser. Contact details are shown directly on approved listings.'
+              }
+            },
+            {
+              '@type': 'Question',
+              'name': 'What is the best escort service platform in India?',
+              'acceptedAnswer': {
+                '@type': 'Answer',
+                'text': 'Trusted Escort India is India\'s most trusted escort service platform. With 500+ admin-verified listings across 75+ cities, direct contact via call or WhatsApp, and free browsing — it is the top-rated escort directory in India.'
               }
             }
           ]
@@ -85,10 +163,11 @@ router.get('/', async (req, res) => {
     });
 
     res.render('landing', {
-      title: 'Escorts Service Near Me | Trusted Escort India',
-      metaDescription: 'Find trusted escorts service near you. Browse 500+ verified escort profiles across Delhi, Mumbai, Bangalore, Hyderabad & all major Indian cities. Safe, discreet & premium escort services available 24/7.',
-      metaKeywords: 'escorts service near me, escort service india, escorts in delhi, escorts in mumbai, escorts in bangalore, escort girls india, premium escorts, female escorts india, call girls near me, companion service india, escort service hyderabad, escort service chennai',
-      canonical: 'https://trustedesco.com',
+      title: 'Escorts Service Near Me in India | Trusted Escort India',
+      metaDescription: 'Find trusted escorts service near you in India. Browse 500+ verified escort profiles across Delhi, Mumbai, Bangalore, Hyderabad, Chennai & 70+ more cities. Admin-approved, safe & discreet. Free to browse.',
+      metaKeywords: 'escorts service near me, escort service india, escorts in delhi, escorts in mumbai, escorts in bangalore, escort service near me, call girls near me india, female escorts india, verified escort service, escort directory india',
+      canonical: 'https://trustedescort.in',
+      ogImage: 'https://trustedescort.in/logo.png',
       schema,
       ads: approvedAds,
       cities: CITIES

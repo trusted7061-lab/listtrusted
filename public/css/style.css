@@ -920,3 +920,42 @@ body {
   background: var(--bg-light);
   padding: 1rem 1.25rem;
 }
+
+/* ========================================
+   SEO / VSO / ASO — Answer & Definition Boxes
+   ======================================== */
+
+.answer-box {
+  border-left: 4px solid var(--primary) !important;
+  background: #fff !important;
+}
+
+.answer-box strong {
+  color: var(--primary);
+  font-size: 0.97rem;
+}
+
+.definition-box {
+  background: linear-gradient(135deg, rgba(200,16,46,0.03) 0%, rgba(212,168,67,0.04) 100%);
+}
+
+.definition-box h2,
+.definition-box h3 {
+  color: var(--primary);
+}
+
+/* Speakable content — visually neutral, semantically marked */
+.speakable-content {
+  /* no special visual change needed — class used for schema.org cssSelector */
+}
+
+.hero-answer {
+  font-size: 0.96rem;
+  line-height: 1.7;
+}
+
+/* Voice Q&A small cards */
+.speakable-content.p-3 h3 {
+  font-size: 0.88rem;
+  line-height: 1.4;
+}

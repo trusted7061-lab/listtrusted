@@ -3,7 +3,7 @@ const router = express.Router();
 const { CITIES } = require('../config/cities');
 const { AREAS } = require('../config/areas');
 
-const BASE = 'https://trustedesco.com';
+const BASE = 'https://trustedescort.in';
 
 function escXml(str) {
   return String(str)

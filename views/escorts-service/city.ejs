@@ -9,6 +9,16 @@
   </nav>
 </div>
 
+<!-- Answer Box — Featured Snippet / Voice Search target -->
+<div class="container mt-2 mb-1">
+  <div class="answer-box city-answer speakable-content p-3 p-md-4 rounded-4 bg-white border border-primary-subtle shadow-sm" itemscope itemtype="https://schema.org/Answer">
+    <div class="d-flex align-items-start gap-3" itemprop="text">
+      <i class="bi bi-geo-alt-fill fs-4 text-primary flex-shrink-0 mt-1"></i>
+      <p class="mb-0 text-muted"><strong>Escort service in <%= city.name %></strong> — Find <%= ads.length > 0 ? ads.length + '+' : 'verified' %> admin-approved escort service listings in <%= city.name %>, <%= city.state %> on Trusted Escort India. Browse profiles below and contact directly via Call or WhatsApp — no middlemen, available 24/7. Every listing is manually reviewed for authenticity.</p>
+    </div>
+  </div>
+</div>
+
 <!-- Hero -->
 <section class="location-hero py-5">
   <div class="container">
@@ -154,6 +164,30 @@
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-lg-8">
+
+        <!-- Definition Box — targets "What is" featured snippets -->
+        <div class="definition-box p-4 rounded-4 bg-white border-start border-4 border-primary shadow-sm mb-4 speakable-content">
+          <h2 class="fw-bold fs-5 mb-2">What is Escort Service in <%= city.name %>?</h2>
+          <p class="text-muted mb-0">Escort service in <%= city.name %> refers to verified adult companionship listings on Trusted Escort India. Every profile in <%= city.name %>, <%= city.state %> is manually admin-reviewed before publishing. Browse <%= ads.length > 0 ? ads.length + '+' : 'verified' %> listings and contact directly — no middlemen.</p>
+        </div>
+
+        <!-- Quick Facts Table — targets table featured snippets -->
+        <div class="table-responsive mb-4">
+          <table class="table table-sm table-bordered bg-white rounded-3 overflow-hidden shadow-sm">
+            <caption class="visually-hidden">Escort service quick facts for <%= city.name %></caption>
+            <thead class="table-primary">
+              <tr><th colspan="2" class="text-center">Escort Service in <%= city.name %> — Quick Facts</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="fw-semibold text-nowrap" style="width:45%">City</td><td><%= city.name %>, <%= city.state %></td></tr>
+              <tr><td class="fw-semibold">Verified Listings</td><td><%= ads.length > 0 ? ads.length + '+' : 'Updated daily' %> admin-approved</td></tr>
+              <tr><td class="fw-semibold">Contact Method</td><td>Direct Call &amp; WhatsApp</td></tr>
+              <tr><td class="fw-semibold">Availability</td><td>24/7 — browse anytime</td></tr>
+              <tr><td class="fw-semibold">Registration</td><td>Free to browse — no sign-up needed</td></tr>
+            </tbody>
+          </table>
+        </div>
+
         <div class="seo-content-box p-4 p-lg-5 rounded-4 bg-light-subtle border">
           <h2 class="fw-bold mb-3">Escort Service in <%= city.name %>, <%= city.state %></h2>
           <p class="text-muted">
@@ -174,6 +208,15 @@
             <li><strong>24/7 Available</strong> — find escort service in <%= city.name %> any time</li>
             <li><strong>Direct Contact</strong> — call or WhatsApp directly from the listing</li>
           </ul>
+
+          <!-- Voice Search Q&A pairs -->
+          <div class="mt-4 pt-2 border-top">
+            <h3 class="fw-semibold fs-6 mb-3 text-primary speakable-content">How do I find escort service near me in <%= city.name %>?</h3>
+            <p class="text-muted small mb-3">Browse the verified listings above — all admin-approved. Tap Call or WhatsApp on any listing to contact directly. Available 24/7 across all areas in <%= city.name %>.</p>
+            <h3 class="fw-semibold fs-6 mb-3 text-primary speakable-content">Where can I find the best escort service in <%= city.name %>?</h3>
+            <p class="text-muted small mb-0">Trusted Escort India lists the most verified escort profiles in <%= city.name %>, <%= city.state %>. Every profile is admin-approved — browse free, no registration needed.</p>
+          </div>
+
           <% if (areas && areas.length > 0) { %>
           <h3 class="fw-semibold fs-5 mt-4 mb-2">Escort Service by Area in <%= city.name %></h3>
           <p class="text-muted mb-2">We also cover specific areas and localities within <%= city.name %>:</p>
@@ -396,7 +439,10 @@
 </section>
 
 <!-- CTA -->
-      </h2>
+<section class="cta-section py-6">
+  <div class="container">
+    <div class="cta-card text-center p-5 rounded-4" data-aos="zoom-in">
+      <h2 class="display-5 fw-bold text-white mb-3">Post Your Escort Ad in <%= city.name %> Free</h2>
       <p class="lead text-white-50 mb-4 mx-auto" style="max-width:480px;">
         Register free, post your listing in <%= city.name %>, and get admin-approved within 24 hours.
       </p>
