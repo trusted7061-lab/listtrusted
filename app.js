@@ -1,7 +1,6 @@
 require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
-const MongoStore = require('connect-mongo').default || require('connect-mongo').MongoStore;
 const flash = require('connect-flash');
 const expressLayouts = require('express-ejs-layouts');
 const path = require('path');
@@ -25,21 +24,26 @@ app.use(express.json());
 // ── Static files ─────────────────────────────────────────────────────────────
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ── Session (MongoStore opens its own connection via mongoUrl) ────────────────
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'dev-secret',
+// ── Session ───────────────────────────────────────────────────────────────────
+const sessionOptions = {
+  secret: process.env.SESSION_SECRET || 'dev-secret-change-in-prod',
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({
-    mongoUrl: process.env.MONGODB_URI,
-    collectionName: 'sessions'
-  }),
   cookie: {
     maxAge: 1000 * 60 * 60 * 24, // 1 day
     httpOnly: true,
     sameSite: 'lax'
   }
-}));
+};
+// Only use MongoStore when a URI is available; fall back to in-memory otherwise
+if (process.env.MONGODB_URI) {
+  const MongoStore = require('connect-mongo').default;
+  sessionOptions.store = MongoStore.create({
+    mongoUrl: process.env.MONGODB_URI,
+    collectionName: 'sessions'
+  });
+}
+app.use(session(sessionOptions));
 
 // ── Flash + locals ────────────────────────────────────────────────────────────
 app.use(flash());
