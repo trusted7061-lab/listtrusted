@@ -11,6 +11,7 @@ const User = require('./models/User');
 const seedCityAds = require('./seeds/cityAds');
 
 const app = express();
+app.set('trust proxy', 1); // Required for secure cookies behind Vercel/reverse proxy
 
 // ── Compression (gzip all HTML/JSON/CSS/JS responses) ───────────────────────
 app.use(compression({ level: 6, threshold: 1024 }));
@@ -55,7 +56,8 @@ const sessionOptions = {
   cookie: {
     maxAge: 1000 * 60 * 60 * 24, // 1 day
     httpOnly: true,
-    sameSite: 'lax'
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    secure: process.env.NODE_ENV === 'production'
   }
 };
 // Only use MongoStore when a URI is available; fall back to in-memory otherwise

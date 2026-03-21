@@ -31,8 +31,11 @@ router.post('/login', async (req, res) => {
     req.session.userEmail = user.email;
     req.session.role = user.role;
 
-    req.flash('success', `Welcome back, ${user.name}!`);
-    res.redirect(user.role === 'admin' ? '/admin/dashboard' : '/advertiser/dashboard');
+    req.session.save((err) => {
+      if (err) console.error('Session save error:', err);
+      req.flash('success', `Welcome back, ${user.name}!`);
+      res.redirect(user.role === 'admin' ? '/admin/dashboard' : '/advertiser/dashboard');
+    });
   } catch (err) {
     console.error(err);
     req.flash('error', 'Something went wrong');
@@ -82,8 +85,11 @@ router.post('/register', async (req, res) => {
     req.session.userEmail = user.email;
     req.session.role = user.role;
 
-    req.flash('success', 'Registration successful! Welcome to TrustedAds.');
-    res.redirect('/advertiser/dashboard');
+    req.session.save((err) => {
+      if (err) console.error('Session save error:', err);
+      req.flash('success', 'Registration successful! Welcome to TrustedAds.');
+      res.redirect('/advertiser/dashboard');
+    });
   } catch (err) {
     console.error('Register error:', err.message);
     const msg = err.message && err.message.includes('E11000')
