@@ -1,0 +1,429 @@
+<section class="hero-section">
+  <div class="hero-bg-shapes">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+  </div>
+  <div class="container">
+    <div class="row align-items-center min-vh-100">
+      <div class="col-lg-6" data-aos="fade-right" data-aos-duration="1000">
+        <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill mb-3">
+          <i class="bi bi-geo-alt-fill me-1"></i>Escorts Service Near Me — India's Trusted Platform
+        </span>
+        <h1 class="display-3 fw-800 mb-4 hero-title">
+          Escorts Service<br>
+          <span class="gradient-text">Near Me In India</span>
+        </h1>
+        <p class="lead text-muted mb-4 pe-lg-5">
+          Find verified escorts service near you across Delhi, Mumbai, Bangalore, Hyderabad &amp; all major Indian cities. Every profile is manually reviewed by our team — safe, discreet and premium quality guaranteed.
+        </p>
+        <div class="d-flex gap-3 flex-wrap">
+          <a href="/auth/register" class="btn btn-primary btn-lg rounded-pill px-4 shadow-lg">
+            <i class="bi bi-rocket-takeoff me-2"></i>Start Advertising
+          </a>
+          <a href="#how-it-works" class="btn btn-outline-secondary btn-lg rounded-pill px-4">
+            <i class="bi bi-play-circle me-2"></i>How It Works
+          </a>
+        </div>
+        <div class="d-flex gap-4 mt-5">
+          <div class="text-center">
+            <h4 class="fw-bold mb-0 gradient-text">500+</h4>
+            <small class="text-muted">Ads Published</small>
+          </div>
+          <div class="vr"></div>
+          <div class="text-center">
+            <h4 class="fw-bold mb-0 gradient-text">200+</h4>
+            <small class="text-muted">Advertisers</small>
+          </div>
+          <div class="vr"></div>
+          <div class="text-center">
+            <h4 class="fw-bold mb-0 gradient-text">99%</h4>
+            <small class="text-muted">Satisfaction</small>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 text-center" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200">
+        <div class="hero-illustration">
+          <div class="floating-card card-1">
+            <i class="bi bi-check-circle-fill text-success"></i>
+            <span>Ad Approved!</span>
+          </div>
+          <div class="floating-card card-2">
+            <i class="bi bi-graph-up-arrow text-primary"></i>
+            <span>+147% Reach</span>
+          </div>
+          <div class="floating-card card-3">
+            <i class="bi bi-shield-check text-warning"></i>
+            <span>Quality Verified</span>
+          </div>
+          <div class="hero-main-visual">
+            <i class="bi bi-megaphone-fill"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Cities We Serve -->
+<section class="py-5 bg-light-subtle">
+  <div class="container">
+    <div class="text-center mb-4" data-aos="fade-up">
+      <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill mb-3">Available Across India</span>
+      <h2 class="display-5 fw-bold">Escorts Service <span class="gradient-text">Near Me</span></h2>
+      <p class="lead text-muted mx-auto" style="max-width:620px;">Find premium escorts service in your city. We cover 70+ locations across India.</p>
+    </div>
+
+    <!-- Metro Cities -->
+    <h6 class="fw-semibold text-muted text-uppercase small mb-3 mt-4">Metro & Tier-1 Cities</h6>
+    <div class="row g-3 mb-4">
+      <% cities.filter(c => c.metro).forEach((city, i) => { %>
+        <div class="col-6 col-sm-4 col-md-3 col-lg-2" data-aos="zoom-in" data-aos-delay="<%= i * 40 %>">
+          <a href="/escorts-service/<%= city.slug %>" class="city-card d-flex flex-column align-items-center text-center p-3 rounded-3 text-decoration-none h-100">
+            <i class="bi bi-building fs-3 mb-2 gradient-text"></i>
+            <span class="fw-semibold small">Escorts in<br><strong><%= city.name %></strong></span>
+          </a>
+        </div>
+      <% }) %>
+    </div>
+
+    <!-- All Other Cities -->
+    <h6 class="fw-semibold text-muted text-uppercase small mb-3">All India Cities</h6>
+    <div class="row g-2">
+      <% cities.filter(c => !c.metro).forEach((city, i) => { %>
+        <div class="col-6 col-sm-4 col-md-3 col-lg-2" data-aos="fade-up" data-aos-delay="<%= (i % 12) * 30 %>">
+          <a href="/escorts-service/<%= city.slug %>" class="city-card-sm d-flex align-items-center gap-2 p-2 rounded-3 text-decoration-none">
+            <i class="bi bi-geo-alt-fill text-primary small"></i>
+            <span class="small fw-medium"><%= city.name %></span>
+          </a>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works -->
+<section id="how-it-works" class="py-6">
+  <div class="container">
+    <div class="text-center mb-5" data-aos="fade-up">
+      <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill mb-3">Simple Process</span>
+      <h2 class="display-5 fw-bold">How It <span class="gradient-text">Works</span></h2>
+      <p class="lead text-muted mx-auto" style="max-width: 600px;">Three simple steps to get your ads in front of the right audience</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+        <div class="step-card text-center p-4">
+          <div class="step-number">1</div>
+          <div class="step-icon mb-3">
+            <i class="bi bi-person-plus-fill"></i>
+          </div>
+          <h5 class="fw-semibold">Create Account</h5>
+          <p class="text-muted">Sign up as an advertiser in seconds. Fill in your details and you're ready to go.</p>
+        </div>
+      </div>
+      <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+        <div class="step-card text-center p-4">
+          <div class="step-number">2</div>
+          <div class="step-icon mb-3">
+            <i class="bi bi-cloud-arrow-up-fill"></i>
+          </div>
+          <h5 class="fw-semibold">Submit Your Ad</h5>
+          <p class="text-muted">Upload your ad image, add details, set schedule, and choose your ad type.</p>
+        </div>
+      </div>
+      <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+        <div class="step-card text-center p-4">
+          <div class="step-number">3</div>
+          <div class="step-icon mb-3">
+            <i class="bi bi-patch-check-fill"></i>
+          </div>
+          <h5 class="fw-semibold">Get Approved</h5>
+          <p class="text-muted">Our admin team reviews your ad for quality. Once approved, it goes live!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Ad Types -->
+<section class="py-6">
+  <div class="container">
+    <div class="text-center mb-5" data-aos="fade-up">
+      <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill mb-3">Flexible Options</span>
+      <h2 class="display-5 fw-bold">Ad <span class="gradient-text">Types</span></h2>
+      <p class="lead text-muted">Choose the format that works best for your campaign</p>
+    </div>
+    <div class="row g-4">
+      <% const adTypes = [
+        { icon: 'bi-image', name: 'Banner', desc: 'Classic display banners for websites and apps', iconClass: 'text-primary bg-primary-subtle' },
+        { icon: 'bi-camera-video', name: 'Video', desc: 'Engaging video ads that capture attention', iconClass: 'text-danger bg-danger-subtle' },
+        { icon: 'bi-window-stack', name: 'Popup', desc: 'Attention-grabbing popup advertisements', iconClass: 'text-warning bg-warning-subtle' },
+        { icon: 'bi-layout-text-sidebar', name: 'Native', desc: 'Ads that blend naturally with content', iconClass: 'text-success bg-success-subtle' },
+        { icon: 'bi-share', name: 'Social Media', desc: 'Optimized for social platform sharing', iconClass: 'text-info bg-info-subtle' },
+        { icon: 'bi-envelope-open', name: 'Email', desc: 'Professional email campaign creatives', iconClass: 'text-primary-emphasis bg-primary-subtle' }
+      ] %>
+      <% adTypes.forEach((type, i) => { %>
+        <div class="col-md-4 col-sm-6" data-aos="zoom-in" data-aos-delay="<%= i * 100 %>">
+          <div class="type-card p-4 h-100">
+            <div class="type-icon mb-3 <%= type.iconClass %>">
+              <i class="bi <%= type.icon %>"></i>
+            </div>
+            <h5 class="fw-semibold"><%= type.name %></h5>
+            <p class="text-muted mb-0 small"><%= type.desc %></p>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<!-- Featured Ads -->
+<% if (ads && ads.length > 0) { %>
+<section class="py-6 bg-light-subtle">
+  <div class="container">
+    <div class="text-center mb-5" data-aos="fade-up">
+      <span class="badge bg-success-subtle text-success px-3 py-2 rounded-pill mb-3">Live Now</span>
+      <h2 class="display-5 fw-bold">Featured <span class="gradient-text">Ads</span></h2>
+      <p class="lead text-muted">Recently approved advertisements on our platform</p>
+    </div>
+    <div class="row g-4">
+      <% ads.forEach((ad, i) => { %>
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="<%= i * 100 %>">
+          <div class="ad-card card border-0 shadow-sm h-100 overflow-hidden">
+            <div class="ad-card-img-wrapper">
+              <img src="<%= ad.image %>" class="card-img-top" alt="<%= ad.title %>">
+              <span class="ad-type-badge"><%= ad.category %></span>
+            </div>
+            <div class="card-body p-4">
+              <h6 class="fw-semibold mb-2"><%= ad.title %></h6>
+              <p class="text-muted small mb-3"><%= ad.description.substring(0, 100) %><%= ad.description.length > 100 ? '...' : '' %></p>
+              <% const phoneHref = ad.phoneNumber ? ad.phoneNumber.replace(/[^\d+]/g, '') : '' %>
+              <% const whatsappHref = ad.whatsappNumber ? ad.whatsappNumber.replace(/\D/g, '') : '' %>
+              <% if ((ad.showPhoneNumber && ad.phoneNumber) || (ad.showWhatsappNumber && ad.whatsappNumber)) { %>
+                <div class="small mb-3">
+                  <% if (ad.showPhoneNumber && ad.phoneNumber) { %>
+                    <div class="mb-2">
+                      <a href="tel:<%= phoneHref %>" class="btn btn-sm btn-outline-primary rounded-pill">
+                        <i class="bi bi-telephone me-1"></i>Call <%= ad.phoneNumber %>
+                      </a>
+                    </div>
+                  <% } %>
+                  <% if (ad.showWhatsappNumber && ad.whatsappNumber) { %>
+                    <div>
+                      <a href="https://wa.me/<%= whatsappHref %>" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-success rounded-pill">
+                        <i class="bi bi-whatsapp me-1"></i>WhatsApp <%= ad.whatsappNumber %>
+                      </a>
+                    </div>
+                  <% } %>
+                </div>
+              <% } %>
+              <div class="d-flex justify-content-between align-items-center">
+                <small class="text-muted">
+                  <i class="bi bi-person me-1"></i><%= ad.advertiser ? ad.advertiser.name : 'Unknown' %>
+                </small>
+                <span class="badge bg-success-subtle text-success">
+                  <i class="bi bi-check-circle me-1"></i>Approved
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<!-- FAQ Section -->
+<section class="py-6 bg-light-subtle" itemscope itemtype="https://schema.org/FAQPage">
+  <div class="container">
+    <div class="text-center mb-5" data-aos="fade-up">
+      <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill mb-3">Common Questions</span>
+      <h2 class="display-5 fw-bold">Frequently Asked <span class="gradient-text">Questions</span></h2>
+      <div class="gold-divider mt-2"></div>
+      <p class="lead text-muted mt-3">Everything you need to know about escorts service near me in India</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-lg-6" data-aos="fade-up" data-aos-delay="0">
+        <div class="accordion accordion-flush" id="faqLeft">
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq1" itemprop="name">
+                How do I find escorts service near me?
+              </button>
+            </h3>
+            <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqLeft" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                Browse our platform to find verified escort service listings near your location. We cover 75+ cities in India including Delhi, Mumbai, Bangalore, Hyderabad, Chennai, Kolkata, Pune, Goa and more. Use the city links to jump directly to escorts service in your city. Every profile is admin-approved before going live.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq2" itemprop="name">
+                Are escort profiles on this platform verified?
+              </button>
+            </h3>
+            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqLeft" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                Yes. Every profile and advertisement is manually reviewed and approved by our admin team before going live. We verify authenticity and quality to maintain a safe, trustworthy platform. Fake or suspicious listings are removed immediately.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq3" itemprop="name">
+                Which cities are covered for escort services?
+              </button>
+            </h3>
+            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqLeft" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                We cover 75+ major cities across India: Delhi, Mumbai, Bangalore, Hyderabad, Chennai, Kolkata, Pune, Ahmedabad, Noida, Gurugram, Jaipur, Goa, Chandigarh, Lucknow, Surat, Indore, Bhopal, Nagpur, Kochi, Coimbatore and many more across all Indian states.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq4" itemprop="name">
+                How do I post an escort service advertisement?
+              </button>
+            </h3>
+            <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqLeft" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                Register as an advertiser, fill in your profile and service details, upload photos, select your city, and submit for review. Our admin team approves your listing within 24 hours. Your ad then appears live on the city page for that location.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq5" itemprop="name">
+                Is it safe to use Trusted Escort India?
+              </button>
+            </h3>
+            <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqLeft" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                Absolutely. All listings are verified by our admin team. Contact details are only shown on approved ads. We maintain strict quality standards, use secure hosting, and remove any suspicious or unverified profiles immediately to protect all users.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq6" itemprop="name">
+                How do I contact an escort from a listing?
+              </button>
+            </h3>
+            <div id="faq6" class="accordion-collapse collapse" data-bs-parent="#faqLeft" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                Each approved listing shows a Call or WhatsApp button directly on the ad card. Tap the button to contact the advertiser directly — there are no middlemen or booking fees on our platform. Contact details are only shown on admin-approved listings.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+        <div class="accordion accordion-flush" id="faqRight">
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq7" itemprop="name">
+                What types of escort services are available?
+              </button>
+            </h3>
+            <div id="faq7" class="accordion-collapse collapse" data-bs-parent="#faqRight" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                Our platform hosts a variety of escort service listings including companionship, social escort, dinner date companions, travel companions, and more. All services listed are legal and consensual. Every category is clearly labelled on each ad card.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq8" itemprop="name">
+                How much does it cost to post an escort ad?
+              </button>
+            </h3>
+            <div id="faq8" class="accordion-collapse collapse" data-bs-parent="#faqRight" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                Registration and posting your first ad is completely free. New advertisers receive welcome coins to boost visibility. Premium placement and featured listing packages are available to increase your ad's reach across multiple cities.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq9" itemprop="name">
+                How long does ad approval take?
+              </button>
+            </h3>
+            <div id="faq9" class="accordion-collapse collapse" data-bs-parent="#faqRight" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                Our admin team typically reviews and approves new escort listings within 24 hours. During peak hours it may take up to 48 hours. You will receive a notification once your ad is approved and live on the platform.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq10" itemprop="name">
+                Can I edit or delete my escort ad after posting?
+              </button>
+            </h3>
+            <div id="faq10" class="accordion-collapse collapse" data-bs-parent="#faqRight" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                Yes. You can edit your ad title, description, photos, contact details, and city at any time from your advertiser dashboard. Edited ads are re-reviewed by our admin team before the changes go live to maintain quality standards.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq11" itemprop="name">
+                How do I report a fake escort listing?
+              </button>
+            </h3>
+            <div id="faq11" class="accordion-collapse collapse" data-bs-parent="#faqRight" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                You can contact our support team directly or use the report button on any listing. Our admin team investigates every report within 24 hours. Fake, misleading, or spam listings are removed immediately and the advertiser account is banned.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq12" itemprop="name">
+                Is my personal information kept private?
+              </button>
+            </h3>
+            <div id="faq12" class="accordion-collapse collapse" data-bs-parent="#faqRight" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                Absolutely. Your personal data — email, phone number, and account details — is never shared with third parties. Only the contact information you choose to display on your ad is visible to users. We use encrypted connections and secure storage for all data.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section py-6">
+  <div class="container">
+    <div class="cta-card text-center p-5 rounded-4" data-aos="zoom-in">
+      <h2 class="display-5 fw-bold text-white mb-3">Ready to Advertise?</h2>
+      <p class="lead text-white-50 mb-4 mx-auto" style="max-width: 500px;">Join hundreds of advertisers who trust our platform for quality ad placements.</p>
+      <a href="/auth/register" class="btn btn-light btn-lg rounded-pill px-5 shadow">
+        <i class="bi bi-rocket-takeoff me-2"></i>Get Started Free
+      </a>
+    </div>
+  </div>
+</section>

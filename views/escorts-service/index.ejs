@@ -1,0 +1,304 @@
+<!-- Breadcrumb -->
+<div class="container" style="margin-top: 80px; padding-top: 16px;">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb small">
+      <li class="breadcrumb-item"><a href="/" class="text-decoration-none">Home</a></li>
+      <li class="breadcrumb-item active">Escorts Service in India</li>
+    </ol>
+  </nav>
+</div>
+
+<!-- Hero -->
+<section class="location-hero py-5">
+  <div class="container">
+    <div class="text-center" data-aos="fade-up">
+      <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill mb-3">
+        <i class="bi bi-geo-alt-fill me-1"></i>Pan India Coverage
+      </span>
+      <h1 class="display-4 fw-800 mb-3">
+        Escorts Service <span class="gradient-text">Near Me in India</span>
+      </h1>
+      <p class="lead text-muted mx-auto mb-4" style="max-width:650px;">
+        Find verified escort service listings in 75+ cities across India. Every profile is admin-reviewed before going live — safe, discreet and premium quality.
+      </p>
+      <a href="/auth/register" class="btn btn-primary btn-lg rounded-pill px-5 shadow me-3">
+        <i class="bi bi-megaphone me-2"></i>Post Free Ad
+      </a>
+      <a href="#all-cities" class="btn btn-outline-secondary btn-lg rounded-pill px-4">
+        <i class="bi bi-grid me-2"></i>Browse All Cities
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Metro Cities -->
+<section class="py-5 bg-light-subtle" id="all-cities">
+  <div class="container">
+    <div class="text-center mb-4" data-aos="fade-up">
+      <span class="badge bg-danger-subtle text-danger px-3 py-2 rounded-pill mb-2">Top Metro Cities</span>
+      <h2 class="fw-bold">Escorts Service in <span class="gradient-text">Metro Cities</span></h2>
+    </div>
+    <div class="row g-3 mb-5">
+      <% cities.filter(c => c.metro).forEach((city, i) => { %>
+        <div class="col-6 col-sm-4 col-md-3 col-lg-2" data-aos="zoom-in" data-aos-delay="<%= i * 40 %>">
+          <a href="/escorts-service/<%= city.slug %>/" class="city-card d-flex flex-column align-items-center text-center p-3 rounded-3 text-decoration-none h-100">
+            <i class="bi bi-building fs-2 mb-2 gradient-text"></i>
+            <span class="fw-semibold small">Escorts in</span>
+            <strong class="small"><%= city.name %></strong>
+            <small class="text-muted x-small mt-1"><%= city.state %></small>
+          </a>
+        </div>
+      <% }) %>
+    </div>
+
+    <!-- All Cities by State grouped -->
+    <div class="text-center mb-4" data-aos="fade-up">
+      <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill mb-2">All 75+ Cities</span>
+      <h2 class="fw-bold">Escort Service <span class="gradient-text">All India</span></h2>
+    </div>
+
+    <%
+      // Group non-metro cities by state
+      const stateMap = {};
+      cities.filter(c => !c.metro).forEach(city => {
+        if (!stateMap[city.state]) stateMap[city.state] = [];
+        stateMap[city.state].push(city);
+      });
+    %>
+
+    <div class="row g-4">
+      <% Object.entries(stateMap).forEach(([state, stateCities]) => { %>
+        <div class="col-12 col-md-6 col-lg-4" data-aos="fade-up">
+          <div class="state-group-card p-3 rounded-3">
+            <h6 class="fw-bold mb-3 d-flex align-items-center gap-2">
+              <i class="bi bi-map-fill text-primary small"></i><%= state %>
+            </h6>
+            <div class="d-flex flex-wrap gap-2">
+              <% stateCities.forEach(city => { %>
+                <a href="/escorts-service/<%= city.slug %>/" class="city-pill text-decoration-none">
+                  <i class="bi bi-geo-alt-fill me-1"></i><%= city.name %>
+                </a>
+              <% }) %>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<!-- SEO Content -->
+<section class="py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="seo-content-box p-4 p-lg-5 rounded-4 bg-light-subtle border">
+          <h2 class="fw-bold mb-3">Escorts Service Near Me — India's Most Trusted Platform</h2>
+          <p class="text-muted">Trusted Escort India is the most trusted platform for finding verified escort service near you across all major cities in India. From Delhi and Mumbai to Goa and Chandigarh, we cover 75+ cities with admin-verified, premium escort listings.</p>
+          <p class="text-muted">Every listing is manually reviewed by our admin team before going live. Whether you are looking for escort service in a metro city or a tier-2 city, our platform has the most authentic and up-to-date profiles.</p>
+          <h3 class="fw-semibold fs-5 mt-4 mb-2">How Does It Work?</h3>
+          <ol class="text-muted">
+            <li class="mb-2">Browse the city of your choice from 75+ Indian cities above</li>
+            <li class="mb-2">View admin-approved escort listings for that city</li>
+            <li class="mb-2">Call or WhatsApp directly from the listing</li>
+            <li>Advertise your own service by registering as an advertiser</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="py-6 bg-light-subtle" itemscope itemtype="https://schema.org/FAQPage">
+  <div class="container">
+    <div class="text-center mb-5" data-aos="fade-up">
+      <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill mb-3">Common Questions</span>
+      <h2 class="display-5 fw-bold">Frequently Asked <span class="gradient-text">Questions</span></h2>
+      <div class="gold-divider mt-2"></div>
+      <p class="lead text-muted mt-3">Everything about escort service listings across India</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-lg-6" data-aos="fade-up" data-aos-delay="0">
+        <div class="accordion accordion-flush" id="faqIdxL">
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#ifaq1" itemprop="name">
+                Which cities have escort service listings on this platform?
+              </button>
+            </h3>
+            <div id="ifaq1" class="accordion-collapse collapse show" data-bs-parent="#faqIdxL" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                We cover 75+ cities across all Indian states including Delhi, Mumbai, Bangalore, Hyderabad, Chennai, Kolkata, Pune, Ahmedabad, Noida, Gurugram, Jaipur, Goa, Chandigarh, Lucknow, Indore, Surat, Kochi, Coimbatore, Bhopal, Nagpur and many more.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#ifaq2" itemprop="name">
+                How do I find escort service near me in my city?
+              </button>
+            </h3>
+            <div id="ifaq2" class="accordion-collapse collapse" data-bs-parent="#faqIdxL" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                Click on your city from the grid above or use the search. Each city page lists all admin-approved escort service ads for that location. You can then call or WhatsApp the advertiser directly from the listing.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#ifaq3" itemprop="name">
+                Are all escort profiles on Trusted Escort India verified?
+              </button>
+            </h3>
+            <div id="ifaq3" class="accordion-collapse collapse" data-bs-parent="#faqIdxL" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                Yes. Every single listing across all 75+ cities is manually reviewed and approved by our admin team. Fake or unverified profiles never go live. This is what makes Trusted Escort India the most reliable escort service directory in India.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#ifaq4" itemprop="name">
+                How do I post my escort service ad on this platform?
+              </button>
+            </h3>
+            <div id="ifaq4" class="accordion-collapse collapse" data-bs-parent="#faqIdxL" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                Register free as an advertiser, complete your profile, upload photos, select your city and service category, then submit for admin review. Your ad goes live within 24 hours of approval and appears on the relevant city page.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#ifaq5" itemprop="name">
+                Is escort service legal in India?
+              </button>
+            </h3>
+            <div id="ifaq5" class="accordion-collapse collapse" data-bs-parent="#faqIdxL" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                Companionship and social escort services are legal in India. Our platform only lists legal escort services and companionship ads. All listings are screened to ensure compliance with applicable laws. We do not support or list any illegal activities.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#ifaq6" itemprop="name">
+                How do I contact an escort advertiser?
+              </button>
+            </h3>
+            <div id="ifaq6" class="accordion-collapse collapse" data-bs-parent="#faqIdxL" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                Each approved listing on the city page shows a Call or WhatsApp button. Tap the button to contact the advertiser directly — no middlemen, no booking fees. Contact details are only visible on listings that have passed admin review.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+        <div class="accordion accordion-flush" id="faqIdxR">
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#ifaq7" itemprop="name">
+                Can I browse escort listings without registering?
+              </button>
+            </h3>
+            <div id="ifaq7" class="accordion-collapse collapse" data-bs-parent="#faqIdxR" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                Yes. All approved escort service listings are publicly visible. You can browse all city pages and view listings without creating an account. Registration is only required if you want to post your own escort service advertisement.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#ifaq8" itemprop="name">
+                How often are new escort listings added?
+              </button>
+            </h3>
+            <div id="ifaq8" class="accordion-collapse collapse" data-bs-parent="#faqIdxR" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                New escort service ads are submitted, reviewed, and approved daily. Metro cities like Delhi, Mumbai, Bangalore and Hyderabad see new listings every day. Smaller cities are updated regularly as new advertisers join the platform.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#ifaq9" itemprop="name">
+                What is the cost of advertising escort services here?
+              </button>
+            </h3>
+            <div id="ifaq9" class="accordion-collapse collapse" data-bs-parent="#faqIdxR" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                Basic ad posting is completely free. New advertisers receive welcome credits. Premium and featured placements are available to boost visibility across multiple city pages simultaneously for a small fee.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#ifaq10" itemprop="name">
+                How does admin approval work for escort ads?
+              </button>
+            </h3>
+            <div id="ifaq10" class="accordion-collapse collapse" data-bs-parent="#faqIdxR" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                After you submit an ad, it enters a pending queue. Our admin team reviews the content, photos, and contact details for quality and compliance. Approved ads go live immediately. Rejected ads are returned with a reason so you can correct and resubmit.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#ifaq11" itemprop="name">
+                Can I list escort services in multiple cities?
+              </button>
+            </h3>
+            <div id="ifaq11" class="accordion-collapse collapse" data-bs-parent="#faqIdxR" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                Yes. You can post separate ads for different cities from the same advertiser account. Each ad is linked to a specific city and appears on that city's escort service page. This allows you to reach clients across multiple cities simultaneously.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#ifaq12" itemprop="name">
+                Is my data safe on Trusted Escort India?
+              </button>
+            </h3>
+            <div id="ifaq12" class="accordion-collapse collapse" data-bs-parent="#faqIdxR" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                Yes. Your personal account data is never shared with third parties. Only the contact information you choose to display publicly in your ad is visible to other users. All connections are secured via HTTPS and data is stored encrypted.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section py-6">
+  <div class="container">
+    <div class="cta-card text-center p-5 rounded-4" data-aos="zoom-in">
+      <h2 class="display-5 fw-bold text-white mb-3">Post Your Escort Service Ad Free</h2>
+      <p class="lead text-white-50 mb-4">Register now and post your listing in any Indian city. Admin approval within 24 hours.</p>
+      <a href="/auth/register" class="btn btn-light btn-lg rounded-pill px-5 shadow">
+        <i class="bi bi-rocket-takeoff me-2"></i>Get Started Free
+      </a>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,242 @@
+<div class="dashboard-section">
+  <div class="container py-5" style="margin-top: 70px;">
+    <div class="d-flex justify-content-between align-items-center mb-4" data-aos="fade-down">
+      <div>
+        <h2 class="fw-bold mb-1"><i class="bi bi-plus-circle me-2 gradient-text"></i>Create New Ad</h2>
+        <p class="text-muted mb-0">Fill in all the details for your advertisement</p>
+      </div>
+      <a href="/advertiser/my-ads" class="btn btn-outline-secondary rounded-pill px-3">
+        <i class="bi bi-arrow-left me-1"></i>Back to My Ads
+      </a>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-lg-8" data-aos="fade-up">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body p-4 p-lg-5">
+            <form method="POST" action="/advertiser/create-ad" enctype="multipart/form-data" id="adForm">
+              <!-- Basic Info -->
+              <div class="form-section mb-4">
+                <h5 class="fw-semibold mb-3 d-flex align-items-center">
+                  <span class="section-number me-2">1</span>Basic Information
+                </h5>
+                <div class="mb-3">
+                  <label class="form-label fw-medium">Ad Title <span class="text-danger">*</span></label>
+                  <input type="text" name="title" class="form-control form-control-lg" placeholder="Enter a catchy title for your ad" required maxlength="100">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label fw-medium">Description <span class="text-danger">*</span></label>
+                  <textarea name="description" class="form-control" rows="4" placeholder="Describe your ad in detail — what's the offer, message, or promotion?" required maxlength="1000"></textarea>
+                  <div class="form-text">Maximum 1000 characters</div>
+                </div>
+              </div>
+
+              <!-- Ad Type & Target -->
+              <div class="form-section mb-4">
+                <h5 class="fw-semibold mb-3 d-flex align-items-center">
+                  <span class="section-number me-2">2</span>Category, Location & Targeting
+                </h5>
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label class="form-label fw-medium">Ad Category / Type <span class="text-danger">*</span></label>
+                    <select name="category" class="form-select" required>
+                      <option value="" disabled selected>Choose ad type</option>
+                      <option value="Banner">Banner Ad</option>
+                      <option value="Video">Video Ad</option>
+                      <option value="Popup">Popup Ad</option>
+                      <option value="Native">Native Ad</option>
+                      <option value="Social Media">Social Media Ad</option>
+                      <option value="Search">Search Ad</option>
+                      <option value="Email">Email Ad</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label fw-medium">City / Location <span class="text-danger">*</span></label>
+                    <select name="citySlug" class="form-select" required>
+                      <option value="" disabled selected>Select your city</option>
+                      <% cities.forEach(city => { %>
+                        <option value="<%= city.slug %>"><%= city.name %>, <%= city.state %></option>
+                      <% }) %>
+                    </select>
+                    <div class="form-text">Your ad will appear on the city's location page</div>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label fw-medium">Target Audience <span class="text-danger">*</span></label>
+                    <input type="text" name="targetAudience" class="form-control" placeholder="e.g., 18-35 year olds, adults" required>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Image Upload -->
+              <div class="form-section mb-4">
+                <h5 class="fw-semibold mb-3 d-flex align-items-center">
+                  <span class="section-number me-2">3</span>Ad Creative
+                </h5>
+                <div class="upload-zone" id="uploadZone">
+                  <input type="file" name="image" id="imageInput" class="d-none" accept="image/jpeg,image/png,image/gif,image/webp" required>
+                  <div class="upload-placeholder" id="uploadPlaceholder">
+                    <i class="bi bi-cloud-arrow-up display-4 text-primary"></i>
+                    <h6 class="fw-semibold mt-2">Drop your ad image here</h6>
+                    <p class="text-muted small">or click to browse (JPG, PNG, GIF, WEBP — max 5MB)</p>
+                    <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-3" onclick="document.getElementById('imageInput').click()">
+                      <i class="bi bi-image me-1"></i>Choose Image
+                    </button>
+                  </div>
+                  <div class="upload-preview d-none" id="uploadPreview">
+                    <img id="previewImg" src="" alt="Preview" class="img-fluid rounded">
+                    <button type="button" class="btn btn-sm btn-danger rounded-pill mt-2" id="removeImage">
+                      <i class="bi bi-trash me-1"></i>Remove
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Schedule & Budget -->
+              <div class="form-section mb-4">
+                <h5 class="fw-semibold mb-3 d-flex align-items-center">
+                  <span class="section-number me-2">4</span>Schedule & Budget
+                </h5>
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label class="form-label fw-medium">Start Date <span class="text-danger">*</span></label>
+                    <input type="date" name="startDate" class="form-control" required>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label fw-medium">End Date <span class="text-danger">*</span></label>
+                    <input type="date" name="endDate" class="form-control" required>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label fw-medium">Budget ($)</label>
+                    <div class="input-group">
+                      <span class="input-group-text bg-light"><i class="bi bi-currency-dollar"></i></span>
+                      <input type="number" name="budget" class="form-control" placeholder="0.00" min="0" step="0.01">
+                    </div>
+                    <div class="form-text">Optional — set your campaign budget</div>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label fw-medium">Landing URL</label>
+                    <div class="input-group">
+                      <span class="input-group-text bg-light"><i class="bi bi-link-45deg"></i></span>
+                      <input type="url" name="landingUrl" class="form-control" placeholder="https://yourwebsite.com">
+                    </div>
+                    <div class="form-text">Where should clicks go?</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Contact Details -->
+              <div class="form-section mb-4">
+                <h5 class="fw-semibold mb-3 d-flex align-items-center">
+                  <span class="section-number me-2">5</span>Contact Details
+                </h5>
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label class="form-label fw-medium">Phone Number</label>
+                    <div class="input-group">
+                      <span class="input-group-text bg-light"><i class="bi bi-telephone"></i></span>
+                      <input type="tel" name="phoneNumber" class="form-control" placeholder="+91 98765 43210">
+                    </div>
+                    <div class="form-check mt-2">
+                      <input class="form-check-input" type="checkbox" name="showPhoneNumber" id="showPhoneNumber">
+                      <label class="form-check-label small" for="showPhoneNumber">
+                        Show phone number publicly on approved ads
+                      </label>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label fw-medium">WhatsApp Number</label>
+                    <div class="input-group">
+                      <span class="input-group-text bg-light"><i class="bi bi-whatsapp text-success"></i></span>
+                      <input type="tel" name="whatsappNumber" class="form-control" placeholder="+91 98765 43210">
+                    </div>
+                    <div class="form-check mt-2">
+                      <input class="form-check-input" type="checkbox" name="showWhatsappNumber" id="showWhatsappNumber">
+                      <label class="form-check-label small" for="showWhatsappNumber">
+                        Show WhatsApp button publicly on approved ads
+                      </label>
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <div class="form-text">These contact options are optional. Only approved ads with enabled toggles will show them publicly.</div>
+                  </div>
+                </div>
+              </div>
+
+              <hr>
+              <div class="d-flex justify-content-end gap-3">
+                <a href="/advertiser/my-ads" class="btn btn-outline-secondary rounded-pill px-4">Cancel</a>
+                <button type="submit" class="btn btn-primary rounded-pill px-4 shadow-sm">
+                  <i class="bi bi-send me-2"></i>Submit for Review
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar Tips -->
+      <div class="col-lg-4" data-aos="fade-left" data-aos-delay="200">
+        <div class="card border-0 shadow-sm bg-primary-subtle">
+          <div class="card-body p-4">
+            <h6 class="fw-semibold mb-3"><i class="bi bi-lightbulb me-2 text-primary"></i>Tips for Better Ads</h6>
+            <ul class="list-unstyled mb-0">
+              <li class="d-flex mb-3">
+                <i class="bi bi-check2-circle text-success me-2 mt-1"></i>
+                <small>Use high-quality images (at least 1200x628px)</small>
+              </li>
+              <li class="d-flex mb-3">
+                <i class="bi bi-check2-circle text-success me-2 mt-1"></i>
+                <small>Write a clear, concise title under 60 characters</small>
+              </li>
+              <li class="d-flex mb-3">
+                <i class="bi bi-check2-circle text-success me-2 mt-1"></i>
+                <small>Define your target audience precisely</small>
+              </li>
+              <li class="d-flex mb-3">
+                <i class="bi bi-check2-circle text-success me-2 mt-1"></i>
+                <small>Set realistic start and end dates</small>
+              </li>
+              <li class="d-flex">
+                <i class="bi bi-check2-circle text-success me-2 mt-1"></i>
+                <small>Include a landing URL for better engagement</small>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card border-0 shadow-sm mt-3">
+          <div class="card-body p-4">
+            <h6 class="fw-semibold mb-3"><i class="bi bi-info-circle me-2 text-info"></i>Review Process</h6>
+            <div class="d-flex align-items-start mb-3">
+              <div class="review-step-icon bg-warning-subtle text-warning me-3">
+                <i class="bi bi-hourglass-split"></i>
+              </div>
+              <div>
+                <strong class="small">Submitted</strong>
+                <p class="text-muted small mb-0">Your ad enters the review queue</p>
+              </div>
+            </div>
+            <div class="d-flex align-items-start mb-3">
+              <div class="review-step-icon bg-primary-subtle text-primary me-3">
+                <i class="bi bi-eye"></i>
+              </div>
+              <div>
+                <strong class="small">Under Review</strong>
+                <p class="text-muted small mb-0">Admin reviews ad content & quality</p>
+              </div>
+            </div>
+            <div class="d-flex align-items-start">
+              <div class="review-step-icon bg-success-subtle text-success me-3">
+                <i class="bi bi-check-lg"></i>
+              </div>
+              <div>
+                <strong class="small">Approved</strong>
+                <p class="text-muted small mb-0">Your ad goes live on the platform</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

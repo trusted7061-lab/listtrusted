@@ -7,10 +7,16 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
 dist
 dist-ssr
 *.local
+
+# Next.js / build output
+.next/
+out/
+build/
 
 # Editor directories and files
 .vscode/*
@@ -23,7 +29,16 @@ dist-ssr
 *.sln
 *.sw?
 
-# Environment variables
+# Environment variables (keep .env.example if present)
 .env
 .env.local
 .env.*.local
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Temp / backup files
+*.bak
+*.tmp

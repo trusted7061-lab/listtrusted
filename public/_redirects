@@ -1,4 +1,0 @@
-/location/*    /escorts/in/:splat    301
-/locations/*   /escorts/in/:splat    301
-/escort/*      /escorts/in/:splat    301
-/*    /index.html   200

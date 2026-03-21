@@ -1,0 +1,195 @@
+<div class="dashboard-section">
+  <div class="container py-5" style="margin-top: 70px;">
+    <div class="mb-4" data-aos="fade-down">
+      <a href="/admin/ads" class="btn btn-outline-secondary rounded-pill px-3 mb-3">
+        <i class="bi bi-arrow-left me-1"></i>Back to Ads
+      </a>
+      <h2 class="fw-bold mb-1">Ad Review</h2>
+      <p class="text-muted mb-0">Review ad details and take action</p>
+    </div>
+
+    <div class="row g-4">
+      <!-- Ad Details -->
+      <div class="col-lg-7" data-aos="fade-right">
+        <div class="card border-0 shadow-sm overflow-hidden">
+          <div class="ad-detail-img-wrapper">
+            <img src="<%= ad.image %>" class="w-100" alt="<%= ad.title %>" style="max-height: 400px; object-fit: cover;">
+          </div>
+          <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <div>
+                <span class="badge bg-light text-dark me-2"><%= ad.category %></span>
+                <% if (ad.status === 'pending') { %>
+                  <span class="badge bg-warning-subtle text-warning"><i class="bi bi-clock me-1"></i>Pending</span>
+                <% } else if (ad.status === 'approved') { %>
+                  <span class="badge bg-success-subtle text-success"><i class="bi bi-check-circle me-1"></i>Approved</span>
+                <% } else { %>
+                  <span class="badge bg-danger-subtle text-danger"><i class="bi bi-x-circle me-1"></i>Rejected</span>
+                <% } %>
+              </div>
+              <small class="text-muted"><i class="bi bi-calendar me-1"></i><%= new Date(ad.createdAt).toLocaleDateString() %></small>
+            </div>
+            <h4 class="fw-bold mb-3"><%= ad.title %></h4>
+            <p class="text-muted mb-4"><%= ad.description %></p>
+
+            <div class="row g-3 mb-3">
+              <div class="col-sm-6">
+                <div class="detail-item p-3 rounded-3 bg-light">
+                  <small class="text-muted d-block">Target Audience</small>
+                  <strong><%= ad.targetAudience %></strong>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="detail-item p-3 rounded-3 bg-light">
+                  <small class="text-muted d-block">Budget</small>
+                  <strong>$<%= ad.budget || 0 %></strong>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="detail-item p-3 rounded-3 bg-light">
+                  <small class="text-muted d-block">Start Date</small>
+                  <strong><%= new Date(ad.startDate).toLocaleDateString() %></strong>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="detail-item p-3 rounded-3 bg-light">
+                  <small class="text-muted d-block">End Date</small>
+                  <strong><%= new Date(ad.endDate).toLocaleDateString() %></strong>
+                </div>
+              </div>
+              <% if (ad.landingUrl) { %>
+                <div class="col-12">
+                  <div class="detail-item p-3 rounded-3 bg-light">
+                    <small class="text-muted d-block">Landing URL</small>
+                    <strong><a href="<%= ad.landingUrl %>" target="_blank" rel="noopener noreferrer"><%= ad.landingUrl %></a></strong>
+                  </div>
+                </div>
+              <% } %>
+              <% if (ad.phoneNumber) { %>
+                <div class="col-sm-6">
+                  <div class="detail-item p-3 rounded-3 bg-light">
+                    <small class="text-muted d-block">Phone Number</small>
+                    <strong><%= ad.phoneNumber %></strong>
+                    <div class="small mt-1 <%= ad.showPhoneNumber ? 'text-success' : 'text-muted' %>">
+                      <i class="bi <%= ad.showPhoneNumber ? 'bi-eye' : 'bi-eye-slash' %> me-1"></i>
+                      <%= ad.showPhoneNumber ? 'Visible publicly' : 'Hidden publicly' %>
+                    </div>
+                  </div>
+                </div>
+              <% } %>
+              <% if (ad.whatsappNumber) { %>
+                <div class="col-sm-6">
+                  <div class="detail-item p-3 rounded-3 bg-light">
+                    <small class="text-muted d-block">WhatsApp Number</small>
+                    <strong><%= ad.whatsappNumber %></strong>
+                    <div class="small mt-1 <%= ad.showWhatsappNumber ? 'text-success' : 'text-muted' %>">
+                      <i class="bi <%= ad.showWhatsappNumber ? 'bi-eye' : 'bi-eye-slash' %> me-1"></i>
+                      <%= ad.showWhatsappNumber ? 'Visible publicly' : 'Hidden publicly' %>
+                    </div>
+                  </div>
+                </div>
+              <% } %>
+            </div>
+
+            <% if (ad.adminNotes) { %>
+              <div class="alert alert-info d-flex align-items-start">
+                <i class="bi bi-chat-left-text me-2 mt-1"></i>
+                <div>
+                  <strong>Admin Notes:</strong>
+                  <p class="mb-0"><%= ad.adminNotes %></p>
+                </div>
+              </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Advertiser Info + Actions -->
+      <div class="col-lg-5" data-aos="fade-left">
+        <!-- Advertiser Details -->
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-body p-4">
+            <h5 class="fw-semibold mb-3"><i class="bi bi-person-circle me-2 text-primary"></i>Advertiser Info</h5>
+            <div class="d-flex align-items-center mb-3">
+              <div class="avatar-lg me-3">
+                <span><%= ad.advertiser ? ad.advertiser.name.charAt(0).toUpperCase() : '?' %></span>
+              </div>
+              <div>
+                <h6 class="fw-semibold mb-0"><%= ad.advertiser ? ad.advertiser.name : 'Unknown' %></h6>
+                <small class="text-muted"><%= ad.advertiser ? ad.advertiser.email : '' %></small>
+              </div>
+            </div>
+            <% if (ad.advertiser && ad.advertiser.company) { %>
+              <div class="d-flex align-items-center text-muted small mb-2">
+                <i class="bi bi-building me-2"></i><%= ad.advertiser.company %>
+              </div>
+            <% } %>
+            <% if (ad.advertiser && ad.advertiser.phone) { %>
+              <div class="d-flex align-items-center text-muted small">
+                <i class="bi bi-telephone me-2"></i><%= ad.advertiser.phone %>
+              </div>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- Admin Actions -->
+        <div class="card border-0 shadow-sm">
+          <div class="card-body p-4">
+            <h5 class="fw-semibold mb-3"><i class="bi bi-shield-check me-2 text-warning"></i>Admin Actions</h5>
+
+            <% if (ad.status === 'pending') { %>
+              <!-- Approve Form -->
+              <form method="POST" action="/admin/ad/<%= ad._id %>/approve" class="mb-3">
+                <div class="mb-3">
+                  <label class="form-label fw-medium small">Notes (optional)</label>
+                  <textarea name="adminNotes" class="form-control" rows="2" placeholder="Add approval notes..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-success w-100 rounded-pill">
+                  <i class="bi bi-check-circle me-2"></i>Approve Ad
+                </button>
+              </form>
+              <hr>
+              <!-- Reject Form -->
+              <form method="POST" action="/admin/ad/<%= ad._id %>/reject">
+                <div class="mb-3">
+                  <label class="form-label fw-medium small">Rejection Reason</label>
+                  <textarea name="adminNotes" class="form-control" rows="2" placeholder="Explain why this ad is rejected..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-outline-danger w-100 rounded-pill">
+                  <i class="bi bi-x-circle me-2"></i>Reject Ad
+                </button>
+              </form>
+            <% } else { %>
+              <div class="text-center py-3">
+                <% if (ad.status === 'approved') { %>
+                  <div class="mb-2"><i class="bi bi-check-circle-fill text-success display-4"></i></div>
+                  <p class="fw-semibold text-success">This ad has been approved</p>
+                <% } else { %>
+                  <div class="mb-2"><i class="bi bi-x-circle-fill text-danger display-4"></i></div>
+                  <p class="fw-semibold text-danger">This ad has been rejected</p>
+                <% } %>
+                <!-- Allow changing decision -->
+                <hr>
+                <p class="text-muted small">Change decision:</p>
+                <div class="d-flex gap-2">
+                  <% if (ad.status !== 'approved') { %>
+                    <form method="POST" action="/admin/ad/<%= ad._id %>/approve" class="flex-fill">
+                      <input type="hidden" name="adminNotes" value="<%= ad.adminNotes %>">
+                      <button type="submit" class="btn btn-sm btn-outline-success rounded-pill w-100">Approve</button>
+                    </form>
+                  <% } %>
+                  <% if (ad.status !== 'rejected') { %>
+                    <form method="POST" action="/admin/ad/<%= ad._id %>/reject" class="flex-fill">
+                      <input type="hidden" name="adminNotes" value="<%= ad.adminNotes %>">
+                      <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill w-100">Reject</button>
+                    </form>
+                  <% } %>
+                </div>
+              </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

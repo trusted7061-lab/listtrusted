@@ -1,0 +1,173 @@
+<div class="dashboard-section">
+  <div class="container py-5" style="margin-top: 70px;">
+    <!-- Welcome Header -->
+    <div class="mb-4" data-aos="fade-down">
+      <h2 class="fw-bold mb-1">Admin <span class="gradient-text">Dashboard</span></h2>
+      <p class="text-muted mb-0">Platform overview and management</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row g-4 mb-5">
+      <div class="col-md-4 col-lg" data-aos="fade-up" data-aos-delay="100">
+        <div class="stat-card card border-0 shadow-sm h-100 stat-card-gradient-1">
+          <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <p class="text-muted small mb-1">Total Ads</p>
+                <h3 class="fw-bold mb-0"><%= stats.totalAds %></h3>
+              </div>
+              <div class="stat-icon bg-primary-subtle text-primary">
+                <i class="bi bi-collection"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 col-lg" data-aos="fade-up" data-aos-delay="150">
+        <div class="stat-card card border-0 shadow-sm h-100">
+          <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <p class="text-muted small mb-1">Pending Review</p>
+                <h3 class="fw-bold mb-0 text-warning"><%= stats.pendingAds %></h3>
+              </div>
+              <div class="stat-icon bg-warning-subtle text-warning">
+                <i class="bi bi-clock-history"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 col-lg" data-aos="fade-up" data-aos-delay="200">
+        <div class="stat-card card border-0 shadow-sm h-100">
+          <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <p class="text-muted small mb-1">Approved</p>
+                <h3 class="fw-bold mb-0 text-success"><%= stats.approvedAds %></h3>
+              </div>
+              <div class="stat-icon bg-success-subtle text-success">
+                <i class="bi bi-check-circle"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg" data-aos="fade-up" data-aos-delay="250">
+        <div class="stat-card card border-0 shadow-sm h-100">
+          <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <p class="text-muted small mb-1">Rejected</p>
+                <h3 class="fw-bold mb-0 text-danger"><%= stats.rejectedAds %></h3>
+              </div>
+              <div class="stat-icon bg-danger-subtle text-danger">
+                <i class="bi bi-x-circle"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg" data-aos="fade-up" data-aos-delay="300">
+        <div class="stat-card card border-0 shadow-sm h-100">
+          <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <p class="text-muted small mb-1">Advertisers</p>
+                <h3 class="fw-bold mb-0 text-info"><%= stats.totalUsers %></h3>
+              </div>
+              <div class="stat-icon bg-info-subtle text-info">
+                <i class="bi bi-people"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions + Recent Ads -->
+    <div class="row g-4">
+      <div class="col-lg-4" data-aos="fade-right">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body p-4">
+            <h5 class="fw-semibold mb-4"><i class="bi bi-lightning me-2 text-warning"></i>Quick Actions</h5>
+            <div class="d-grid gap-2">
+              <a href="/admin/ads?status=pending" class="btn btn-outline-warning text-start rounded-3 p-3">
+                <i class="bi bi-clock-history me-2"></i>Review Pending Ads
+                <span class="badge bg-warning text-dark float-end"><%= stats.pendingAds %></span>
+              </a>
+              <a href="/admin/ads" class="btn btn-outline-primary text-start rounded-3 p-3">
+                <i class="bi bi-collection me-2"></i>Manage All Ads
+              </a>
+              <a href="/admin/users" class="btn btn-outline-info text-start rounded-3 p-3">
+                <i class="bi bi-people me-2"></i>Manage Users
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-8" data-aos="fade-left">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-header bg-white border-0 pt-4 pb-0 px-4">
+            <div class="d-flex justify-content-between align-items-center">
+              <h5 class="fw-semibold mb-0"><i class="bi bi-clock-history me-2"></i>Recent Submissions</h5>
+              <a href="/admin/ads" class="btn btn-sm btn-outline-primary rounded-pill">View All</a>
+            </div>
+          </div>
+          <div class="card-body p-4">
+            <% if (recentAds.length === 0) { %>
+              <div class="text-center py-4">
+                <i class="bi bi-inbox display-4 text-muted"></i>
+                <p class="text-muted mt-2">No ads submitted yet</p>
+              </div>
+            <% } else { %>
+              <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Ad</th>
+                      <th>Advertiser</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% recentAds.forEach(ad => { %>
+                      <tr>
+                        <td>
+                          <div class="d-flex align-items-center">
+                            <img src="<%= ad.image %>" alt="" class="rounded me-3" style="width: 45px; height: 45px; object-fit: cover;">
+                            <div>
+                              <h6 class="mb-0 fw-semibold small"><%= ad.title %></h6>
+                              <small class="text-muted"><%= ad.category %></small>
+                            </div>
+                          </div>
+                        </td>
+                        <td><small><%= ad.advertiser ? ad.advertiser.name : 'N/A' %></small></td>
+                        <td>
+                          <% if (ad.status === 'pending') { %>
+                            <span class="badge bg-warning-subtle text-warning"><i class="bi bi-clock me-1"></i>Pending</span>
+                          <% } else if (ad.status === 'approved') { %>
+                            <span class="badge bg-success-subtle text-success"><i class="bi bi-check-circle me-1"></i>Approved</span>
+                          <% } else { %>
+                            <span class="badge bg-danger-subtle text-danger"><i class="bi bi-x-circle me-1"></i>Rejected</span>
+                          <% } %>
+                        </td>
+                        <td>
+                          <a href="/admin/ad/<%= ad._id %>" class="btn btn-sm btn-outline-primary rounded-pill">
+                            <i class="bi bi-eye me-1"></i>View
+                          </a>
+                        </td>
+                      </tr>
+                    <% }) %>
+                  </tbody>
+                </table>
+              </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

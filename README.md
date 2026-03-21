@@ -1,104 +1,149 @@
-# Authentication System
+# TrustedAds - Ad Management Platform
 
-A production-ready authentication system with React frontend and Node.js backend.
+## Project Overview
+TrustedAds is a Node.js web application for managing advertisements. It features a dual-dashboard system — one for **Advertisers** (users who post ads) and one for **Admins** (who approve or reject ads before they go live).
+
+---
+
+## Tech Stack
+| Layer        | Technology                        |
+|--------------|-----------------------------------|
+| Runtime      | Node.js                           |
+| Framework    | Express.js                        |
+| Templating   | EJS                               |
+| Database     | MongoDB (Mongoose ODM)            |
+| Auth         | express-session + bcrypt          |
+| File Upload  | Multer                            |
+| UI           | Bootstrap 5 + Custom CSS + AOS animations |
+
+---
 
 ## Features
 
-- User registration and login
-- Email verification with OTP
-- Password reset functionality
-- JWT authentication with access and refresh tokens
-- Secure httpOnly cookies
-- Rate limiting and security middleware
-- Responsive UI with Tailwind CSS
+### 1. Public Landing Page
+- Hero section with call-to-action
+- How-it-works section
+- Featured approved ads showcase
+- Login / Register links
 
-## Project Structure
+### 2. Authentication
+- User registration (role: advertiser)
+- Login / Logout
+- Session-based auth with role guards
+- Admin seeded via env or first-run
 
+### 3. Advertiser Dashboard
+- Overview stats (total ads, approved, pending, rejected)
+- **Create New Ad** form with:
+  - Ad Title
+  - Ad Description (rich details)
+  - Ad Category / Type (Banner, Video, Popup, Native, Social Media)
+  - Target Audience
+  - Ad Image upload (with preview)
+  - Start Date & End Date (scheduling)
+  - Budget (optional)
+  - Landing URL
+- View all submitted ads with status badges (Pending / Approved / Rejected)
+- Edit or delete pending ads
+
+### 4. Admin Dashboard
+- Overview stats (total users, total ads, pending, approved, rejected)
+- Manage Ads: list all ads with filters (status, type, date)
+- View ad detail with image preview
+- Approve / Reject ads with optional admin notes
+- Manage Users: list all advertisers
+
+---
+
+## Folder Structure
 ```
-/
-├── frontend/          # React + Vite frontend
-├── backend/           # Node.js + Express backend
-├── .env              # Environment variables
-└── README.md         # This file
+trustednew/
+├── README.md
+├── package.json
+├── .env
+├── app.js                    # Express app entry point
+├── config/
+│   └── db.js                 # MongoDB connection
+├── models/
+│   ├── User.js               # User schema (advertiser / admin)
+│   └── Ad.js                 # Ad schema
+├── routes/
+│   ├── auth.js               # Login, Register, Logout
+│   ├── admin.js              # Admin dashboard & ad management
+│   ├── advertiser.js         # Advertiser dashboard & ad CRUD
+│   └── public.js             # Landing page & public ad feed
+├── middleware/
+│   └── auth.js               # isAuthenticated, isAdmin, isAdvertiser
+├── public/
+│   ├── css/
+│   │   └── style.css         # Custom styles
+│   ├── js/
+│   │   └── main.js           # Client-side scripts
+│   └── uploads/              # Uploaded ad images
+└── views/
+    ├── layouts/
+    │   └── main.ejs           # Base layout
+    ├── partials/
+    │   ├── navbar.ejs
+    │   ├── footer.ejs
+    │   └── flash.ejs
+    ├── landing.ejs
+    ├── auth/
+    │   ├── login.ejs
+    │   └── register.ejs
+    ├── advertiser/
+    │   ├── dashboard.ejs
+    │   ├── create-ad.ejs
+    │   ├── edit-ad.ejs
+    │   └── my-ads.ejs
+    └── admin/
+        ├── dashboard.ejs
+        ├── ads.ejs
+        ├── ad-detail.ejs
+        └── users.ejs
 ```
 
-## Prerequisites
+---
 
-- Node.js (v16 or higher)
-- MongoDB
-- SendGrid account for email sending
+## Environment Variables (.env)
+```
+PORT=3000
+MONGODB_URI=mongodb://localhost:27017/trustedads
+SESSION_SECRET=your-super-secret-key
+ADMIN_EMAIL=admin@trustedads.com
+ADMIN_PASSWORD=Admin@123
+```
 
-## Installation
+---
 
-### Backend
-
+## How to Run
 ```bash
-cd backend
+# 1. Install MongoDB (if not installed)
+brew tap mongodb/brew
+brew install mongodb-community
+brew services start mongodb-community
+
+# 2. Install dependencies
 npm install
+
+# 3. Start the app
+npm start        # or: npm run dev (with nodemon)
+
+# 4. Open browser
+# http://localhost:3000
 ```
 
-### Frontend
+### Default Admin Login
+- Email: `admin@trustedads.com`
+- Password: `Admin@123`
 
-```bash
-cd frontend
-npm install
-```
+---
 
-## Environment Setup
-
-1. Copy the `.env` file and update the values:
-   - `MONGODB_URI`: Your MongoDB connection string
-   - `JWT_SECRET`: A strong secret for JWT tokens
-   - `JWT_REFRESH_SECRET`: A different secret for refresh tokens
-   - `SENDGRID_API_KEY`: Your SendGrid API key
-   - `EMAIL_FROM`: The email address to send from
-
-## Running the Application
-
-### Backend
-
-```bash
-cd backend
-npm run dev
-```
-
-The backend will run on http://localhost:5000
-
-### Frontend
-
-```bash
-cd frontend
-npm run dev
-```
-
-The frontend will run on http://localhost:3000
-
-## API Endpoints
-
-### Authentication
-- `POST /api/auth/register` - Register a new user
-- `POST /api/auth/verify-otp` - Verify email with OTP
-- `POST /api/auth/login` - Login user
-- `POST /api/auth/forgot-password` - Request password reset
-- `POST /api/auth/reset-password` - Reset password with OTP
-
-### User
-- `GET /api/user/profile` - Get user profile (protected)
-
-## Security Features
-
-- Password hashing with bcrypt
-- JWT tokens with expiration
-- httpOnly cookies for token storage
-- Rate limiting
-- CORS protection
-- Helmet security headers
-- Input validation with express-validator
-
-## Development
-
-- Frontend uses React Hook Form for form handling
-- Axios for API calls
-- React Hot Toast for notifications
-- Tailwind CSS for styling
-- Backend uses Express with middleware for security
+## Status
+- [x] README created
+- [x] Project initialized
+- [x] Models built (User + Ad)
+- [x] Auth system (login, register, sessions)
+- [x] Advertiser dashboard (create/edit/delete ads, status tracking)
+- [x] Admin dashboard (approve/reject ads, manage users)
+- [x] UI polished (Bootstrap 5, gradient theme, AOS animations)

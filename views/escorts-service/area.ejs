@@ -1,0 +1,399 @@
+<!-- Breadcrumb -->
+<div class="container" style="margin-top: 80px; padding-top: 16px;">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb small">
+      <li class="breadcrumb-item"><a href="/" class="text-decoration-none">Home</a></li>
+      <li class="breadcrumb-item"><a href="/escorts-service/" class="text-decoration-none">Escorts Service India</a></li>
+      <li class="breadcrumb-item"><a href="/escorts-service/<%= city.slug %>/" class="text-decoration-none">Escort Service in <%= city.name %></a></li>
+      <li class="breadcrumb-item active">Escort Service in <%= area.name %></li>
+    </ol>
+  </nav>
+</div>
+
+<!-- Hero -->
+<section class="location-hero py-5">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-7" data-aos="fade-right">
+        <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill mb-3">
+          <i class="bi bi-geo-alt-fill me-1"></i><%= area.name %>, <%= city.name %>
+        </span>
+        <h1 class="display-4 fw-800 mb-3">
+          Escort Service in <span class="gradient-text"><%= area.name %></span>, <%= city.name %>
+        </h1>
+        <p class="lead text-muted mb-4">
+          Find verified escort service in <strong><%= area.name %></strong>, <%= city.name %>.
+          All listings are admin-approved — safe, discreet, and reliable.
+        </p>
+        <div class="d-flex gap-3 flex-wrap mb-4">
+          <a href="/auth/register" class="btn btn-primary btn-lg rounded-pill px-4 shadow">
+            <i class="bi bi-megaphone me-2"></i>Post Ad — <%= area.name %>
+          </a>
+          <a href="#listings" class="btn btn-outline-secondary btn-lg rounded-pill px-4">
+            <i class="bi bi-grid me-2"></i>Browse Listings
+          </a>
+        </div>
+        <div class="d-flex gap-4">
+          <div>
+            <h5 class="fw-bold mb-0 gradient-text"><%= ads.length %>+</h5>
+            <small class="text-muted">Active Listings</small>
+          </div>
+          <div class="vr"></div>
+          <div>
+            <h5 class="fw-bold mb-0 gradient-text">100%</h5>
+            <small class="text-muted">Verified</small>
+          </div>
+          <div class="vr"></div>
+          <div>
+            <h5 class="fw-bold mb-0 gradient-text">24/7</h5>
+            <small class="text-muted">Available</small>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-5 d-none d-lg-block text-center" data-aos="fade-left">
+        <div class="location-hero-visual">
+          <i class="bi bi-geo-alt-fill display-1 gradient-text"></i>
+          <h3 class="fw-bold mt-3"><%= area.name %></h3>
+          <p class="text-muted mb-0"><%= city.name %>, <%= city.state %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Other Areas in same City -->
+<% if (otherAreas && otherAreas.length > 0) { %>
+<section class="py-3 border-bottom">
+  <div class="container">
+    <h5 class="fw-semibold mb-3">
+      <i class="bi bi-pin-map-fill me-2 text-primary"></i>
+      Other Areas in <%= city.name %>:
+    </h5>
+    <div class="d-flex flex-wrap gap-2">
+      <a href="/escorts-service/<%= city.slug %>/"
+         class="area-pill text-decoration-none">
+        <i class="bi bi-arrow-left me-1"></i>All <%= city.name %>
+      </a>
+      <% otherAreas.forEach(a => { %>
+        <a href="/escorts-service/<%= city.slug %>/<%= a.slug %>/"
+           class="area-pill text-decoration-none <%= a.slug === area.slug ? 'active' : '' %>">
+          <i class="bi bi-geo-alt me-1"></i><%= a.name %>
+        </a>
+      <% }) %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<!-- Listings -->
+<section id="listings" class="py-5 bg-light-subtle">
+  <div class="container">
+    <div class="text-center mb-5" data-aos="fade-up">
+      <span class="badge bg-success-subtle text-success px-3 py-2 rounded-pill mb-3">
+        <i class="bi bi-patch-check me-1"></i>Admin Verified Listings
+      </span>
+      <h2 class="display-5 fw-bold">
+        Escort Service in <span class="gradient-text"><%= area.name %></span>
+      </h2>
+      <p class="lead text-muted"><%= city.name %>, <%= city.state %> — Verified profiles only</p>
+    </div>
+
+    <% if (ads && ads.length > 0) { %>
+      <div class="row g-4">
+        <% ads.forEach((ad, i) => { %>
+          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="<%= (i % 6) * 80 %>">
+            <div class="ad-card card border-0 shadow-sm h-100 overflow-hidden">
+              <div class="ad-card-img-wrapper">
+                <img src="<%= ad.image %>" class="card-img-top"
+                     alt="<%= ad.title %> — Escort Service in <%= area.name %>, <%= city.name %>"
+                     loading="lazy">
+                <span class="ad-type-badge"><%= ad.category %></span>
+                <span class="city-badge">
+                  <i class="bi bi-geo-alt-fill me-1"></i><%= area.name %>, <%= city.name %>
+                </span>
+              </div>
+              <div class="card-body p-4">
+                <h5 class="fw-semibold mb-2"><%= ad.title %></h5>
+                <p class="text-muted small mb-3">
+                  <%= ad.description.substring(0, 120) %><%= ad.description.length > 120 ? '...' : '' %>
+                </p>
+                <% const phoneHref = ad.phoneNumber    ? ad.phoneNumber.replace(/[^\d+]/g, '')    : '' %>
+                <% const waHref    = ad.whatsappNumber ? ad.whatsappNumber.replace(/\D/g, '')       : '' %>
+                <div class="d-flex flex-column gap-2 mb-3">
+                  <% if (ad.showPhoneNumber && ad.phoneNumber) { %>
+                    <a href="tel:<%= phoneHref %>" class="btn btn-outline-primary btn-sm rounded-pill">
+                      <i class="bi bi-telephone-fill me-1"></i>Call <%= ad.phoneNumber %>
+                    </a>
+                  <% } %>
+                  <% if (ad.showWhatsappNumber && ad.whatsappNumber) { %>
+                    <a href="https://wa.me/<%= waHref %>"
+                       target="_blank" rel="noopener noreferrer"
+                       class="btn btn-success btn-sm rounded-pill">
+                      <i class="bi bi-whatsapp me-1"></i>WhatsApp <%= ad.whatsappNumber %>
+                    </a>
+                  <% } %>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                  <small class="text-muted">
+                    <i class="bi bi-person-circle me-1"></i>
+                    <%= ad.advertiser ? ad.advertiser.name : 'Verified Advertiser' %>
+                  </small>
+                  <span class="badge bg-success-subtle text-success small">
+                    <i class="bi bi-patch-check-fill me-1"></i>Verified
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div class="text-center py-5" data-aos="fade-up">
+        <i class="bi bi-megaphone display-1 gradient-text opacity-50 mb-3 d-block"></i>
+        <h3 class="fw-bold mb-2">Be the First in <%= area.name %>!</h3>
+        <p class="lead text-muted mb-4">
+          No listings in <%= area.name %> yet. Post your ad and get first-mover advantage.
+        </p>
+        <a href="/auth/register" class="btn btn-primary btn-lg rounded-pill px-5 shadow">
+          <i class="bi bi-rocket-takeoff me-2"></i>Post Free Ad in <%= area.name %>
+        </a>
+      </div>
+    <% } %>
+  </div>
+</section>
+
+<!-- SEO Content -->
+<section class="py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="seo-content-box p-4 p-lg-5 rounded-4 bg-light-subtle border">
+          <h2 class="fw-bold mb-3">
+            Escort Service in <%= area.name %>, <%= city.name %>
+          </h2>
+          <p class="text-muted">
+            Trusted Escort India provides the most reliable escort service listings in
+            <strong><%= area.name %></strong>, <%= city.name %>. All advertiser profiles are
+            manually reviewed by our admin team to ensure only genuine, verified listings appear.
+          </p>
+          <p class="text-muted">
+            Searching "escort service near me" in <%= area.name %>? You're in the right place.
+            Browse verified escort listings in <%= area.name %>, <%= city.name %>,
+            <%= city.state %>. Call or WhatsApp directly for safe, discreet service.
+          </p>
+          <h3 class="fw-semibold fs-5 mt-4 mb-2">
+            Why Choose Trusted Escort India for Escort Service in <%= area.name %>?
+          </h3>
+          <ul class="text-muted">
+            <li>Admin-verified listings specific to <strong><%= area.name %></strong></li>
+            <li>Safe, discreet, and confidential</li>
+            <li>Direct contact — no middlemen</li>
+            <li>Available 24/7 across <%= city.name %></li>
+            <li>Free listing for advertisers</li>
+          </ul>
+          <div class="mt-4">
+            <a href="/escorts-service/<%= city.slug %>/" class="btn btn-outline-primary rounded-pill me-2">
+              <i class="bi bi-arrow-left me-1"></i>All <%= city.name %> Listings
+            </a>
+            <a href="/escorts-service/" class="btn btn-outline-secondary rounded-pill">
+              <i class="bi bi-grid me-1"></i>All India Cities
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="py-6 bg-light-subtle" itemscope itemtype="https://schema.org/FAQPage">
+  <div class="container">
+    <div class="text-center mb-5" data-aos="fade-up">
+      <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill mb-3">Common Questions</span>
+      <h2 class="display-5 fw-bold">FAQs — Escort Service in <span class="gradient-text"><%= area.name %></span></h2>
+      <div class="gold-divider mt-2"></div>
+      <p class="lead text-muted mt-3">Questions about escort service in <%= area.name %>, <%= city.name %></p>
+    </div>
+    <div class="row g-4">
+      <div class="col-lg-6" data-aos="fade-up" data-aos-delay="0">
+        <div class="accordion accordion-flush" id="afaqL">
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#afaq1" itemprop="name">
+                How do I find escort service in <%= area.name %>, <%= city.name %>?
+              </button>
+            </h3>
+            <div id="afaq1" class="accordion-collapse collapse show" data-bs-parent="#afaqL" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                Browse the verified listings on this page for escort service in <%= area.name %>, <%= city.name %>. All ads are admin-approved. Tap the Call or WhatsApp button on any listing to contact the advertiser directly. No middlemen, no booking fees.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#afaq2" itemprop="name">
+                Are escort listings in <%= area.name %> verified and genuine?
+              </button>
+            </h3>
+            <div id="afaq2" class="accordion-collapse collapse" data-bs-parent="#afaqL" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                Yes. Every escort listing in <%= area.name %>, <%= city.name %> is manually reviewed by our admin team before going live. We reject fake, misleading or low-quality profiles. Only verified, genuine advertisers appear on this page.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#afaq3" itemprop="name">
+                How do I post an escort ad for <%= area.name %>?
+              </button>
+            </h3>
+            <div id="afaq3" class="accordion-collapse collapse" data-bs-parent="#afaqL" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                Register free on Trusted Escort India, complete your profile, upload photos, select <%= city.name %> as your city, and submit for admin review. Your ad will appear on the <%= city.name %> page, including this <%= area.name %> sub-area page, within 24 hours.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#afaq4" itemprop="name">
+                Is escort service available 24/7 in <%= area.name %>?
+              </button>
+            </h3>
+            <div id="afaq4" class="accordion-collapse collapse" data-bs-parent="#afaqL" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                Many escort service advertisers listed for <%= area.name %>, <%= city.name %> are available 24/7. Check each listing and contact the advertiser directly via Call or WhatsApp to confirm their availability and timing for your preferred date.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#afaq5" itemprop="name">
+                What types of escort services are available in <%= area.name %>?
+              </button>
+            </h3>
+            <div id="afaq5" class="accordion-collapse collapse" data-bs-parent="#afaqL" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                Escort service listings in <%= area.name %>, <%= city.name %> include companionship, social escort, dinner date escort, event companion, and travel escort services. All services are legal. The category is clearly labelled on every listing card.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#afaq6" itemprop="name">
+                Is it safe to use escort service in <%= area.name %>?
+              </button>
+            </h3>
+            <div id="afaq6" class="accordion-collapse collapse" data-bs-parent="#afaqL" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                All listings shown here are admin-verified. We screen every advertiser before their listing goes live in <%= area.name %>, <%= city.name %>. Always exercise personal care, meet in public places initially, and never share financial information with unknown parties.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+        <div class="accordion accordion-flush" id="afaqR">
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#afaq7" itemprop="name">
+                How do I contact an escort in <%= area.name %>, <%= city.name %>?
+              </button>
+            </h3>
+            <div id="afaq7" class="accordion-collapse collapse" data-bs-parent="#afaqR" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                Click the Call or WhatsApp button on any approved listing on this page to connect directly with the escort advertiser in <%= area.name %>. There are no agents or intermediaries — you contact the advertiser at their number directly.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#afaq8" itemprop="name">
+                Can I post an escort ad specifically for <%= area.name %>?
+              </button>
+            </h3>
+            <div id="afaq8" class="accordion-collapse collapse" data-bs-parent="#afaqR" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                Yes. When posting your ad, select <%= city.name %> as your city. Your listing will appear on the main <%= city.name %> page and also on the <%= area.name %> sub-area page, maximising your visibility to users searching specifically in <%= area.name %>.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#afaq9" itemprop="name">
+                How much does escort service cost in <%= area.name %>?
+              </button>
+            </h3>
+            <div id="afaq9" class="accordion-collapse collapse" data-bs-parent="#afaqR" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                Pricing for escort services in <%= area.name %>, <%= city.name %> is set individually by each advertiser. Contact the advertiser directly via the Call or WhatsApp button to discuss rates, availability, and terms. Our platform does not charge service users any fees.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#afaq10" itemprop="name">
+                How do I report a fake escort listing in <%= area.name %>?
+              </button>
+            </h3>
+            <div id="afaq10" class="accordion-collapse collapse" data-bs-parent="#afaqR" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                Contact our support team and provide the listing details. We will investigate within 24 hours and remove it if it violates our guidelines. Helping us maintain quality in <%= area.name %>, <%= city.name %> benefits all genuine users on the platform.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#afaq11" itemprop="name">
+                Are there escort services in other areas of <%= city.name %>?
+              </button>
+            </h3>
+            <div id="afaq11" class="accordion-collapse collapse" data-bs-parent="#afaqR" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                Yes. Use the "Other Areas in <%= city.name %>" links at the top of this page to browse escort service in other localities of <%= city.name %>. You can also visit the main <a href="/escorts-service/<%= city.slug %>/" class="text-primary">Escort Service in <%= city.name %></a> page for the full city listing.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#afaq12" itemprop="name">
+                Why is Trusted Escort India best for <%= area.name %> listings?
+              </button>
+            </h3>
+            <div id="afaq12" class="accordion-collapse collapse" data-bs-parent="#afaqR" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                Trusted Escort India is the only escort service platform with dedicated area-level pages like this one for <%= area.name %>. Every listing is admin-approved, contact details are genuine, and the platform is free for users. We update <%= area.name %> listings regularly.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+      </h2>
+      <p class="lead text-white-50 mb-4 mx-auto" style="max-width:480px;">
+        Register free, post your listing for <%= area.name %>, <%= city.name %>, and go live within 24 hours.
+      </p>
+      <a href="/auth/register" class="btn btn-light btn-lg rounded-pill px-5 shadow">
+        <i class="bi bi-rocket-takeoff me-2"></i>Post Free Ad
+      </a>
+    </div>
+  </div>
+</section>

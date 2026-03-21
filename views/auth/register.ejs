@@ -1,0 +1,82 @@
+<div class="auth-section">
+  <div class="container">
+    <div class="row justify-content-center align-items-center" style="min-height: 100vh; padding-top: 100px; padding-bottom: 40px;">
+      <div class="col-md-6 col-lg-5" data-aos="fade-up" data-aos-duration="800">
+        <div class="auth-card card border-0 shadow-lg">
+          <div class="card-body p-5">
+            <div class="text-center mb-4">
+              <div class="auth-icon mb-3">
+                <i class="bi bi-person-plus"></i>
+              </div>
+              <h3 class="fw-bold">Create Account</h3>
+              <p class="text-muted">Start advertising with TrustedAds</p>
+            </div>
+
+            <form method="POST" action="/auth/register">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label fw-medium">Full Name</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-person"></i></span>
+                    <input type="text" name="name" class="form-control border-start-0 ps-0" placeholder="John Doe" required>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-medium">Company</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-building"></i></span>
+                    <input type="text" name="company" class="form-control border-start-0 ps-0" placeholder="Your Company">
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-3 mt-3">
+                <label class="form-label fw-medium">Email Address</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-end-0"><i class="bi bi-envelope"></i></span>
+                  <input type="email" name="email" class="form-control border-start-0 ps-0" placeholder="you@example.com" required>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label fw-medium">Phone Number</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-end-0"><i class="bi bi-telephone"></i></span>
+                  <input type="tel" name="phone" class="form-control border-start-0 ps-0" placeholder="+1 234 567 8900">
+                </div>
+              </div>
+
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label fw-medium">Password</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-lock"></i></span>
+                    <input type="password" name="password" class="form-control border-start-0 ps-0" placeholder="Min 6 characters" required minlength="6">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-medium">Confirm Password</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-lock-fill"></i></span>
+                    <input type="password" name="confirmPassword" class="form-control border-start-0 ps-0" placeholder="Repeat password" required minlength="6">
+                  </div>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary w-100 py-2 rounded-pill fw-semibold mt-4">
+                <i class="bi bi-rocket-takeoff me-2"></i>Create Account
+              </button>
+            </form>
+
+            <div class="text-center mt-4">
+              <p class="text-muted mb-0">
+                Already have an account?
+                <a href="/auth/login" class="text-primary fw-semibold text-decoration-none">Sign In</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

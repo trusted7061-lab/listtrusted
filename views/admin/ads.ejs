@@ -1,0 +1,74 @@
+<div class="dashboard-section">
+  <div class="container py-5" style="margin-top: 70px;">
+    <div class="d-flex justify-content-between align-items-center mb-4" data-aos="fade-down">
+      <div>
+        <h2 class="fw-bold mb-1"><i class="bi bi-collection me-2 gradient-text"></i>Manage Ads</h2>
+        <p class="text-muted mb-0">Review, approve, or reject submitted advertisements</p>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card border-0 shadow-sm mb-4" data-aos="fade-up">
+      <div class="card-body p-3">
+        <div class="d-flex gap-2 flex-wrap align-items-center">
+          <span class="text-muted small me-2">Status:</span>
+          <a href="/admin/ads" class="btn btn-sm rounded-pill <%= !statusFilter ? 'btn-primary' : 'btn-outline-secondary' %>">All</a>
+          <a href="/admin/ads?status=pending" class="btn btn-sm rounded-pill <%= statusFilter === 'pending' ? 'btn-warning' : 'btn-outline-warning' %>">
+            <i class="bi bi-clock me-1"></i>Pending
+          </a>
+          <a href="/admin/ads?status=approved" class="btn btn-sm rounded-pill <%= statusFilter === 'approved' ? 'btn-success' : 'btn-outline-success' %>">
+            <i class="bi bi-check-circle me-1"></i>Approved
+          </a>
+          <a href="/admin/ads?status=rejected" class="btn btn-sm rounded-pill <%= statusFilter === 'rejected' ? 'btn-danger' : 'btn-outline-danger' %>">
+            <i class="bi bi-x-circle me-1"></i>Rejected
+          </a>
+          <span class="text-muted small ms-3 me-2">Type:</span>
+          <a href="/admin/ads" class="btn btn-sm rounded-pill <%= !categoryFilter ? 'btn-dark' : 'btn-outline-dark' %>">All</a>
+          <% ['Banner','Video','Popup','Native','Social Media'].forEach(cat => { %>
+            <a href="/admin/ads?category=<%= cat %><%= statusFilter ? '&status=' + statusFilter : '' %>"
+               class="btn btn-sm rounded-pill <%= categoryFilter === cat ? 'btn-dark' : 'btn-outline-dark' %>"><%= cat %></a>
+          <% }) %>
+        </div>
+      </div>
+    </div>
+
+    <% if (ads.length === 0) { %>
+      <div class="text-center py-5" data-aos="fade-up">
+        <div class="empty-state-icon mb-3"><i class="bi bi-inbox"></i></div>
+        <h5 class="text-muted">No ads found</h5>
+        <p class="text-muted">No ads match the current filters.</p>
+      </div>
+    <% } else { %>
+      <div class="row g-4">
+        <% ads.forEach((ad, i) => { %>
+          <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="<%= Math.min(i * 50, 300) %>">
+            <div class="ad-card card border-0 shadow-sm h-100 overflow-hidden">
+              <div class="ad-card-img-wrapper">
+                <img src="<%= ad.image %>" class="card-img-top" alt="<%= ad.title %>">
+                <span class="ad-type-badge"><%= ad.category %></span>
+                <% if (ad.status === 'pending') { %>
+                  <span class="ad-status-badge bg-warning text-dark"><i class="bi bi-clock me-1"></i>Pending</span>
+                <% } else if (ad.status === 'approved') { %>
+                  <span class="ad-status-badge bg-success"><i class="bi bi-check-circle me-1"></i>Approved</span>
+                <% } else { %>
+                  <span class="ad-status-badge bg-danger"><i class="bi bi-x-circle me-1"></i>Rejected</span>
+                <% } %>
+              </div>
+              <div class="card-body p-4">
+                <h6 class="fw-semibold mb-1"><%= ad.title %></h6>
+                <p class="text-muted small mb-2"><%= ad.description.substring(0, 80) %><%= ad.description.length > 80 ? '...' : '' %></p>
+                <div class="d-flex justify-content-between align-items-center text-muted small mb-3">
+                  <span><i class="bi bi-person me-1"></i><%= ad.advertiser ? ad.advertiser.name : 'N/A' %></span>
+                  <span><i class="bi bi-calendar me-1"></i><%= new Date(ad.createdAt).toLocaleDateString() %></span>
+                </div>
+                <a href="/admin/ad/<%= ad._id %>" class="btn btn-sm btn-primary rounded-pill w-100">
+                  <i class="bi bi-eye me-1"></i>Review Ad
+                </a>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+</div>

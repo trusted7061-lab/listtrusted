@@ -1,0 +1,98 @@
+const express = require('express');
+const router = express.Router();
+const User = require('../models/User');
+
+router.get('/login', (req, res) => {
+  if (req.session.userId) {
+    return res.redirect(req.session.role === 'admin' ? '/admin/dashboard' : '/advertiser/dashboard');
+  }
+  res.render('auth/login', { title: 'Login' });
+});
+
+router.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
+
+    if (!user || !(await user.comparePassword(password))) {
+      req.flash('error', 'Invalid email or password');
+      return res.redirect('/auth/login');
+    }
+
+    if (!user.isActive) {
+      req.flash('error', 'Your account has been deactivated');
+      return res.redirect('/auth/login');
+    }
+
+    req.session.userId = user._id;
+    req.session.userName = user.name;
+    req.session.userEmail = user.email;
+    req.session.role = user.role;
+
+    req.flash('success', `Welcome back, ${user.name}!`);
+    res.redirect(user.role === 'admin' ? '/admin/dashboard' : '/advertiser/dashboard');
+  } catch (err) {
+    console.error(err);
+    req.flash('error', 'Something went wrong');
+    res.redirect('/auth/login');
+  }
+});
+
+router.get('/register', (req, res) => {
+  if (req.session.userId) {
+    return res.redirect(req.session.role === 'admin' ? '/admin/dashboard' : '/advertiser/dashboard');
+  }
+  res.render('auth/register', { title: 'Register' });
+});
+
+router.post('/register', async (req, res) => {
+  try {
+    const { name, email, password, confirmPassword, company, phone } = req.body;
+
+    if (password !== confirmPassword) {
+      req.flash('error', 'Passwords do not match');
+      return res.redirect('/auth/register');
+    }
+
+    if (password.length < 6) {
+      req.flash('error', 'Password must be at least 6 characters');
+      return res.redirect('/auth/register');
+    }
+
+    const existingUser = await User.findOne({ email: email.toLowerCase().trim() });
+    if (existingUser) {
+      req.flash('error', 'Email is already registered');
+      return res.redirect('/auth/register');
+    }
+
+    const user = await User.create({
+      name: name.trim(),
+      email: email.toLowerCase().trim(),
+      password,
+      role: 'advertiser',
+      company: company ? company.trim() : '',
+      phone: phone ? phone.trim() : ''
+    });
+
+    req.session.userId = user._id;
+    req.session.userName = user.name;
+    req.session.userEmail = user.email;
+    req.session.role = user.role;
+
+    req.flash('success', 'Registration successful! Welcome to TrustedAds.');
+    res.redirect('/advertiser/dashboard');
+  } catch (err) {
+    console.error(err);
+    req.flash('error', 'Registration failed. Please try again.');
+    res.redirect('/auth/register');
+  }
+});
+
+router.get('/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) console.error(err);
+    res.redirect('/');
+  });
+});
+
+module.exports = router;
