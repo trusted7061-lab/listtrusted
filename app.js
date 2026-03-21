@@ -87,6 +87,19 @@ app.use(async (req, res, next) => {
   next();
 });
 
+// ── Health check (debug) ─────────────────────────────────────────────────────
+app.get('/health', async (req, res) => {
+  const status = { env: process.env.NODE_ENV, mongoUri: !!process.env.MONGODB_URI };
+  try {
+    await connectDB();
+    status.db = 'connected';
+  } catch (err) {
+    status.db = 'error';
+    status.error = err.message;
+  }
+  res.json(status);
+});
+
 // ── Routes ────────────────────────────────────────────────────────────────────
 app.use('/', require('./routes/public'));
 app.use('/escorts-service', require('./routes/escorts-service'));
