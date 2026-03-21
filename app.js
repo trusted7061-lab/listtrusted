@@ -99,18 +99,24 @@ async function seedAdmin() {
   }
 }
 
-startApp()
-  .then(() => {
-    // Only bind a port when running locally (not on Vercel serverless)
-    if (require.main === module) {
-      const PORT = process.env.PORT || 3000;
-      app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
-    }
-  })
-  .catch(err => {
-    console.error('Failed to start app:', err);
-    if (require.main === module) process.exit(1);
-  });
+// Kick off initialization immediately — resolves once all routes/middleware are registered
+const initPromise = startApp().catch(err => {
+  console.error('App initialization failed:', err);
+  if (require.main === module) process.exit(1);
+});
 
-// Export for Vercel serverless
-module.exports = app;
+// Vercel serverless handler — awaits full initialization before serving each request
+const handler = async (req, res) => {
+  await initPromise;
+  app(req, res);
+};
+
+// Only bind a TCP port when running locally (not on Vercel serverless)
+if (require.main === module) {
+  initPromise.then(() => {
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+  });
+}
+
+module.exports = handler;
