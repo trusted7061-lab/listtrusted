@@ -12,6 +12,18 @@ const seedCityAds = require('./seeds/cityAds');
 
 const app = express();
 
+// DB ready promise — resolved once on first invocation
+let dbReady = null;
+
+async function initDB() {
+  if (dbReady) return dbReady;
+  dbReady = (async () => {
+    const mongoUri = await connectDB();
+    return mongoUri;
+  })();
+  return dbReady;
+}
+
 async function startApp() {
   // Connect to MongoDB (returns resolved URI)
   const mongoUri = await connectDB();
@@ -64,16 +76,9 @@ async function startApp() {
     res.status(404).render('404', { title: 'Page Not Found' });
   });
 
-  // Seed admin
-  await seedAdmin();
-
-  // Seed city ads (5 approved ads per city from admin account)
-  await seedCityAds();
-
-  const PORT = process.env.PORT || 3000;
-  app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-  });
+  // Seed in background — don't block Vercel cold starts
+  seedAdmin().catch(err => console.error('Seed admin failed:', err));
+  seedCityAds().catch(err => console.error('Seed city ads failed:', err));
 }
 
 // Seed admin user
@@ -94,7 +99,18 @@ async function seedAdmin() {
   }
 }
 
-startApp().catch(err => {
-  console.error('Failed to start app:', err);
-  process.exit(1);
-});
+startApp()
+  .then(() => {
+    // Only bind a port when running locally (not on Vercel serverless)
+    if (require.main === module) {
+      const PORT = process.env.PORT || 3000;
+      app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+    }
+  })
+  .catch(err => {
+    console.error('Failed to start app:', err);
+    if (require.main === module) process.exit(1);
+  });
+
+// Export for Vercel serverless
+module.exports = app;
