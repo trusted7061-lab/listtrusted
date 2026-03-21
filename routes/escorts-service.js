@@ -93,8 +93,21 @@ router.get('/:citySlug', async (req, res, next) => {
       nearByCities
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).render('404', { title: 'Server Error' });
+    console.error('City page error:', err.message);
+    // Fall back — render page with empty ads so it doesn't show error
+    const areas = getAreasForCity(city.slug);
+    const nearByCities = CITIES.filter(c => c.slug !== city.slug).slice(0, 18);
+    res.render('escorts-service/city', {
+      title: `Escort Service in ${city.name} | Trusted Escort India`,
+      metaDescription: `Find verified escort service in ${city.name}, ${city.state}. Admin-approved listings.`,
+      metaKeywords: `escort service in ${city.name.toLowerCase()}, escorts in ${city.name.toLowerCase()}`,
+      canonical: `https://trustedesco.com/escorts-service/${city.slug}/`,
+      schema: '{}',
+      city,
+      ads: [],
+      areas,
+      nearByCities
+    });
   }
 });
 
@@ -155,8 +168,20 @@ router.get('/:citySlug/:areaSlug', async (req, res, next) => {
       otherAreas
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).render('404', { title: 'Server Error' });
+    console.error('Area page error:', err.message);
+    const allAreas = getAreasForCity(city.slug);
+    const otherAreas = allAreas.filter(a => a.slug !== area.slug);
+    res.render('escorts-service/area', {
+      title: `Escort Service in ${area.name}, ${city.name} | Trusted Escort India`,
+      metaDescription: `Find verified escort service in ${area.name}, ${city.name}.`,
+      metaKeywords: `escort service ${area.name.toLowerCase()}, escorts ${city.name.toLowerCase()}`,
+      canonical: `https://trustedesco.com/escorts-service/${city.slug}/${area.slug}/`,
+      schema: '{}',
+      city,
+      area,
+      ads: [],
+      otherAreas
+    });
   }
 });
 
