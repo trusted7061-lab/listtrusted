@@ -19,8 +19,8 @@ const connectDB = async () => {
   // Reuse in-progress connection promise
   if (!cached.promise) {
     cached.promise = mongoose.connect(process.env.MONGODB_URI, {
-      serverSelectionTimeoutMS: 10000,
-      socketTimeoutMS: 30000,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 10000,
       bufferCommands: false
     }).then(m => {
       cached.conn = m;

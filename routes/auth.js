@@ -92,9 +92,12 @@ router.post('/register', async (req, res) => {
     });
   } catch (err) {
     console.error('Register error:', err.message);
+    const isDBError = err.message && (err.message.includes('ENOTFOUND') || err.message.includes('ECONNREFUSED') || err.message.includes('timed out') || err.message.includes('not set'));
     const msg = err.message && err.message.includes('E11000')
       ? 'Email is already registered'
-      : 'Registration failed. Please try again.';
+      : isDBError
+        ? 'Database connection failed. Please try again in a moment.'
+        : `Registration failed: ${err.message}`;
     req.flash('error', msg);
     res.redirect('/auth/register');
   }
