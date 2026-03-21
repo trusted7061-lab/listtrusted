@@ -49,6 +49,19 @@ app.use(session(sessionOptions));
 app.use(flash());
 app.use(setLocals);
 
+// ── Ensure DB is connected before any route handler runs ─────────────────────
+// bufferCommands:false means queries fail immediately when not connected,
+// so we must explicitly await the connection on every cold-start request.
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+  } catch (err) {
+    console.error('DB connect middleware error:', err.message);
+    // Don't block the request — let route handlers handle DB errors individually
+  }
+  next();
+});
+
 // ── Routes ────────────────────────────────────────────────────────────────────
 app.use('/', require('./routes/public'));
 app.use('/escorts-service', require('./routes/escorts-service'));

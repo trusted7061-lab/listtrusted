@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
+const connectDB = require('../config/db');
 
 router.get('/login', (req, res) => {
   if (req.session.userId) {
@@ -11,6 +12,7 @@ router.get('/login', (req, res) => {
 
 router.post('/login', async (req, res) => {
   try {
+    await connectDB();
     const { email, password } = req.body;
     const user = await User.findOne({ email: email.toLowerCase().trim() });
 
@@ -47,6 +49,7 @@ router.get('/register', (req, res) => {
 
 router.post('/register', async (req, res) => {
   try {
+    await connectDB();
     const { name, email, password, confirmPassword, company, phone } = req.body;
 
     if (password !== confirmPassword) {
@@ -82,8 +85,11 @@ router.post('/register', async (req, res) => {
     req.flash('success', 'Registration successful! Welcome to TrustedAds.');
     res.redirect('/advertiser/dashboard');
   } catch (err) {
-    console.error(err);
-    req.flash('error', 'Registration failed. Please try again.');
+    console.error('Register error:', err.message);
+    const msg = err.message && err.message.includes('E11000')
+      ? 'Email is already registered'
+      : 'Registration failed. Please try again.';
+    req.flash('error', msg);
     res.redirect('/auth/register');
   }
 });
