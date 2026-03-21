@@ -3,6 +3,13 @@
    Brand: Crimson #c8102e + Gold #d4a843
    =================================================================== */
 
+/* Performance: ensure fonts never block render */
+@font-face { font-display: swap; }
+
+/* Reduce layout shift for images */
+img { height: auto; }
+.card-img-top { aspect-ratio: 16/9; object-fit: cover; }
+
 :root {
   --primary:        #c8102e;
   --primary-dark:   #96001f;

@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const compression = require('compression');
 const session = require('express-session');
 const flash = require('connect-flash');
 const expressLayouts = require('express-ejs-layouts');
@@ -11,6 +12,17 @@ const seedCityAds = require('./seeds/cityAds');
 
 const app = express();
 
+// ── Compression (gzip all HTML/JSON/CSS/JS responses) ───────────────────────
+app.use(compression({ level: 6, threshold: 1024 }));
+
+// ── Security / performance headers ───────────────────────────────────────────
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  next();
+});
+
 // ── View engine ──────────────────────────────────────────────────────────────
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -21,8 +33,19 @@ app.set('layout', 'layouts/main');
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// ── Static files ─────────────────────────────────────────────────────────────
-app.use(express.static(path.join(__dirname, 'public')));
+// ── Static files with long-lived cache ──────────────────────────────────────
+app.use(express.static(path.join(__dirname, 'public'), {
+  maxAge: '1y',
+  etag: true,
+  lastModified: true,
+  immutable: true,
+  setHeaders(res, filePath) {
+    // EJS views / HTML should never be cached at the CDN level
+    if (filePath.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+    }
+  }
+}));
 
 // ── Session ───────────────────────────────────────────────────────────────────
 const sessionOptions = {

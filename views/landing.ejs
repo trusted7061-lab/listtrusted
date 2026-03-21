@@ -211,7 +211,7 @@
         <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="<%= i * 100 %>">
           <div class="ad-card card border-0 shadow-sm h-100 overflow-hidden">
             <div class="ad-card-img-wrapper">
-              <img src="<%= ad.image %>" class="card-img-top" alt="<%= ad.title %>">
+              <img src="<%= ad.image %>" class="card-img-top" alt="<%= ad.title %>" loading="lazy" decoding="async">
               <span class="ad-type-badge"><%= ad.category %></span>
             </div>
             <div class="card-body p-4">
