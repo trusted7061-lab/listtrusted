@@ -44,7 +44,7 @@ router.get('/', (req, res) => {
 // ─────────────────────────────────────────────
 // GET /escorts-service/:city/   →  City page
 // ─────────────────────────────────────────────
-router.get(['/:citySlug', '/:citySlug/'], async (req, res, next) => {
+router.get('/:citySlug{/}', async (req, res, next) => {
   const city = CITY_BY_SLUG[req.params.citySlug];
   if (!city) return next(); // fall through to 404
 
@@ -101,7 +101,7 @@ router.get(['/:citySlug', '/:citySlug/'], async (req, res, next) => {
 // ─────────────────────────────────────────────
 // GET /escorts-service/:city/:area/   →  Area page
 // ─────────────────────────────────────────────
-router.get(['/:citySlug/:areaSlug', '/:citySlug/:areaSlug/'], async (req, res, next) => {
+router.get('/:citySlug/:areaSlug{/}', async (req, res, next) => {
   const city = CITY_BY_SLUG[req.params.citySlug];
   if (!city) return next();
 
