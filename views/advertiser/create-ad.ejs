@@ -15,6 +15,21 @@
         <div class="card border-0 shadow-sm">
           <div class="card-body p-4 p-lg-5">
             <form method="POST" action="/advertiser/create-ad" enctype="multipart/form-data" id="adForm">
+              <%
+                var fd = typeof formData !== 'undefined' ? formData : {};
+                var am = fd.aboutMe || {};
+                var svcList = Array.isArray(fd.services) ? fd.services : (fd.services ? [fd.services] : []);
+                var langList = am.languages ? (Array.isArray(am.languages) ? am.languages : [am.languages]) : [];
+              %>
+              <% if (typeof errorMsg !== 'undefined' && errorMsg) { %>
+                <div class="alert alert-danger d-flex align-items-center mb-4" role="alert" id="formErrorAlert">
+                  <i class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2"></i>
+                  <span><%= errorMsg %></span>
+                </div>
+              <% } %>
+              <% if (typeof uploadedImage !== 'undefined' && uploadedImage) { %>
+                <input type="hidden" name="existingImage" value="<%= uploadedImage %>">
+              <% } %>
               <!-- Basic Info -->
               <div class="form-section mb-4">
                 <h5 class="fw-semibold mb-3 d-flex align-items-center">
@@ -22,11 +37,11 @@
                 </h5>
                 <div class="mb-3">
                   <label class="form-label fw-medium">Ad Title <span class="text-danger">*</span></label>
-                  <input type="text" name="title" class="form-control form-control-lg" placeholder="Enter a catchy title for your ad" required maxlength="100">
+                  <input type="text" name="title" class="form-control form-control-lg" placeholder="Enter a catchy title for your ad" required maxlength="100" value="<%= fd.title || '' %>">
                 </div>
                 <div class="mb-3">
                   <label class="form-label fw-medium">Description <span class="text-danger">*</span></label>
-                  <textarea name="description" class="form-control" rows="4" placeholder="Describe your ad in detail — what's the offer, message, or promotion?" required maxlength="1000"></textarea>
+                  <textarea name="description" class="form-control" rows="4" placeholder="Describe your ad in detail — what's the offer, message, or promotion?" required maxlength="1000"><%= fd.description || '' %></textarea>
                   <div class="form-text">Maximum 1000 characters</div>
                 </div>
               </div>
@@ -40,14 +55,14 @@
                   <div class="col-md-6">
                     <label class="form-label fw-medium">Ad Category / Type <span class="text-danger">*</span></label>
                     <select name="category" class="form-select" required>
-                      <option value="" disabled selected>Choose ad type</option>
-                      <option value="Banner">Banner Ad</option>
-                      <option value="Video">Video Ad</option>
-                      <option value="Popup">Popup Ad</option>
-                      <option value="Native">Native Ad</option>
-                      <option value="Social Media">Social Media Ad</option>
-                      <option value="Search">Search Ad</option>
-                      <option value="Email">Email Ad</option>
+                      <option value="" disabled <%= !fd.category ? 'selected' : '' %>>Choose ad type</option>
+                      <option value="Banner" <%= fd.category === 'Banner' ? 'selected' : '' %>>Banner Ad</option>
+                      <option value="Video" <%= fd.category === 'Video' ? 'selected' : '' %>>Video Ad</option>
+                      <option value="Popup" <%= fd.category === 'Popup' ? 'selected' : '' %>>Popup Ad</option>
+                      <option value="Native" <%= fd.category === 'Native' ? 'selected' : '' %>>Native Ad</option>
+                      <option value="Social Media" <%= fd.category === 'Social Media' ? 'selected' : '' %>>Social Media Ad</option>
+                      <option value="Search" <%= fd.category === 'Search' ? 'selected' : '' %>>Search Ad</option>
+                      <option value="Email" <%= fd.category === 'Email' ? 'selected' : '' %>>Email Ad</option>
                     </select>
                   </div>
                   <div class="col-md-6">
@@ -55,14 +70,14 @@
                     <select name="citySlug" class="form-select" required>
                       <option value="" disabled selected>Select your city</option>
                       <% cities.forEach(city => { %>
-                        <option value="<%= city.slug %>"><%= city.name %>, <%= city.state %></option>
+                        <option value="<%= city.slug %>" <%= fd.citySlug === city.slug ? 'selected' : '' %>><%= city.name %>, <%= city.state %></option>
                       <% }) %>
                     </select>
                     <div class="form-text">Your ad will appear on the city's location page</div>
                   </div>
                   <div class="col-md-6">
                     <label class="form-label fw-medium">Target Audience <span class="text-danger">*</span></label>
-                    <input type="text" name="targetAudience" class="form-control" placeholder="e.g., 18-35 year olds, adults" required>
+                    <input type="text" name="targetAudience" class="form-control" placeholder="e.g., 18-35 year olds, adults" required value="<%= fd.targetAudience || '' %>">
                   </div>
                 </div>
               </div>
@@ -73,19 +88,22 @@
                   <span class="section-number me-2">3</span>Ad Creative
                 </h5>
                 <div class="upload-zone" id="uploadZone">
-                  <input type="file" name="image" id="imageInput" class="d-none" accept="image/jpeg,image/png,image/gif,image/webp" required>
-                  <div class="upload-placeholder" id="uploadPlaceholder">
+                  <input type="file" name="image" id="imageInput" class="d-none" accept="image/*">
+                  <div class="upload-placeholder" id="uploadPlaceholder"<% if(typeof uploadedImage !== 'undefined' && uploadedImage){ %> style="display:none"<% } %>>
                     <i class="bi bi-cloud-arrow-up display-4 text-primary"></i>
                     <h6 class="fw-semibold mt-2">Drop your ad image here</h6>
-                    <p class="text-muted small">or click to browse (JPG, PNG, GIF, WEBP — max 5MB)</p>
+                    <p class="text-muted small">or click to browse &mdash; any image format (JPG, PNG, HEIC, WEBP&hellip;), max 5MB</p>
                     <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-3" onclick="document.getElementById('imageInput').click()">
                       <i class="bi bi-image me-1"></i>Choose Image
                     </button>
                   </div>
-                  <div class="upload-preview d-none" id="uploadPreview">
-                    <img id="previewImg" src="" alt="Preview" class="img-fluid rounded">
-                    <button type="button" class="btn btn-sm btn-danger rounded-pill mt-2" id="removeImage">
-                      <i class="bi bi-trash me-1"></i>Remove
+                  <div class="upload-preview<% if(!(typeof uploadedImage !== 'undefined' && uploadedImage)){ %> d-none<% } %>" id="uploadPreview">
+                    <img id="previewImg" src="<%= (typeof uploadedImage !== 'undefined' && uploadedImage) ? uploadedImage : '' %>" alt="Preview" class="img-fluid rounded">
+                    <% if(typeof uploadedImage !== 'undefined' && uploadedImage) { %>
+                      <p class="text-success small mt-2"><i class="bi bi-check-circle me-1"></i>Image already uploaded &mdash; choose a new one to replace it, or leave as-is.</p>
+                    <% } %>
+                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill mt-2" id="removeImage" onclick="document.getElementById('imageInput').click()">
+                      <i class="bi bi-arrow-repeat me-1"></i>Change Image
                     </button>
                   </div>
                 </div>
@@ -99,17 +117,17 @@
                 <div class="row g-3">
                   <div class="col-md-6">
                     <label class="form-label fw-medium">Start Date <span class="text-danger">*</span></label>
-                    <input type="date" name="startDate" class="form-control" required>
+                    <input type="date" name="startDate" class="form-control" required value="<%= fd.startDate || '' %>">
                   </div>
                   <div class="col-md-6">
                     <label class="form-label fw-medium">End Date <span class="text-danger">*</span></label>
-                    <input type="date" name="endDate" class="form-control" required>
+                    <input type="date" name="endDate" class="form-control" required value="<%= fd.endDate || '' %>">
                   </div>
                   <div class="col-md-6">
                     <label class="form-label fw-medium">Budget ($)</label>
                     <div class="input-group">
                       <span class="input-group-text bg-light"><i class="bi bi-currency-dollar"></i></span>
-                      <input type="number" name="budget" class="form-control" placeholder="0.00" min="0" step="0.01">
+                      <input type="number" name="budget" class="form-control" placeholder="0.00" min="0" step="0.01" value="<%= fd.budget || '' %>">
                     </div>
                     <div class="form-text">Optional — set your campaign budget</div>
                   </div>
@@ -134,7 +152,7 @@
                   ].forEach(service => { %>
                     <div class="col-6 col-md-4 col-lg-3">
                       <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="services" value="<%= service %>" id="svc_<%= service.replace(/[^a-z0-9]/gi,'_') %>">
+                        <input class="form-check-input" type="checkbox" name="services" value="<%= service %>" id="svc_<%= service.replace(/[^a-z0-9]/gi,'_') %>" <%= svcList.includes(service) ? 'checked' : '' %>>
                         <label class="form-check-label small" for="svc_<%= service.replace(/[^a-z0-9]/gi,'_') %>"><%= service %></label>
                       </div>
                     </div>
@@ -151,79 +169,79 @@
                   <div class="col-md-6">
                     <label class="form-label fw-medium">Gender <span class="text-danger">*</span></label>
                     <div class="d-flex gap-3">
-                      <div class="form-check"><input class="form-check-input" type="radio" name="aboutMe[gender]" value="Female" id="gFemale" required><label class="form-check-label" for="gFemale">Female</label></div>
-                      <div class="form-check"><input class="form-check-input" type="radio" name="aboutMe[gender]" value="Male" id="gMale"><label class="form-check-label" for="gMale">Male</label></div>
-                      <div class="form-check"><input class="form-check-input" type="radio" name="aboutMe[gender]" value="Transsexual" id="gTrans"><label class="form-check-label" for="gTrans">Transsexual</label></div>
+                      <div class="form-check"><input class="form-check-input" type="radio" name="aboutMe[gender]" value="Female" id="gFemale" required <%= am.gender === 'Female' ? 'checked' : '' %>><label class="form-check-label" for="gFemale">Female</label></div>
+                      <div class="form-check"><input class="form-check-input" type="radio" name="aboutMe[gender]" value="Male" id="gMale" <%= am.gender === 'Male' ? 'checked' : '' %>><label class="form-check-label" for="gMale">Male</label></div>
+                      <div class="form-check"><input class="form-check-input" type="radio" name="aboutMe[gender]" value="Transsexual" id="gTrans" <%= am.gender === 'Transsexual' ? 'checked' : '' %>><label class="form-check-label" for="gTrans">Transsexual</label></div>
                     </div>
                   </div>
                   <div class="col-md-6">
                     <label class="form-label fw-medium">Orientation</label>
                     <div class="d-flex gap-3 flex-wrap">
-                      <div class="form-check"><input class="form-check-input" type="radio" name="aboutMe[orientation]" value="Heterosexual" id="oHet"><label class="form-check-label" for="oHet">Heterosexual</label></div>
-                      <div class="form-check"><input class="form-check-input" type="radio" name="aboutMe[orientation]" value="Bisexual" id="oBi"><label class="form-check-label" for="oBi">Bisexual</label></div>
-                      <div class="form-check"><input class="form-check-input" type="radio" name="aboutMe[orientation]" value="Lesbian or Gay" id="oGay"><label class="form-check-label" for="oGay">Lesbian or Gay</label></div>
+                      <div class="form-check"><input class="form-check-input" type="radio" name="aboutMe[orientation]" value="Heterosexual" id="oHet" <%= am.orientation === 'Heterosexual' ? 'checked' : '' %>><label class="form-check-label" for="oHet">Heterosexual</label></div>
+                      <div class="form-check"><input class="form-check-input" type="radio" name="aboutMe[orientation]" value="Bisexual" id="oBi" <%= am.orientation === 'Bisexual' ? 'checked' : '' %>><label class="form-check-label" for="oBi">Bisexual</label></div>
+                      <div class="form-check"><input class="form-check-input" type="radio" name="aboutMe[orientation]" value="Lesbian or Gay" id="oGay" <%= am.orientation === 'Lesbian or Gay' ? 'checked' : '' %>><label class="form-check-label" for="oGay">Lesbian or Gay</label></div>
                     </div>
                   </div>
                   <div class="col-md-4">
                     <label class="form-label fw-medium">Ethnicity</label>
                     <select name="aboutMe[ethnicity]" class="form-select">
                       <option value="">Select</option>
-                      <option>Asian</option><option>Black</option><option>Caucasian</option>
-                      <option>Hispanic</option><option>Indian</option><option>Middle Eastern</option>
-                      <option>Mixed</option><option>Other</option>
+                      <option <%= am.ethnicity === 'Asian' ? 'selected' : '' %>>Asian</option><option <%= am.ethnicity === 'Black' ? 'selected' : '' %>>Black</option><option <%= am.ethnicity === 'Caucasian' ? 'selected' : '' %>>Caucasian</option>
+                      <option <%= am.ethnicity === 'Hispanic' ? 'selected' : '' %>>Hispanic</option><option <%= am.ethnicity === 'Indian' ? 'selected' : '' %>>Indian</option><option <%= am.ethnicity === 'Middle Eastern' ? 'selected' : '' %>>Middle Eastern</option>
+                      <option <%= am.ethnicity === 'Mixed' ? 'selected' : '' %>>Mixed</option><option <%= am.ethnicity === 'Other' ? 'selected' : '' %>>Other</option>
                     </select>
                   </div>
                   <div class="col-md-4">
                     <label class="form-label fw-medium">Height (cm)</label>
-                    <input type="number" name="aboutMe[height]" class="form-control" placeholder="e.g. 165" min="100" max="220">
+                    <input type="number" name="aboutMe[height]" class="form-control" placeholder="e.g. 165" min="100" max="220" value="<%= am.height || '' %>">
                   </div>
                   <div class="col-md-4">
                     <label class="form-label fw-medium">Age</label>
-                    <input type="number" name="aboutMe[age]" class="form-control" placeholder="e.g. 24" min="18" max="80">
+                    <input type="number" name="aboutMe[age]" class="form-control" placeholder="e.g. 24" min="18" max="80" value="<%= am.age || '' %>">
                   </div>
                   <div class="col-md-4">
                     <label class="form-label fw-medium">Bust</label>
                     <select name="aboutMe[bust]" class="form-select">
                       <option value="">Select</option>
-                      <option>A</option><option>B</option><option>C</option><option>D</option>
-                      <option>DD</option><option>E</option><option>F</option><option>G+</option>
+                      <option <%= am.bust === 'A' ? 'selected' : '' %>>A</option><option <%= am.bust === 'B' ? 'selected' : '' %>>B</option><option <%= am.bust === 'C' ? 'selected' : '' %>>C</option><option <%= am.bust === 'D' ? 'selected' : '' %>>D</option>
+                      <option <%= am.bust === 'DD' ? 'selected' : '' %>>DD</option><option <%= am.bust === 'E' ? 'selected' : '' %>>E</option><option <%= am.bust === 'F' ? 'selected' : '' %>>F</option><option <%= am.bust === 'G+' ? 'selected' : '' %>>G+</option>
                     </select>
                   </div>
                   <div class="col-md-4">
                     <label class="form-label fw-medium">Hair Color</label>
                     <select name="aboutMe[hairColor]" class="form-select">
                       <option value="">Select</option>
-                      <option>Black</option><option>Brown</option><option>Blonde</option>
-                      <option>Red</option><option>Auburn</option><option>Gray</option><option>Other</option>
+                      <option <%= am.hairColor === 'Black' ? 'selected' : '' %>>Black</option><option <%= am.hairColor === 'Brown' ? 'selected' : '' %>>Brown</option><option <%= am.hairColor === 'Blonde' ? 'selected' : '' %>>Blonde</option>
+                      <option <%= am.hairColor === 'Red' ? 'selected' : '' %>>Red</option><option <%= am.hairColor === 'Auburn' ? 'selected' : '' %>>Auburn</option><option <%= am.hairColor === 'Gray' ? 'selected' : '' %>>Gray</option><option <%= am.hairColor === 'Other' ? 'selected' : '' %>>Other</option>
                     </select>
                   </div>
                   <div class="col-md-4">
                     <label class="form-label fw-medium">Nationality</label>
                     <select name="aboutMe[nationality]" class="form-select">
                       <option value="">Select</option>
-                      <option>Indian</option><option>Russian</option><option>Thai</option>
-                      <option>Chinese</option><option>Filipino</option><option>Brazilian</option>
-                      <option>European</option><option>American</option><option>Other</option>
+                      <option <%= am.nationality === 'Indian' ? 'selected' : '' %>>Indian</option><option <%= am.nationality === 'Russian' ? 'selected' : '' %>>Russian</option><option <%= am.nationality === 'Thai' ? 'selected' : '' %>>Thai</option>
+                      <option <%= am.nationality === 'Chinese' ? 'selected' : '' %>>Chinese</option><option <%= am.nationality === 'Filipino' ? 'selected' : '' %>>Filipino</option><option <%= am.nationality === 'Brazilian' ? 'selected' : '' %>>Brazilian</option>
+                      <option <%= am.nationality === 'European' ? 'selected' : '' %>>European</option><option <%= am.nationality === 'American' ? 'selected' : '' %>>American</option><option <%= am.nationality === 'Other' ? 'selected' : '' %>>Other</option>
                     </select>
                   </div>
                   <div class="col-md-6">
                     <label class="form-label fw-medium">Languages I Speak</label>
                     <select name="aboutMe[languages]" class="form-select" multiple size="4">
-                      <option>English</option><option>Hindi</option><option>Russian</option>
-                      <option>French</option><option>Spanish</option><option>Arabic</option>
-                      <option>Chinese</option><option>Thai</option><option>Other</option>
+                      <option <%= langList.includes('English') ? 'selected' : '' %>>English</option><option <%= langList.includes('Hindi') ? 'selected' : '' %>>Hindi</option><option <%= langList.includes('Russian') ? 'selected' : '' %>>Russian</option>
+                      <option <%= langList.includes('French') ? 'selected' : '' %>>French</option><option <%= langList.includes('Spanish') ? 'selected' : '' %>>Spanish</option><option <%= langList.includes('Arabic') ? 'selected' : '' %>>Arabic</option>
+                      <option <%= langList.includes('Chinese') ? 'selected' : '' %>>Chinese</option><option <%= langList.includes('Thai') ? 'selected' : '' %>>Thai</option><option <%= langList.includes('Other') ? 'selected' : '' %>>Other</option>
                     </select>
                     <div class="form-text">Hold Ctrl/Cmd to select multiple</div>
                   </div>
                   <div class="col-md-6">
                     <label class="form-label fw-medium">Shaved</label>
                     <div class="d-flex gap-3 mt-1">
-                      <div class="form-check"><input class="form-check-input" type="radio" name="aboutMe[shaved]" value="No" id="shNo"><label class="form-check-label" for="shNo">No</label></div>
-                      <div class="form-check"><input class="form-check-input" type="radio" name="aboutMe[shaved]" value="Partially" id="shPart"><label class="form-check-label" for="shPart">Partially</label></div>
-                      <div class="form-check"><input class="form-check-input" type="radio" name="aboutMe[shaved]" value="Yes" id="shYes"><label class="form-check-label" for="shYes">Yes</label></div>
+                      <div class="form-check"><input class="form-check-input" type="radio" name="aboutMe[shaved]" value="No" id="shNo" <%= am.shaved === 'No' ? 'checked' : '' %>><label class="form-check-label" for="shNo">No</label></div>
+                      <div class="form-check"><input class="form-check-input" type="radio" name="aboutMe[shaved]" value="Partially" id="shPart" <%= am.shaved === 'Partially' ? 'checked' : '' %>><label class="form-check-label" for="shPart">Partially</label></div>
+                      <div class="form-check"><input class="form-check-input" type="radio" name="aboutMe[shaved]" value="Yes" id="shYes" <%= am.shaved === 'Yes' ? 'checked' : '' %>><label class="form-check-label" for="shYes">Yes</label></div>
                     </div>
                     <div class="form-check mt-3">
-                      <input class="form-check-input" type="checkbox" name="aboutMe[smoke]" value="1" id="smoker">
+                      <input class="form-check-input" type="checkbox" name="aboutMe[smoke]" value="1" id="smoker" <%= am.smoke === '1' ? 'checked' : '' %>>
                       <label class="form-check-label" for="smoker">I smoke</label>
                     </div>
                   </div>
@@ -240,10 +258,10 @@
                     <label class="form-label fw-medium">Phone Number</label>
                     <div class="input-group">
                       <span class="input-group-text bg-light"><i class="bi bi-telephone"></i></span>
-                      <input type="tel" name="phoneNumber" class="form-control" placeholder="+91 98765 43210">
+                      <input type="tel" name="phoneNumber" class="form-control" placeholder="+91 98765 43210" value="<%= fd.phoneNumber || '' %>">
                     </div>
                     <div class="form-check mt-2">
-                      <input class="form-check-input" type="checkbox" name="showPhoneNumber" id="showPhoneNumber">
+                      <input class="form-check-input" type="checkbox" name="showPhoneNumber" id="showPhoneNumber" <%= fd.showPhoneNumber ? 'checked' : '' %>>
                       <label class="form-check-label small" for="showPhoneNumber">
                         Show phone number publicly on approved ads
                       </label>
@@ -253,10 +271,10 @@
                     <label class="form-label fw-medium">WhatsApp Number</label>
                     <div class="input-group">
                       <span class="input-group-text bg-light"><i class="bi bi-whatsapp text-success"></i></span>
-                      <input type="tel" name="whatsappNumber" class="form-control" placeholder="+91 98765 43210">
+                      <input type="tel" name="whatsappNumber" class="form-control" placeholder="+91 98765 43210" value="<%= fd.whatsappNumber || '' %>">
                     </div>
                     <div class="form-check mt-2">
-                      <input class="form-check-input" type="checkbox" name="showWhatsappNumber" id="showWhatsappNumber">
+                      <input class="form-check-input" type="checkbox" name="showWhatsappNumber" id="showWhatsappNumber" <%= fd.showWhatsappNumber ? 'checked' : '' %>>
                       <label class="form-check-label small" for="showWhatsappNumber">
                         Show WhatsApp button publicly on approved ads
                       </label>
@@ -346,3 +364,84 @@
     </div>
   </div>
 </div>
+
+<script>
+(function () {
+  var form = document.getElementById('adForm');
+  if (!form) return;
+
+  // Live image preview (handles new file selection)
+  var imageInput = document.getElementById('imageInput');
+  var placeholder = document.getElementById('uploadPlaceholder');
+  var preview = document.getElementById('uploadPreview');
+  var previewImg = document.getElementById('previewImg');
+
+  if (imageInput) {
+    imageInput.addEventListener('change', function () {
+      var file = this.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        previewImg.src = e.target.result;
+        placeholder.style.display = 'none';
+        preview.classList.remove('d-none');
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // Client-side validation on submit
+  form.addEventListener('submit', function (e) {
+    // Remove previous inline errors
+    form.querySelectorAll('.js-field-error').forEach(function (el) { el.remove(); });
+
+    var errors = [];
+    var existingImage = form.querySelector('[name="existingImage"]');
+    var hasNewFile = imageInput && imageInput.files && imageInput.files.length > 0;
+
+    if (!existingImage && !hasNewFile) {
+      errors.push({ selector: '#uploadZone', msg: 'Please choose an image for your ad.' });
+    }
+
+    var startDate = form.querySelector('[name="startDate"]').value;
+    var endDate = form.querySelector('[name="endDate"]').value;
+    if (startDate && endDate && new Date(endDate) <= new Date(startDate)) {
+      errors.push({ selector: '[name="endDate"]', msg: 'End date must be after start date.' });
+    }
+
+    var phoneRegex = /^[\d\s()+-]{7,20}$/;
+    var phone = form.querySelector('[name="phoneNumber"]').value.trim();
+    var wa = form.querySelector('[name="whatsappNumber"]').value.trim();
+    var showPhone = form.querySelector('[name="showPhoneNumber"]').checked;
+    var showWa = form.querySelector('[name="showWhatsappNumber"]').checked;
+
+    if (phone && !phoneRegex.test(phone)) {
+      errors.push({ selector: '[name="phoneNumber"]', msg: 'Enter a valid phone number.' });
+    }
+    if (wa && !phoneRegex.test(wa)) {
+      errors.push({ selector: '[name="whatsappNumber"]', msg: 'Enter a valid WhatsApp number.' });
+    }
+    if (showPhone && !phone) {
+      errors.push({ selector: '[name="phoneNumber"]', msg: 'Enter a phone number before enabling public display.' });
+    }
+    if (showWa && !wa) {
+      errors.push({ selector: '[name="whatsappNumber"]', msg: 'Enter a WhatsApp number before enabling public display.' });
+    }
+
+    if (errors.length) {
+      e.preventDefault();
+      errors.forEach(function (err) {
+        var field = form.querySelector(err.selector);
+        if (!field) return;
+        var msg = document.createElement('div');
+        msg.className = 'text-danger small mt-1 js-field-error';
+        msg.textContent = err.msg;
+        var parent = field.closest('.input-group') || field.closest('.upload-zone') || field;
+        parent.insertAdjacentElement('afterend', msg);
+      });
+      var first = form.querySelector('.js-field-error');
+      if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  });
+}());
+</script>

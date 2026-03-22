@@ -20,17 +20,15 @@ const storage = new CloudinaryStorage({
   cloudinary,
   params: {
     folder: 'trustedescort/ads',
-    allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
-    transformation: [{ width: 1200, crop: 'limit', quality: 'auto' }],
+    // No allowed_formats restriction — accept any image Cloudinary can process (HEIC, AVIF, WebP, etc.)
+    transformation: [{ width: 1200, crop: 'limit', quality: 'auto', fetch_format: 'auto' }],
   },
 });
 
 const fileFilter = (req, file, cb) => {
-  const allowed = /jpeg|jpg|png|gif|webp/;
-  const ext = allowed.test(path.extname(file.originalname).toLowerCase());
-  const mime = allowed.test(file.mimetype);
-  if (ext && mime) return cb(null, true);
-  cb(new Error('Only image files (jpg, png, gif, webp) are allowed'));
+  // Accept any image format — Cloudinary handles conversion
+  if (file.mimetype.startsWith('image/')) return cb(null, true);
+  cb(new Error('Only image files are allowed. Please choose a JPG, PNG, HEIC, WEBP or similar image file.'));
 };
 
 const upload = multer({ storage, fileFilter, limits: { fileSize: 5 * 1024 * 1024 } });
@@ -82,15 +80,24 @@ router.get('/my-ads', isAdvertiser, async (req, res) => {
 
 // Create Ad - form
 router.get('/create-ad', isAdvertiser, (req, res) => {
-  res.render('advertiser/create-ad', { title: 'Create New Ad', cities: CITIES });
+  res.render('advertiser/create-ad', { title: 'Create New Ad', cities: CITIES, formData: {}, uploadedImage: null, errorMsg: null });
 });
 
 // Create Ad - submit
+function renderCreateAdForm(res, { formData = {}, uploadedImage = null, errorMsg = null } = {}) {
+  return res.render('advertiser/create-ad', {
+    title: 'Create New Ad',
+    cities: CITIES,
+    formData,
+    uploadedImage,
+    errorMsg
+  });
+}
+
 router.post('/create-ad', isAdvertiser, (req, res, next) => {
   upload.single('image')(req, res, (err) => {
     if (err) {
-      req.flash('error', err.message || 'File upload failed. Use JPG, PNG, GIF or WebP under 5MB.');
-      return res.redirect('/advertiser/create-ad');
+      return renderCreateAdForm(res, { formData: req.body || {}, errorMsg: err.message || 'File upload failed. Please use an image file under 5MB.' });
     }
     next();
   });
@@ -118,34 +125,31 @@ router.post('/create-ad', isAdvertiser, (req, res, next) => {
     const showWhatsappNumber = parseCheckbox(rawShowWhatsappNumber);
     const cityObj = CITY_BY_SLUG[(rawCitySlug || '').trim()] || null;
 
-    if (!req.file) {
-      req.flash('error', 'Ad image is required');
-      return res.redirect('/advertiser/create-ad');
+    // Accept new upload OR previously uploaded image (when form re-renders after validation error)
+    const imageUrl = (req.file && req.file.path) || (req.body && req.body.existingImage) || null;
+
+    if (!imageUrl) {
+      return renderCreateAdForm(res, { formData: req.body, errorMsg: 'Ad image is required. Please choose an image file.' });
     }
 
     if (new Date(endDate) <= new Date(startDate)) {
-      req.flash('error', 'End date must be after start date');
-      return res.redirect('/advertiser/create-ad');
+      return renderCreateAdForm(res, { formData: req.body, uploadedImage: imageUrl, errorMsg: 'End date must be after start date.' });
     }
 
     if (!isValidContactNumber(phoneNumber)) {
-      req.flash('error', 'Please enter a valid phone number');
-      return res.redirect('/advertiser/create-ad');
+      return renderCreateAdForm(res, { formData: req.body, uploadedImage: imageUrl, errorMsg: 'Please enter a valid phone number.' });
     }
 
     if (!isValidContactNumber(whatsappNumber)) {
-      req.flash('error', 'Please enter a valid WhatsApp number');
-      return res.redirect('/advertiser/create-ad');
+      return renderCreateAdForm(res, { formData: req.body, uploadedImage: imageUrl, errorMsg: 'Please enter a valid WhatsApp number.' });
     }
 
     if (showPhoneNumber && !phoneNumber) {
-      req.flash('error', 'Add a phone number before enabling the public phone option');
-      return res.redirect('/advertiser/create-ad');
+      return renderCreateAdForm(res, { formData: req.body, uploadedImage: imageUrl, errorMsg: 'Add a phone number before enabling the public phone option.' });
     }
 
     if (showWhatsappNumber && !whatsappNumber) {
-      req.flash('error', 'Add a WhatsApp number before enabling the public WhatsApp option');
-      return res.redirect('/advertiser/create-ad');
+      return renderCreateAdForm(res, { formData: req.body, uploadedImage: imageUrl, errorMsg: 'Add a WhatsApp number before enabling the public WhatsApp option.' });
     }
 
     await Ad.create({
@@ -153,7 +157,7 @@ router.post('/create-ad', isAdvertiser, (req, res, next) => {
       description: description.trim(),
       category,
       targetAudience: targetAudience.trim(),
-      image: req.file.path,
+      image: imageUrl,
       startDate: new Date(startDate),
       endDate: new Date(endDate),
       budget: budget ? Number(budget) : 0,
@@ -184,8 +188,11 @@ router.post('/create-ad', isAdvertiser, (req, res, next) => {
     res.redirect('/advertiser/my-ads');
   } catch (err) {
     console.error(err);
-    req.flash('error', 'Error creating ad. Please check all fields.');
-    res.redirect('/advertiser/create-ad');
+    renderCreateAdForm(res, {
+      formData: req.body || {},
+      uploadedImage: (req.file && req.file.path) || (req.body && req.body.existingImage) || null,
+      errorMsg: 'An error occurred saving your ad. Please check all fields and try again.'
+    });
   }
 });
 
