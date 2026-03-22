@@ -113,13 +113,119 @@
                     </div>
                     <div class="form-text">Optional — set your campaign budget</div>
                   </div>
-                  <div class="col-md-6">
-                    <label class="form-label fw-medium">Landing URL</label>
-                    <div class="input-group">
-                      <span class="input-group-text bg-light"><i class="bi bi-link-45deg"></i></span>
-                      <input type="url" name="landingUrl" class="form-control" placeholder="https://yourwebsite.com">
+
+                </div>
+              </div>
+
+              <!-- Services -->
+              <div class="form-section mb-4">
+                <h5 class="fw-semibold mb-3 d-flex align-items-center">
+                  <span class="section-number me-2">5</span>Services
+                </h5>
+                <div class="row g-2">
+                  <% [
+                    'Anal Sex','BDSM','CIM - Come In Mouth','COB - Come On Body','Couples','Deep throat',
+                    'Domination','Face sitting','Fingering','Fisting','Foot fetish','French kissing',
+                    'GFE','Giving hardsports','Receiving hardsports','Lap dancing','Massage','Nuru massage',
+                    'Oral sex - blowjob','OWO - Oral without condom','Parties','Reverse oral',
+                    'Giving rimming','Rimming receiving','Role play','Sex toys','Spanking','Strapon',
+                    'Striptease','Submissive','Squirting','Tantric massage','Teabagging','Tie and tease',
+                    'Uniforms','Giving watersports','Receiving watersports','Webcam sex'
+                  ].forEach(service => { %>
+                    <div class="col-6 col-md-4 col-lg-3">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="services" value="<%= service %>" id="svc_<%= service.replace(/[^a-z0-9]/gi,'_') %>">
+                        <label class="form-check-label small" for="svc_<%= service.replace(/[^a-z0-9]/gi,'_') %>"><%= service %></label>
+                      </div>
                     </div>
-                    <div class="form-text">Where should clicks go?</div>
+                  <% }) %>
+                </div>
+              </div>
+
+              <!-- About Me -->
+              <div class="form-section mb-4">
+                <h5 class="fw-semibold mb-3 d-flex align-items-center">
+                  <span class="section-number me-2">6</span>About Me
+                </h5>
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label class="form-label fw-medium">Gender <span class="text-danger">*</span></label>
+                    <div class="d-flex gap-3">
+                      <div class="form-check"><input class="form-check-input" type="radio" name="aboutMe[gender]" value="Female" id="gFemale" required><label class="form-check-label" for="gFemale">Female</label></div>
+                      <div class="form-check"><input class="form-check-input" type="radio" name="aboutMe[gender]" value="Male" id="gMale"><label class="form-check-label" for="gMale">Male</label></div>
+                      <div class="form-check"><input class="form-check-input" type="radio" name="aboutMe[gender]" value="Transsexual" id="gTrans"><label class="form-check-label" for="gTrans">Transsexual</label></div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label fw-medium">Orientation</label>
+                    <div class="d-flex gap-3 flex-wrap">
+                      <div class="form-check"><input class="form-check-input" type="radio" name="aboutMe[orientation]" value="Heterosexual" id="oHet"><label class="form-check-label" for="oHet">Heterosexual</label></div>
+                      <div class="form-check"><input class="form-check-input" type="radio" name="aboutMe[orientation]" value="Bisexual" id="oBi"><label class="form-check-label" for="oBi">Bisexual</label></div>
+                      <div class="form-check"><input class="form-check-input" type="radio" name="aboutMe[orientation]" value="Lesbian or Gay" id="oGay"><label class="form-check-label" for="oGay">Lesbian or Gay</label></div>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label fw-medium">Ethnicity</label>
+                    <select name="aboutMe[ethnicity]" class="form-select">
+                      <option value="">Select</option>
+                      <option>Asian</option><option>Black</option><option>Caucasian</option>
+                      <option>Hispanic</option><option>Indian</option><option>Middle Eastern</option>
+                      <option>Mixed</option><option>Other</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label fw-medium">Height (cm)</label>
+                    <input type="number" name="aboutMe[height]" class="form-control" placeholder="e.g. 165" min="100" max="220">
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label fw-medium">Age</label>
+                    <input type="number" name="aboutMe[age]" class="form-control" placeholder="e.g. 24" min="18" max="80">
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label fw-medium">Bust</label>
+                    <select name="aboutMe[bust]" class="form-select">
+                      <option value="">Select</option>
+                      <option>A</option><option>B</option><option>C</option><option>D</option>
+                      <option>DD</option><option>E</option><option>F</option><option>G+</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label fw-medium">Hair Color</label>
+                    <select name="aboutMe[hairColor]" class="form-select">
+                      <option value="">Select</option>
+                      <option>Black</option><option>Brown</option><option>Blonde</option>
+                      <option>Red</option><option>Auburn</option><option>Gray</option><option>Other</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label fw-medium">Nationality</label>
+                    <select name="aboutMe[nationality]" class="form-select">
+                      <option value="">Select</option>
+                      <option>Indian</option><option>Russian</option><option>Thai</option>
+                      <option>Chinese</option><option>Filipino</option><option>Brazilian</option>
+                      <option>European</option><option>American</option><option>Other</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label fw-medium">Languages I Speak</label>
+                    <select name="aboutMe[languages]" class="form-select" multiple size="4">
+                      <option>English</option><option>Hindi</option><option>Russian</option>
+                      <option>French</option><option>Spanish</option><option>Arabic</option>
+                      <option>Chinese</option><option>Thai</option><option>Other</option>
+                    </select>
+                    <div class="form-text">Hold Ctrl/Cmd to select multiple</div>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label fw-medium">Shaved</label>
+                    <div class="d-flex gap-3 mt-1">
+                      <div class="form-check"><input class="form-check-input" type="radio" name="aboutMe[shaved]" value="No" id="shNo"><label class="form-check-label" for="shNo">No</label></div>
+                      <div class="form-check"><input class="form-check-input" type="radio" name="aboutMe[shaved]" value="Partially" id="shPart"><label class="form-check-label" for="shPart">Partially</label></div>
+                      <div class="form-check"><input class="form-check-input" type="radio" name="aboutMe[shaved]" value="Yes" id="shYes"><label class="form-check-label" for="shYes">Yes</label></div>
+                    </div>
+                    <div class="form-check mt-3">
+                      <input class="form-check-input" type="checkbox" name="aboutMe[smoke]" value="1" id="smoker">
+                      <label class="form-check-label" for="smoker">I smoke</label>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -127,7 +233,7 @@
               <!-- Contact Details -->
               <div class="form-section mb-4">
                 <h5 class="fw-semibold mb-3 d-flex align-items-center">
-                  <span class="section-number me-2">5</span>Contact Details
+                  <span class="section-number me-2">7</span>Contact Details
                 </h5>
                 <div class="row g-3">
                   <div class="col-md-6">

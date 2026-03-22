@@ -35,9 +35,22 @@ const adSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-  landingUrl: {
-    type: String,
-    trim: true
+  services: {
+    type: [String],
+    default: []
+  },
+  aboutMe: {
+    gender:      { type: String, default: '' },
+    orientation: { type: String, default: '' },
+    ethnicity:   { type: String, default: '' },
+    height:      { type: String, default: '' },
+    age:         { type: String, default: '' },
+    bust:        { type: String, default: '' },
+    hairColor:   { type: String, default: '' },
+    nationality: { type: String, default: '' },
+    languages:   { type: [String], default: [] },
+    shaved:      { type: String, default: '' },
+    smoke:       { type: Boolean, default: false }
   },
   phoneNumber: {
     type: String,

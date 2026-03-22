@@ -91,12 +91,13 @@ router.post('/create-ad', isAdvertiser, upload.single('image'), async (req, res)
       startDate,
       endDate,
       budget,
-      landingUrl,
       phoneNumber: rawPhoneNumber,
       whatsappNumber: rawWhatsappNumber,
       showPhoneNumber: rawShowPhoneNumber,
       showWhatsappNumber: rawShowWhatsappNumber,
-      citySlug: rawCitySlug
+      citySlug: rawCitySlug,
+      services: rawServices,
+      aboutMe: rawAboutMe
     } = req.body;
     const phoneNumber = normalizeContactNumber(rawPhoneNumber);
     const whatsappNumber = normalizeContactNumber(rawWhatsappNumber);
@@ -143,7 +144,20 @@ router.post('/create-ad', isAdvertiser, upload.single('image'), async (req, res)
       startDate: new Date(startDate),
       endDate: new Date(endDate),
       budget: budget ? Number(budget) : 0,
-      landingUrl: landingUrl ? landingUrl.trim() : '',
+      services: Array.isArray(rawServices) ? rawServices : (rawServices ? [rawServices] : []),
+      aboutMe: {
+        gender:      rawAboutMe?.gender || '',
+        orientation: rawAboutMe?.orientation || '',
+        ethnicity:   rawAboutMe?.ethnicity || '',
+        height:      rawAboutMe?.height || '',
+        age:         rawAboutMe?.age || '',
+        bust:        rawAboutMe?.bust || '',
+        hairColor:   rawAboutMe?.hairColor || '',
+        nationality: rawAboutMe?.nationality || '',
+        languages:   Array.isArray(rawAboutMe?.languages) ? rawAboutMe.languages : (rawAboutMe?.languages ? [rawAboutMe.languages] : []),
+        shaved:      rawAboutMe?.shaved || '',
+        smoke:       rawAboutMe?.smoke === '1'
+      },
       phoneNumber,
       whatsappNumber,
       showPhoneNumber,
