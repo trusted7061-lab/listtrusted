@@ -183,4 +183,72 @@ router.get('/', async (req, res) => {
   }
 });
 
+// ── Static pages ─────────────────────────────────────────────────────────────
+router.get('/about', (req, res) => {
+  res.render('pages/about', {
+    title: 'About Us | Trusted Escort India',
+    metaDescription: "Learn about Trusted Escort India — India's most trusted verified escort service directory covering 75+ cities.",
+    canonical: 'https://trustedescort.in/about',
+  });
+});
+
+router.get('/contact', (req, res) => {
+  res.render('pages/contact', {
+    title: 'Contact Us | Trusted Escort India',
+    metaDescription: 'Get in touch with the Trusted Escort India team. Support, abuse reports and business enquiries.',
+    canonical: 'https://trustedescort.in/contact',
+  });
+});
+
+router.post('/contact', (req, res) => {
+  const { name, email, subject, message } = req.body;
+  if (!name || !email || !subject || !message) {
+    return res.render('pages/contact', {
+      title: 'Contact Us | Trusted Escort India',
+      metaDescription: 'Contact Trusted Escort India.',
+      canonical: 'https://trustedescort.in/contact',
+      error: 'Please fill in all fields.',
+    });
+  }
+  console.log('[contact form]', { name, email, subject, message: message.slice(0, 100) });
+  res.render('pages/contact', {
+    title: 'Contact Us | Trusted Escort India',
+    metaDescription: 'Contact Trusted Escort India.',
+    canonical: 'https://trustedescort.in/contact',
+    success: "Thank you! We've received your message and will reply within 24 hours.",
+  });
+});
+
+router.get('/privacy-policy', (req, res) => {
+  res.render('pages/privacy-policy', {
+    title: 'Privacy Policy | Trusted Escort India',
+    metaDescription: 'Read the Trusted Escort India privacy policy — how we collect, use and protect your data.',
+    canonical: 'https://trustedescort.in/privacy-policy',
+  });
+});
+
+router.get('/terms', (req, res) => {
+  res.render('pages/terms', {
+    title: 'Terms & Conditions | Trusted Escort India',
+    metaDescription: 'Read the Trusted Escort India terms and conditions of use.',
+    canonical: 'https://trustedescort.in/terms',
+  });
+});
+
+router.get('/age-verification', (req, res) => {
+  res.render('pages/age-verification', {
+    title: 'Age Verification — Adults 18+ Only | Trusted Escort India',
+    metaDescription: 'Trusted Escort India is strictly for adults aged 18 and above. Read our age verification and child protection policy.',
+    canonical: 'https://trustedescort.in/age-verification',
+  });
+});
+
+router.get('/help-center', (req, res) => {
+  res.render('pages/help-center', {
+    title: 'Help Center | Trusted Escort India',
+    metaDescription: 'Browse frequently asked questions and get help with browsing, posting ads, accounts and safety on Trusted Escort India.',
+    canonical: 'https://trustedescort.in/help-center',
+  });
+});
+
 module.exports = router;

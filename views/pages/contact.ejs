@@ -1,0 +1,95 @@
+<div style="padding-top:80px;">
+  <!-- Hero -->
+  <section class="py-5" style="background:var(--gradient-hero);">
+    <div class="container py-4 text-center text-white" data-aos="fade-up">
+      <h1 class="display-5 fw-bold mb-3">Contact <span class="gradient-text-gold">Us</span></h1>
+      <p class="lead mb-0" style="color:rgba(255,255,255,0.75);max-width:600px;margin:0 auto;">Have a question, issue or report? We're here to help. Typically respond within 24 hours.</p>
+    </div>
+  </section>
+
+  <section class="py-5">
+    <div class="container">
+      <div class="row g-5 justify-content-center">
+        <!-- Contact Info -->
+        <div class="col-lg-4" data-aos="fade-right">
+          <h4 class="fw-bold mb-4">Get in Touch</h4>
+          <div class="d-flex align-items-start mb-4">
+            <div style="width:44px;height:44px;background:var(--gradient);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;" class="me-3">
+              <i class="bi bi-envelope text-white"></i>
+            </div>
+            <div>
+              <div class="fw-semibold">Email Support</div>
+              <a href="mailto:support@trustedescort.in" class="text-muted small text-decoration-none">support@trustedescort.in</a>
+            </div>
+          </div>
+          <div class="d-flex align-items-start mb-4">
+            <div style="width:44px;height:44px;background:var(--gradient);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;" class="me-3">
+              <i class="bi bi-shield-exclamation text-white"></i>
+            </div>
+            <div>
+              <div class="fw-semibold">Report Abuse</div>
+              <a href="mailto:abuse@trustedescort.in" class="text-muted small text-decoration-none">abuse@trustedescort.in</a>
+              <div class="text-muted small mt-1">For trafficking concerns, we respond within 2 hours.</div>
+            </div>
+          </div>
+          <div class="d-flex align-items-start mb-4">
+            <div style="width:44px;height:44px;background:var(--gradient);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;" class="me-3">
+              <i class="bi bi-briefcase text-white"></i>
+            </div>
+            <div>
+              <div class="fw-semibold">Business &amp; Advertising</div>
+              <a href="mailto:business@trustedescort.in" class="text-muted small text-decoration-none">business@trustedescort.in</a>
+            </div>
+          </div>
+          <div class="alert border-0 p-3 small mt-4" style="background:#fff8f0;border-radius:12px;">
+            <i class="bi bi-clock me-2 text-warning"></i>
+            <strong>Response time:</strong> Within 24 hours on weekdays. Emergency reports (abuse/trafficking) within 2 hours.
+          </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="col-lg-6" data-aos="fade-left">
+          <div class="card border-0 shadow p-4 p-md-5" style="border-radius:var(--radius);">
+            <h5 class="fw-bold mb-4">Send a Message</h5>
+            <% if (typeof success !== 'undefined' && success) { %>
+              <div class="alert alert-success rounded-3"><i class="bi bi-check-circle me-2"></i><%= success %></div>
+            <% } %>
+            <% if (typeof error !== 'undefined' && error) { %>
+              <div class="alert alert-danger rounded-3"><i class="bi bi-exclamation-circle me-2"></i><%= error %></div>
+            <% } %>
+            <form method="POST" action="/contact" novalidate>
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Your Name</label>
+                <input type="text" name="name" class="form-control" placeholder="Enter your name" required maxlength="80">
+              </div>
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Email Address</label>
+                <input type="email" name="email" class="form-control" placeholder="you@example.com" required maxlength="100">
+              </div>
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Subject</label>
+                <select name="subject" class="form-select" required>
+                  <option value="" disabled selected>Select a subject</option>
+                  <option>General Enquiry</option>
+                  <option>Report a Listing</option>
+                  <option>Report Abuse / Trafficking</option>
+                  <option>Account Issue</option>
+                  <option>Payment / Ad Issue</option>
+                  <option>Business / Partnership</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div class="mb-4">
+                <label class="form-label fw-semibold">Message</label>
+                <textarea name="message" class="form-control" rows="5" placeholder="Describe your issue or question..." required maxlength="2000"></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary w-100 rounded-pill py-2 fw-semibold">
+                <i class="bi bi-send me-2"></i>Send Message
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
