@@ -100,6 +100,14 @@ app.get('/health', async (req, res) => {
   res.json(status);
 });
 
+// ── Legacy URL redirects (/escorts/in/:slug → /escorts-service/:slug) ─────────
+app.get('/escorts/in/:slug', (req, res) => {
+  res.redirect(301, `/escorts-service/${req.params.slug}`);
+});
+app.get('/escorts/in', (req, res) => {
+  res.redirect(301, '/escorts-service/');
+});
+
 // ── Routes ────────────────────────────────────────────────────────────────────
 app.use('/', require('./routes/public'));
 app.use('/escorts-service', require('./routes/escorts-service'));
