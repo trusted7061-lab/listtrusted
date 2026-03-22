@@ -265,4 +265,24 @@ router.get('/:citySlug/:areaSlug', async (req, res, next) => {
   }
 });
 
+// ── Individual Ad Profile ──────────────────────────────────────────────────
+router.get('/profile/:id', async (req, res) => {
+  try {
+    const ad = await Ad.findOne({ _id: req.params.id, status: 'approved' })
+      .populate('advertiser', 'name company');
+    if (!ad) {
+      return res.status(404).render('404', { title: 'Profile Not Found' });
+    }
+    res.render('escorts-service/profile', {
+      title: `${ad.title} — Escort Service in ${ad.city} | Trusted Escort India`,
+      metaDescription: `${ad.description.substring(0, 155)}`,
+      canonical: `https://trustedescort.in/escorts-service/profile/${ad._id}`,
+      ad
+    });
+  } catch (err) {
+    console.error('Profile page error:', err.message);
+    res.status(404).render('404', { title: 'Profile Not Found' });
+  }
+});
+
 module.exports = router;

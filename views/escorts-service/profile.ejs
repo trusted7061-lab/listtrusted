@@ -1,0 +1,169 @@
+<link rel="canonical" href="<%= canonical %>">
+<meta name="description" content="<%= metaDescription %>">
+
+<div class="container py-5" style="margin-top: 70px;">
+  <div class="mb-3">
+    <a href="/escorts-service/<%= ad.citySlug %>/" class="btn btn-outline-secondary btn-sm rounded-pill">
+      <i class="bi bi-arrow-left me-1"></i>Back to <%= ad.city %>
+    </a>
+  </div>
+
+  <div class="row g-4">
+    <!-- Left: Image + Contact -->
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm overflow-hidden sticky-lg-top" style="top: 90px;">
+        <img src="<%= ad.image %>" alt="<%= ad.title %>" class="img-fluid w-100" style="max-height:420px;object-fit:cover;">
+        <div class="card-body p-4">
+          <h4 class="fw-bold mb-1"><%= ad.title %></h4>
+          <p class="text-muted small mb-3">
+            <i class="bi bi-geo-alt-fill text-primary me-1"></i><%= ad.city %>
+            <span class="ms-2 badge bg-success-subtle text-success"><i class="bi bi-patch-check-fill me-1"></i>Verified</span>
+          </p>
+
+          <% const phoneHref = ad.phoneNumber ? ad.phoneNumber.replace(/[^\d+]/g,'') : '' %>
+          <% const waHref    = ad.whatsappNumber ? ad.whatsappNumber.replace(/\D/g,'') : '' %>
+          <div class="d-grid gap-2">
+            <% if (ad.showPhoneNumber && ad.phoneNumber) { %>
+              <a href="tel:<%= phoneHref %>" class="btn btn-primary rounded-pill">
+                <i class="bi bi-telephone-fill me-2"></i>Call <%= ad.phoneNumber %>
+              </a>
+            <% } %>
+            <% if (ad.showWhatsappNumber && ad.whatsappNumber) { %>
+              <a href="https://wa.me/<%= waHref %>" target="_blank" rel="noopener noreferrer" class="btn btn-success rounded-pill">
+                <i class="bi bi-whatsapp me-2"></i>WhatsApp <%= ad.whatsappNumber %>
+              </a>
+            <% } %>
+          </div>
+
+          <% if (ad.aboutMe && (ad.aboutMe.age || ad.aboutMe.gender || ad.aboutMe.nationality)) { %>
+            <hr>
+            <ul class="list-unstyled mb-0 small">
+              <% if (ad.aboutMe.gender) { %>
+                <li class="d-flex justify-content-between py-1 border-bottom">
+                  <span class="text-muted">Gender</span><span class="fw-medium"><%= ad.aboutMe.gender %></span>
+                </li>
+              <% } %>
+              <% if (ad.aboutMe.age) { %>
+                <li class="d-flex justify-content-between py-1 border-bottom">
+                  <span class="text-muted">Age</span><span class="fw-medium"><%= ad.aboutMe.age %> yrs</span>
+                </li>
+              <% } %>
+              <% if (ad.aboutMe.height) { %>
+                <li class="d-flex justify-content-between py-1 border-bottom">
+                  <span class="text-muted">Height</span><span class="fw-medium"><%= ad.aboutMe.height %> cm</span>
+                </li>
+              <% } %>
+              <% if (ad.aboutMe.ethnicity) { %>
+                <li class="d-flex justify-content-between py-1 border-bottom">
+                  <span class="text-muted">Ethnicity</span><span class="fw-medium"><%= ad.aboutMe.ethnicity %></span>
+                </li>
+              <% } %>
+              <% if (ad.aboutMe.nationality) { %>
+                <li class="d-flex justify-content-between py-1 border-bottom">
+                  <span class="text-muted">Nationality</span><span class="fw-medium"><%= ad.aboutMe.nationality %></span>
+                </li>
+              <% } %>
+              <% if (ad.aboutMe.hairColor) { %>
+                <li class="d-flex justify-content-between py-1 border-bottom">
+                  <span class="text-muted">Hair</span><span class="fw-medium"><%= ad.aboutMe.hairColor %></span>
+                </li>
+              <% } %>
+              <% if (ad.aboutMe.bust) { %>
+                <li class="d-flex justify-content-between py-1 border-bottom">
+                  <span class="text-muted">Bust</span><span class="fw-medium"><%= ad.aboutMe.bust %></span>
+                </li>
+              <% } %>
+              <% if (ad.aboutMe.orientation) { %>
+                <li class="d-flex justify-content-between py-1 border-bottom">
+                  <span class="text-muted">Orientation</span><span class="fw-medium"><%= ad.aboutMe.orientation %></span>
+                </li>
+              <% } %>
+              <% if (ad.aboutMe.shaved) { %>
+                <li class="d-flex justify-content-between py-1 border-bottom">
+                  <span class="text-muted">Shaved</span><span class="fw-medium"><%= ad.aboutMe.shaved %></span>
+                </li>
+              <% } %>
+              <% if (ad.aboutMe.languages && ad.aboutMe.languages.length > 0) { %>
+                <li class="d-flex justify-content-between py-1 border-bottom">
+                  <span class="text-muted">Languages</span><span class="fw-medium"><%= ad.aboutMe.languages.join(', ') %></span>
+                </li>
+              <% } %>
+              <% if (typeof ad.aboutMe.smoke !== 'undefined') { %>
+                <li class="d-flex justify-content-between py-1">
+                  <span class="text-muted">Smoker</span><span class="fw-medium"><%= ad.aboutMe.smoke ? 'Yes' : 'No' %></span>
+                </li>
+              <% } %>
+            </ul>
+          <% } %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Details -->
+    <div class="col-lg-8">
+      <!-- Description -->
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-4">
+          <h5 class="fw-semibold mb-3"><i class="bi bi-file-person me-2 text-primary"></i>About</h5>
+          <p class="mb-0" style="white-space:pre-line;"><%= ad.description %></p>
+        </div>
+      </div>
+
+      <!-- Services -->
+      <% if (ad.services && ad.services.length > 0) { %>
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-body p-4">
+            <h5 class="fw-semibold mb-3"><i class="bi bi-list-check me-2 text-primary"></i>Services</h5>
+            <div class="d-flex flex-wrap gap-2">
+              <% ad.services.forEach(s => { %>
+                <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill fw-normal"><%= s %></span>
+              <% }) %>
+            </div>
+          </div>
+        </div>
+      <% } %>
+
+      <!-- Category & Location -->
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-4">
+          <h5 class="fw-semibold mb-3"><i class="bi bi-info-circle me-2 text-primary"></i>Details</h5>
+          <div class="row g-3">
+            <div class="col-sm-6">
+              <div class="p-3 rounded-3 bg-light">
+                <div class="text-muted small">Category</div>
+                <div class="fw-semibold"><%= ad.category %></div>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="p-3 rounded-3 bg-light">
+                <div class="text-muted small">Location</div>
+                <div class="fw-semibold"><%= ad.city %></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact again (mobile-friendly) -->
+      <% if ((ad.showPhoneNumber && ad.phoneNumber) || (ad.showWhatsappNumber && ad.whatsappNumber)) { %>
+        <div class="card border-0 shadow-sm d-lg-none mb-4">
+          <div class="card-body p-4">
+            <h5 class="fw-semibold mb-3"><i class="bi bi-telephone me-2 text-primary"></i>Contact</h5>
+            <div class="d-grid gap-2">
+              <% if (ad.showPhoneNumber && ad.phoneNumber) { %>
+                <a href="tel:<%= phoneHref %>" class="btn btn-primary rounded-pill">
+                  <i class="bi bi-telephone-fill me-2"></i>Call <%= ad.phoneNumber %>
+                </a>
+              <% } %>
+              <% if (ad.showWhatsappNumber && ad.whatsappNumber) { %>
+                <a href="https://wa.me/<%= waHref %>" target="_blank" rel="noopener noreferrer" class="btn btn-success rounded-pill">
+                  <i class="bi bi-whatsapp me-2"></i>WhatsApp <%= ad.whatsappNumber %>
+                </a>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
