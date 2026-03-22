@@ -429,13 +429,14 @@ body {
   width: 100%;
   aspect-ratio: 3 / 4;
   overflow: hidden;
+  background: #120808;
 }
 
 .ad-card-img-wrapper img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: top center;
+  object-fit: contain;
+  object-position: center top;
   transition: transform 0.3s ease;
 }
 
