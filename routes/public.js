@@ -3,6 +3,62 @@ const router = express.Router();
 const Ad = require('../models/Ad');
 const { CITIES, CITY_BY_SLUG } = require('../config/cities');
 
+// ── Search ────────────────────────────────────────────────────────────────────
+router.get('/search', async (req, res) => {
+  const raw = (req.query.q || '').trim();
+  const cityFilter = (req.query.city || '').trim();
+  const page  = Math.max(1, parseInt(req.query.page) || 1);
+  const limit = 12;
+
+  // Sanitise: strip characters that would make a regex dangerous
+  const q = raw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+  try {
+    const filter = { status: 'approved' };
+    if (q) {
+      filter.$or = [
+        { title:       { $regex: q, $options: 'i' } },
+        { description: { $regex: q, $options: 'i' } },
+        { category:    { $regex: q, $options: 'i' } },
+        { city:        { $regex: q, $options: 'i' } },
+        { services:    { $regex: q, $options: 'i' } },
+      ];
+    }
+    if (cityFilter && CITY_BY_SLUG[cityFilter]) {
+      filter.citySlug = cityFilter;
+    }
+
+    const total   = await Ad.countDocuments(filter);
+    const results = await Ad.find(filter)
+      .populate('advertiser', 'name')
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    res.render('search', {
+      title: raw ? `"${raw}" — Search Results | Trusted Escort India` : 'Search | Trusted Escort India',
+      metaDescription: `Search results for "${raw}" on Trusted Escort India.`,
+      canonical: `https://trustedescort.in/search?q=${encodeURIComponent(raw)}`,
+      q: raw,
+      cityFilter,
+      results,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+      limit,
+      cities: CITIES,
+    });
+  } catch (err) {
+    console.error(err);
+    res.render('search', {
+      title: 'Search | Trusted Escort India',
+      metaDescription: 'Search escort listings.',
+      canonical: 'https://trustedescort.in/search',
+      q: raw, cityFilter, results: [], total: 0, page: 1, totalPages: 0, limit, cities: CITIES,
+    });
+  }
+});
+
 router.get('/', async (req, res) => {
   try {
     const approvedAds = await Ad.find({ status: 'approved' })

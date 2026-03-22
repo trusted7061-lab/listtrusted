@@ -37,6 +37,17 @@
       <a href="#all-cities" class="btn btn-outline-secondary btn-lg rounded-pill px-4">
         <i class="bi bi-grid me-2"></i>Browse All Cities
       </a>
+
+      <!-- Search Bar -->
+      <form action="/search" method="GET" class="site-search-form mx-auto mt-4" style="max-width:680px;">
+        <div class="site-search-wrap d-flex align-items-center gap-2">
+          <div class="site-search-input-wrap flex-grow-1 d-flex align-items-center">
+            <i class="bi bi-search site-search-icon"></i>
+            <input type="text" name="q" placeholder="Search escorts, city, services…" class="site-search-input" autocomplete="off" maxlength="100">
+          </div>
+          <button type="submit" class="btn btn-primary rounded-pill px-4 fw-semibold">Search</button>
+        </div>
+      </form>
     </div>
   </div>
 </section>

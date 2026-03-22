@@ -641,6 +641,60 @@ body {
   font-size: 16px;
 }
 
+/* ===== SITE SEARCH BAR ===== */
+.site-search-form {
+  width: 100%;
+}
+.site-search-wrap {
+  background: rgba(255,255,255,0.97);
+  border-radius: 50px;
+  padding: 6px 6px 6px 18px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+  border: 1.5px solid rgba(200,16,46,0.12);
+  transition: box-shadow 0.2s;
+}
+.site-search-wrap:focus-within {
+  box-shadow: 0 6px 32px rgba(200,16,46,0.22);
+  border-color: var(--primary);
+}
+.site-search-input-wrap {
+  flex: 1;
+  min-width: 0;
+}
+.site-search-icon {
+  color: var(--primary);
+  font-size: 1.05rem;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+.site-search-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 0.97rem;
+  color: var(--text-dark);
+  width: 100%;
+  padding: 4px 0;
+  font-family: 'Lora', Georgia, serif;
+}
+.site-search-input::placeholder { color: #aaa; }
+.site-search-city-select {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 0.88rem;
+  color: var(--text-dark);
+  padding: 4px 8px;
+  cursor: pointer;
+  border-left: 1px solid #e8e0e0;
+  max-width: 130px;
+  font-family: 'Lora', Georgia, serif;
+}
+@media (max-width: 576px) {
+  .site-search-city-select { display: none; }
+  .site-search-wrap { padding: 5px 5px 5px 14px; }
+}
+
 /* ===== FOOTER ===== */
 .footer-section {
   background: var(--dark);

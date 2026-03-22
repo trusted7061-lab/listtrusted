@@ -1,0 +1,148 @@
+<div style="padding-top:80px;">
+
+  <!-- Search hero / bar -->
+  <section class="py-5" style="background:var(--gradient-hero);">
+    <div class="container py-2">
+      <div class="text-center text-white mb-4" data-aos="fade-up">
+        <h1 class="fw-bold mb-1">
+          <% if (q) { %>Results for "<span class="gradient-text-gold"><%= q %></span>"
+          <% } else { %>Search Escorts &amp; Listings<% } %>
+        </h1>
+        <% if (q) { %><p class="mb-0" style="color:rgba(255,255,255,0.65);"><%= total %> listing<%= total !== 1 ? 's' : '' %> found</p><% } %>
+      </div>
+
+      <!-- Search Form -->
+      <form action="/search" method="GET" class="site-search-form mx-auto" style="max-width:780px;" data-aos="fade-up" data-aos-delay="100">
+        <div class="site-search-wrap d-flex align-items-center gap-2">
+          <div class="site-search-input-wrap flex-grow-1 d-flex align-items-center">
+            <i class="bi bi-search site-search-icon"></i>
+            <input
+              type="text"
+              name="q"
+              value="<%= q %>"
+              placeholder="Search escorts, city, services, category…"
+              class="site-search-input"
+              autocomplete="off"
+              maxlength="100"
+              autofocus>
+          </div>
+          <select name="city" class="site-search-city-select">
+            <option value="">All Cities</option>
+            <% cities.forEach(c => { %>
+              <option value="<%= c.slug %>" <%= cityFilter === c.slug ? 'selected' : '' %>><%= c.name %></option>
+            <% }) %>
+          </select>
+          <button type="submit" class="btn btn-primary rounded-pill px-4 fw-semibold">Search</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- Results -->
+  <section class="py-5">
+    <div class="container">
+
+      <% if (!q) { %>
+        <!-- No query yet — show popular searches -->
+        <div class="text-center py-4" data-aos="fade-up">
+          <i class="bi bi-search display-3 gradient-text opacity-50 d-block mb-3"></i>
+          <h4 class="fw-bold mb-3">What are you looking for?</h4>
+          <p class="text-muted mb-4">Type in the search bar above to find escorts, call girls, services or cities.</p>
+          <div class="d-flex flex-wrap gap-2 justify-content-center">
+            <% ['Delhi escorts', 'Mumbai call girls', 'Bangalore escort service', 'Goa escorts', 'Independent escorts', 'VIP escort', 'Female escort'].forEach(s => { %>
+              <a href="/search?q=<%= encodeURIComponent(s) %>" class="badge rounded-pill px-3 py-2 text-decoration-none" style="background:var(--bg-light);color:var(--text-dark);font-size:.88rem;border:1px solid #e0d8d8;"><%= s %></a>
+            <% }) %>
+          </div>
+        </div>
+
+      <% } else if (results.length === 0) { %>
+        <!-- No results -->
+        <div class="text-center py-5" data-aos="fade-up">
+          <i class="bi bi-emoji-frown display-3 gradient-text opacity-50 d-block mb-3"></i>
+          <h4 class="fw-bold mb-2">No results found for "<%= q %>"</h4>
+          <p class="text-muted mb-4">Try a different keyword, or browse a city directly.</p>
+          <a href="/escorts-service/" class="btn btn-primary rounded-pill px-4 me-2">Browse All Cities</a>
+          <a href="/search" class="btn btn-outline-secondary rounded-pill px-4">Clear Search</a>
+        </div>
+
+      <% } else { %>
+        <!-- Results grid -->
+        <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+          <p class="text-muted mb-0 small"><strong><%= total %></strong> result<%= total !== 1 ? 's' : '' %> for "<%= q %>"<%= cityFilter ? ' in ' + cities.find(c => c.slug === cityFilter)?.name : '' %></p>
+          <% if (cityFilter) { %>
+            <a href="/search?q=<%= encodeURIComponent(q) %>" class="badge bg-secondary-subtle text-secondary text-decoration-none rounded-pill px-3 py-2">
+              <i class="bi bi-x me-1"></i>Clear city filter
+            </a>
+          <% } %>
+        </div>
+
+        <div class="row g-4">
+          <% results.forEach((ad, i) => { %>
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="<%= (i % 6) * 60 %>">
+              <div class="ad-card card border-0 shadow-sm h-100 overflow-hidden">
+                <div class="ad-card-img-wrapper">
+                  <img src="<%= ad.image %>" class="card-img-top" loading="lazy" decoding="async"
+                       alt="<%= ad.title %> — Escort Service">
+                  <span class="ad-type-badge"><%= ad.category %></span>
+                  <% if (ad.city) { %><span class="city-badge"><i class="bi bi-geo-alt-fill me-1"></i><%= ad.city %></span><% } %>
+                </div>
+                <div class="card-body p-4">
+                  <h5 class="fw-semibold mb-2"><%= ad.title %></h5>
+                  <p class="text-muted small mb-3">
+                    <%= ad.description.substring(0, 120) %><%= ad.description.length > 120 ? '...' : '' %>
+                  </p>
+                  <% const phoneHref = ad.phoneNumber ? ad.phoneNumber.replace(/[^\d+]/g, '') : '' %>
+                  <% const waHref    = ad.whatsappNumber ? ad.whatsappNumber.replace(/\D/g, '') : '' %>
+                  <div class="d-flex flex-column gap-2 mb-3">
+                    <% if (ad.showPhoneNumber && ad.phoneNumber) { %>
+                      <a href="tel:<%= phoneHref %>" class="btn btn-outline-primary btn-sm rounded-pill">
+                        <i class="bi bi-telephone-fill me-1"></i>Call <%= ad.phoneNumber %>
+                      </a>
+                    <% } %>
+                    <% if (ad.showWhatsappNumber && ad.whatsappNumber) { %>
+                      <a href="https://wa.me/<%= waHref %>" target="_blank" rel="noopener noreferrer"
+                         class="btn btn-success btn-sm rounded-pill">
+                        <i class="bi bi-whatsapp me-1"></i>WhatsApp
+                      </a>
+                    <% } %>
+                  </div>
+                  <a href="/escorts-service/profile/<%= ad._id %>" class="btn btn-primary btn-sm rounded-pill w-100">
+                    <i class="bi bi-person-lines-fill me-1"></i>View Full Profile
+                  </a>
+                </div>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+
+        <!-- Pagination -->
+        <% if (totalPages > 1) { %>
+          <nav class="mt-5 d-flex justify-content-center" aria-label="Search results pages">
+            <ul class="pagination gap-1">
+              <% if (page > 1) { %>
+                <li class="page-item">
+                  <a class="page-link rounded-pill px-3" href="/search?q=<%= encodeURIComponent(q) %>&city=<%= cityFilter %>&page=<%= page - 1 %>">
+                    <i class="bi bi-chevron-left"></i>
+                  </a>
+                </li>
+              <% } %>
+              <% for (let p = 1; p <= totalPages; p++) { %>
+                <li class="page-item <%= p === page ? 'active' : '' %>">
+                  <a class="page-link rounded-pill px-3" href="/search?q=<%= encodeURIComponent(q) %>&city=<%= cityFilter %>&page=<%= p %>"><%= p %></a>
+                </li>
+              <% } %>
+              <% if (page < totalPages) { %>
+                <li class="page-item">
+                  <a class="page-link rounded-pill px-3" href="/search?q=<%= encodeURIComponent(q) %>&city=<%= cityFilter %>&page=<%= page + 1 %>">
+                    <i class="bi bi-chevron-right"></i>
+                  </a>
+                </li>
+              <% } %>
+            </ul>
+          </nav>
+        <% } %>
+      <% } %>
+
+    </div>
+  </section>
+</div>
