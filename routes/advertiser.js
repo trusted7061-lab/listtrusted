@@ -16,12 +16,21 @@ cloudinary.config({
 });
 
 // Multer → Cloudinary storage
+// params as a function ensures cloudinary config is read fresh each request
+// (avoids stale module-cache issue on Vercel serverless cold-starts)
 const storage = new CloudinaryStorage({
   cloudinary,
-  params: {
-    folder: 'trustedescort/ads',
-    resource_type: 'auto',          // handles HEIC, AVIF, WebP, PNG, JPG, etc.
-    transformation: [{ width: 1200, crop: 'limit', quality: 'auto' }],  // fetch_format must NOT be here
+  params: async (req, file) => {
+    cloudinary.config({
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key:    process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET,
+    });
+    return {
+      folder: 'trustedescort/ads',
+      resource_type: 'auto',
+      transformation: [{ width: 1200, crop: 'limit', quality: 'auto' }],
+    };
   },
 });
 
