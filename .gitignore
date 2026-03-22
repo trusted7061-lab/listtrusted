@@ -42,3 +42,4 @@ __pycache__/
 # Temp / backup files
 *.bak
 *.tmp
+.vercel
