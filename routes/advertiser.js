@@ -20,14 +20,16 @@ const storage = new CloudinaryStorage({
   cloudinary,
   params: {
     folder: 'trustedescort/ads',
-    // No allowed_formats restriction — accept any image Cloudinary can process (HEIC, AVIF, WebP, etc.)
-    transformation: [{ width: 1200, crop: 'limit', quality: 'auto', fetch_format: 'auto' }],
+    resource_type: 'auto',          // handles HEIC, AVIF, WebP, PNG, JPG, etc.
+    transformation: [{ width: 1200, crop: 'limit', quality: 'auto' }],  // fetch_format must NOT be here
   },
 });
 
 const fileFilter = (req, file, cb) => {
-  // Accept any image format — Cloudinary handles conversion
-  if (file.mimetype.startsWith('image/')) return cb(null, true);
+  // Accept any image MIME type. Also allow octet-stream because iOS/macOS Safari
+  // sends HEIC files with that MIME type instead of image/heic.
+  const ok = file.mimetype.startsWith('image/') || file.mimetype === 'application/octet-stream';
+  if (ok) return cb(null, true);
   cb(new Error('Only image files are allowed. Please choose a JPG, PNG, HEIC, WEBP or similar image file.'));
 };
 
@@ -97,7 +99,13 @@ function renderCreateAdForm(res, { formData = {}, uploadedImage = null, errorMsg
 router.post('/create-ad', isAdvertiser, (req, res, next) => {
   upload.single('image')(req, res, (err) => {
     if (err) {
-      return renderCreateAdForm(res, { formData: req.body || {}, errorMsg: err.message || 'File upload failed. Please use an image file under 5MB.' });
+      console.error('[upload error]', err);
+      // Cloudinary errors may nest the message inside err.error.message
+      const msg = err.message
+        || (err.error && err.error.message)
+        || (typeof err === 'string' ? err : null)
+        || 'File upload failed. Please try a JPG, PNG or WEBP image under 5 MB.';
+      return renderCreateAdForm(res, { formData: req.body || {}, errorMsg: msg });
     }
     next();
   });
