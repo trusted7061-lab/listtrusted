@@ -2,22 +2,27 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path');
-const fs = require('fs');
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const Ad = require('../models/Ad');
 const { isAdvertiser } = require('../middleware/auth');
 const { CITIES, CITY_BY_SLUG } = require('../config/cities');
 
-// Multer config
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const dir = path.join(__dirname, '..', 'public', 'uploads', 'ads');
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-    cb(null, dir);
+// Cloudinary config
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key:    process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// Multer → Cloudinary storage
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: 'trustedescort/ads',
+    allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
+    transformation: [{ width: 1200, crop: 'limit', quality: 'auto' }],
   },
-  filename: (req, file, cb) => {
-    const uniqueName = Date.now() + '-' + Math.round(Math.random() * 1e9) + path.extname(file.originalname);
-    cb(null, uniqueName);
-  }
 });
 
 const fileFilter = (req, file, cb) => {
@@ -148,7 +153,7 @@ router.post('/create-ad', isAdvertiser, (req, res, next) => {
       description: description.trim(),
       category,
       targetAudience: targetAudience.trim(),
-      image: '/uploads/ads/' + req.file.filename,
+      image: req.file.path,
       startDate: new Date(startDate),
       endDate: new Date(endDate),
       budget: budget ? Number(budget) : 0,
@@ -279,10 +284,12 @@ router.post('/edit-ad/:id', isAdvertiser, (req, res, next) => {
     ad.showWhatsappNumber = showWhatsappNumber;
 
     if (req.file) {
-      // Remove old image
-      const oldPath = path.join(__dirname, '..', 'public', ad.image);
-      if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
-      ad.image = '/uploads/ads/' + req.file.filename;
+      // Delete old image from Cloudinary if it was a Cloudinary URL
+      if (ad.image && ad.image.includes('cloudinary.com')) {
+        const publicId = ad.image.split('/').slice(-2).join('/').replace(/\.[^.]+$/, '');
+        cloudinary.uploader.destroy(publicId).catch(() => {});
+      }
+      ad.image = req.file.path;
     }
 
     await ad.save();
