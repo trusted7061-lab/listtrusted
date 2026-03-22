@@ -15,10 +15,22 @@ async function uploadToCloudinary(buffer) {
     api_key:    process.env.CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_API_SECRET,
   });
+  // Log config keys (no secrets) to help diagnose env var issues on Vercel
+  console.log('[cloudinary] cloud_name=%s api_key_set=%s api_secret_set=%s',
+    process.env.CLOUDINARY_CLOUD_NAME || '(missing)',
+    !!process.env.CLOUDINARY_API_KEY,
+    !!process.env.CLOUDINARY_API_SECRET
+  );
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
       { folder: 'trustedescort/ads', resource_type: 'auto', transformation: [{ width: 1200, crop: 'limit', quality: 'auto' }] },
-      (err, result) => (err ? reject(err) : resolve(result))
+      (err, result) => {
+        if (err) {
+          console.error('[cloudinary] upload_stream error:', JSON.stringify(err));
+          return reject(err);
+        }
+        resolve(result);
+      }
     );
     stream.end(buffer);
   });
@@ -113,7 +125,10 @@ router.post('/create-ad', isAdvertiser, (req, res, next) => {
         req.file.filename = result.public_id;
       } catch (cloudErr) {
         console.error('[cloudinary upload error]', cloudErr);
-        const msg = (cloudErr.error && cloudErr.error.message) || cloudErr.message || 'Image upload failed. Please try again.';
+        const msg = cloudErr.message
+          || (cloudErr.error && cloudErr.error.message)
+          || JSON.stringify(cloudErr)
+          || 'Image upload failed. Please try again.';
         return renderCreateAdForm(res, { formData: req.body || {}, errorMsg: msg });
       }
     }
@@ -248,7 +263,7 @@ router.post('/edit-ad/:id', isAdvertiser, (req, res, next) => {
         req.file.filename = result.public_id;
       } catch (cloudErr) {
         console.error('[cloudinary upload error]', cloudErr);
-        req.flash('error', (cloudErr.error && cloudErr.error.message) || cloudErr.message || 'Image upload failed. Please try again.');
+        req.flash('error', cloudErr.message || (cloudErr.error && cloudErr.error.message) || JSON.stringify(cloudErr) || 'Image upload failed. Please try again.');
         return res.redirect('back');
       }
     }
