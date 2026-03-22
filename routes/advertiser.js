@@ -7,20 +7,29 @@ const Ad = require('../models/Ad');
 const { isAdvertiser } = require('../middleware/auth');
 const { CITIES, CITY_BY_SLUG } = require('../config/cities');
 
-// Upload a buffer to Cloudinary. Config is applied fresh on every call so
-// env vars are always read at request time (safe on Vercel serverless).
+// Upload a buffer to Cloudinary.
+// cloudinary.config(true) resets the SDK singleton to {} so no stale/cached
+// values from a previous Vercel invocation can bleed through, then we apply
+// fresh credentials read directly from process.env on every request.
 async function uploadToCloudinary(buffer) {
-  cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key:    process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-  });
-  // Log config keys (no secrets) to help diagnose env var issues on Vercel
-  console.log('[cloudinary] cloud_name=%s api_key_set=%s api_secret_set=%s',
-    process.env.CLOUDINARY_CLOUD_NAME || '(missing)',
-    !!process.env.CLOUDINARY_API_KEY,
-    !!process.env.CLOUDINARY_API_SECRET
-  );
+  const cloud_name = process.env.CLOUDINARY_CLOUD_NAME;
+  const api_key    = process.env.CLOUDINARY_API_KEY;
+  const api_secret = process.env.CLOUDINARY_API_SECRET;
+
+  if (!cloud_name || !api_key || !api_secret) {
+    const missing = [
+      !cloud_name  && 'CLOUDINARY_CLOUD_NAME',
+      !api_key     && 'CLOUDINARY_API_KEY',
+      !api_secret  && 'CLOUDINARY_API_SECRET',
+    ].filter(Boolean).join(', ');
+    console.error('[cloudinary] missing env vars:', missing);
+    throw new Error('Cloudinary not configured on this server. Missing: ' + missing);
+  }
+
+  // Reset singleton then apply fresh credentials
+  cloudinary.config(true);
+  cloudinary.config({ cloud_name, api_key, api_secret });
+
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
       { folder: 'trustedescort/ads', resource_type: 'auto', transformation: [{ width: 1200, crop: 'limit', quality: 'auto' }] },
