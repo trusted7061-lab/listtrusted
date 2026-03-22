@@ -121,6 +121,15 @@ app.use((req, res) => {
   res.status(404).render('404', { title: 'Page Not Found' });
 });
 
+// ── Global error handler ──────────────────────────────────────────────────────
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+  console.error('Unhandled error:', err);
+  if (req.flash) req.flash('error', err.message || 'An unexpected error occurred. Please try again.');
+  const referer = req.get('Referrer') || '/';
+  res.redirect(referer);
+});
+
 // ── Database connection (non-blocking — Mongoose buffers queries until ready) ─
 connectDB()
   .then(() => {

@@ -81,7 +81,15 @@ router.get('/create-ad', isAdvertiser, (req, res) => {
 });
 
 // Create Ad - submit
-router.post('/create-ad', isAdvertiser, upload.single('image'), async (req, res) => {
+router.post('/create-ad', isAdvertiser, (req, res, next) => {
+  upload.single('image')(req, res, (err) => {
+    if (err) {
+      req.flash('error', err.message || 'File upload failed. Use JPG, PNG, GIF or WebP under 5MB.');
+      return res.redirect('/advertiser/create-ad');
+    }
+    next();
+  });
+}, async (req, res) => {
   try {
     const {
       title,
@@ -197,7 +205,15 @@ router.get('/edit-ad/:id', isAdvertiser, async (req, res) => {
 });
 
 // Edit Ad - submit
-router.post('/edit-ad/:id', isAdvertiser, upload.single('image'), async (req, res) => {
+router.post('/edit-ad/:id', isAdvertiser, (req, res, next) => {
+  upload.single('image')(req, res, (err) => {
+    if (err) {
+      req.flash('error', err.message || 'File upload failed. Use JPG, PNG, GIF or WebP under 5MB.');
+      return res.redirect('back');
+    }
+    next();
+  });
+}, async (req, res) => {
   try {
     const ad = await Ad.findOne({ _id: req.params.id, advertiser: req.session.userId });
     if (!ad || ad.status !== 'pending') {
