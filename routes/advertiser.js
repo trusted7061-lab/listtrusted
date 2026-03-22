@@ -3,36 +3,26 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const cloudinary = require('cloudinary').v2;
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const Ad = require('../models/Ad');
 const { isAdvertiser } = require('../middleware/auth');
 const { CITIES, CITY_BY_SLUG } = require('../config/cities');
 
-// Cloudinary config
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key:    process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
-// Multer → Cloudinary storage
-// params as a function ensures cloudinary config is read fresh each request
-// (avoids stale module-cache issue on Vercel serverless cold-starts)
-const storage = new CloudinaryStorage({
-  cloudinary,
-  params: async (req, file) => {
-    cloudinary.config({
-      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-      api_key:    process.env.CLOUDINARY_API_KEY,
-      api_secret: process.env.CLOUDINARY_API_SECRET,
-    });
-    return {
-      folder: 'trustedescort/ads',
-      resource_type: 'auto',
-      transformation: [{ width: 1200, crop: 'limit', quality: 'auto' }],
-    };
-  },
-});
+// Upload a buffer to Cloudinary. Config is applied fresh on every call so
+// env vars are always read at request time (safe on Vercel serverless).
+async function uploadToCloudinary(buffer) {
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key:    process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  });
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { folder: 'trustedescort/ads', resource_type: 'auto', transformation: [{ width: 1200, crop: 'limit', quality: 'auto' }] },
+      (err, result) => (err ? reject(err) : resolve(result))
+    );
+    stream.end(buffer);
+  });
+}
 
 const fileFilter = (req, file, cb) => {
   // Accept any image MIME type. Also allow octet-stream because iOS/macOS Safari
@@ -42,7 +32,8 @@ const fileFilter = (req, file, cb) => {
   cb(new Error('Only image files are allowed. Please choose a JPG, PNG, HEIC, WEBP or similar image file.'));
 };
 
-const upload = multer({ storage, fileFilter, limits: { fileSize: 5 * 1024 * 1024 } });
+// Use memory storage — cloudinary upload is done manually in the route handlers
+const upload = multer({ storage: multer.memoryStorage(), fileFilter, limits: { fileSize: 5 * 1024 * 1024 } });
 
 function parseCheckbox(value) {
   return value === 'on' || value === 'true' || value === true;
@@ -106,15 +97,25 @@ function renderCreateAdForm(res, { formData = {}, uploadedImage = null, errorMsg
 }
 
 router.post('/create-ad', isAdvertiser, (req, res, next) => {
-  upload.single('image')(req, res, (err) => {
+  upload.single('image')(req, res, async (err) => {
     if (err) {
       console.error('[upload error]', err);
-      // Cloudinary errors may nest the message inside err.error.message
       const msg = err.message
         || (err.error && err.error.message)
         || (typeof err === 'string' ? err : null)
         || 'File upload failed. Please try a JPG, PNG or WEBP image under 5 MB.';
       return renderCreateAdForm(res, { formData: req.body || {}, errorMsg: msg });
+    }
+    if (req.file) {
+      try {
+        const result = await uploadToCloudinary(req.file.buffer);
+        req.file.path = result.secure_url;
+        req.file.filename = result.public_id;
+      } catch (cloudErr) {
+        console.error('[cloudinary upload error]', cloudErr);
+        const msg = (cloudErr.error && cloudErr.error.message) || cloudErr.message || 'Image upload failed. Please try again.';
+        return renderCreateAdForm(res, { formData: req.body || {}, errorMsg: msg });
+      }
     }
     next();
   });
@@ -235,10 +236,21 @@ router.get('/edit-ad/:id', isAdvertiser, async (req, res) => {
 
 // Edit Ad - submit
 router.post('/edit-ad/:id', isAdvertiser, (req, res, next) => {
-  upload.single('image')(req, res, (err) => {
+  upload.single('image')(req, res, async (err) => {
     if (err) {
       req.flash('error', err.message || 'File upload failed. Use JPG, PNG, GIF or WebP under 5MB.');
       return res.redirect('back');
+    }
+    if (req.file) {
+      try {
+        const result = await uploadToCloudinary(req.file.buffer);
+        req.file.path = result.secure_url;
+        req.file.filename = result.public_id;
+      } catch (cloudErr) {
+        console.error('[cloudinary upload error]', cloudErr);
+        req.flash('error', (cloudErr.error && cloudErr.error.message) || cloudErr.message || 'Image upload failed. Please try again.');
+        return res.redirect('back');
+      }
     }
     next();
   });
