@@ -61,6 +61,8 @@
     }
   ],
   "routes": [
+    { "src": "/escorts/in/(?<slug>[^/]+)", "dest": "/escorts-service/$slug", "status": 301 },
+    { "src": "/escorts/in/?$", "dest": "/escorts-service/", "status": 301 },
     { "src": "/(.*)", "dest": "/app.js" }
   ]
 }
