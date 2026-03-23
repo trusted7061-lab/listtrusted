@@ -131,35 +131,63 @@ router.get('/:citySlug', async (req, res, next) => {
           'mainEntity': [
             {
               '@type': 'Question',
-              'name': `How do I find escort service near me in ${city.name}?`,
-              'acceptedAnswer': {
-                '@type': 'Answer',
-                'text': `To find escort service near you in ${city.name}, browse the listings above on Trusted Escort India. All profiles are admin-approved. Click the Call or WhatsApp button on any listing to contact directly — available 24/7 in ${city.name}, ${city.state}.`
-              }
+              'name': `How do I find escort service in ${city.name}?`,
+              'acceptedAnswer': { '@type': 'Answer', 'text': `Browse the verified listings on this page for escort service in ${city.name}. All ads are admin-approved before going live. Tap the Call or WhatsApp button on any listing to directly contact the advertiser — no middlemen, no booking fees.` }
             },
             {
               '@type': 'Question',
-              'name': `Are escort profiles in ${city.name} verified?`,
-              'acceptedAnswer': {
-                '@type': 'Answer',
-                'text': `Yes. Every escort listing in ${city.name} on Trusted Escort India is manually reviewed by our admin team before going live. Fake profiles are rejected. Only genuine, verified escorts in ${city.name} appear on this page.`
-              }
+              'name': `Are escort listings in ${city.name} verified?`,
+              'acceptedAnswer': { '@type': 'Answer', 'text': `Yes. Every escort service listing in ${city.name} is manually reviewed and approved by our admin team. Fake, misleading or low-quality profiles are rejected and never shown. This makes our ${city.name} escort directory the most trusted in ${city.state}.` }
             },
             {
               '@type': 'Question',
-              'name': `What areas in ${city.name} have escort service?`,
-              'acceptedAnswer': {
-                '@type': 'Answer',
-                'text': `Escort service is available across all major areas in ${city.name}. Our listings cover all localities in ${city.name}, ${city.state}. Browse the listings above to find escort service near your location in ${city.name}.`
-              }
+              'name': `How do I post an escort ad in ${city.name}?`,
+              'acceptedAnswer': { '@type': 'Answer', 'text': `Register free on Trusted Escort India, fill in your service details, upload photos, and select ${city.name} as your city. Submit for admin review. Your listing goes live on this ${city.name} page within 24 hours of approval.` }
+            },
+            {
+              '@type': 'Question',
+              'name': `What areas in ${city.name} are covered?`,
+              'acceptedAnswer': { '@type': 'Answer', 'text': `We cover all major localities and areas within ${city.name}. Use the area links at the top of this page to browse escort service listings for a specific neighbourhood or locality in ${city.name}, ${city.state}.` }
+            },
+            {
+              '@type': 'Question',
+              'name': `Is escort service available 24/7 in ${city.name}?`,
+              'acceptedAnswer': { '@type': 'Answer', 'text': `Many escort service advertisers in ${city.name} are available 24 hours a day, 7 days a week. Each listing shows the advertiser's contact details — call or WhatsApp them directly to confirm availability and timings for ${city.name}.` }
+            },
+            {
+              '@type': 'Question',
+              'name': `Is it safe to book escort service in ${city.name}?`,
+              'acceptedAnswer': { '@type': 'Answer', 'text': `All listings on this page are admin-verified before going live. We screen all ${city.name} escort advertisers for authenticity. However, always exercise personal discretion. Only deal directly with the advertiser and never share sensitive financial information.` }
+            },
+            {
+              '@type': 'Question',
+              'name': `What types of escort services are available in ${city.name}?`,
+              'acceptedAnswer': { '@type': 'Answer', 'text': `Escort service listings in ${city.name} include companionship services, social escort, dinner date companions, event and party companions, and travel escort services. All listed services are legal. Category is clearly labelled on each ad card.` }
             },
             {
               '@type': 'Question',
               'name': `How do I contact an escort in ${city.name}?`,
-              'acceptedAnswer': {
-                '@type': 'Answer',
-                'text': `Each verified escort listing in ${city.name} shows a Call or WhatsApp button with direct contact — no middlemen. Tap the button on any approved listing to reach the advertiser directly.`
-              }
+              'acceptedAnswer': { '@type': 'Answer', 'text': `Click the Call or WhatsApp button displayed on any approved listing on this page. You will be connected directly to the advertiser in ${city.name} — no agency, no fees. Each listing shows the phone number or WhatsApp contact chosen by the advertiser.` }
+            },
+            {
+              '@type': 'Question',
+              'name': `Can I report a suspicious listing in ${city.name}?`,
+              'acceptedAnswer': { '@type': 'Answer', 'text': `Yes. If you come across any fake, misleading or suspicious escort listing in ${city.name}, contact our support team immediately. We will investigate within 24 hours and remove the listing if it violates our guidelines. Advertiser accounts involved in fraud are permanently banned.` }
+            },
+            {
+              '@type': 'Question',
+              'name': `How many escort listings are there in ${city.name}?`,
+              'acceptedAnswer': { '@type': 'Answer', 'text': `The number of live escort service listings in ${city.name} changes daily as new ads are approved and old ads expire. Check the live count shown at the top of this page. For metro cities like Delhi and Mumbai, we typically have dozens of verified listings active at any time.` }
+            },
+            {
+              '@type': 'Question',
+              'name': `Can I advertise escort service in ${city.name} for free?`,
+              'acceptedAnswer': { '@type': 'Answer', 'text': `Yes. Posting your first escort service ad in ${city.name} is completely free. Register, fill in your details, select ${city.name}, and submit. Our admin team will review and approve your listing within 24 hours at no charge.` }
+            },
+            {
+              '@type': 'Question',
+              'name': `Why choose Trusted Escort India for ${city.name} listings?`,
+              'acceptedAnswer': { '@type': 'Answer', 'text': `Trusted Escort India is the most reliable escort service directory in ${city.name}. Every ad is admin-approved, contact details are genuine, and the platform is free to use. We cover all areas within ${city.name} and update listings daily.` }
             }
           ]
         }
