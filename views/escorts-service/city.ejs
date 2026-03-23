@@ -45,29 +45,6 @@
         <!-- Hero Search Bar -->
         <% var _hsbCats = ['Escort Service','Call Girls','VIP Escorts','Celebrity Escorts','College Girls','Russian Escorts','Housewife','Model']; %>
         <% var _hsbStates = cities.reduce(function(a,c){if(a.indexOf(c.state)<0)a.push(c.state);return a;},[]).sort(); %>
-        <form class="hero-search-bar" action="/search" method="GET" novalidate>
-          <div class="hsb-field">
-            <select class="hsb-select hsb-category-select" name="q" aria-label="Category">
-              <option value="">All Categories</option>
-              <% _hsbCats.forEach(function(cat){ %><option value="<%= cat %>"><%= cat %></option><% }) %>
-            </select>
-          </div>
-          <div class="hsb-divider"></div>
-          <div class="hsb-field">
-            <select class="hsb-select hsb-state-select" name="state" aria-label="State">
-              <option value="">Select State</option>
-              <% _hsbStates.forEach(function(s){ %><option value="<%= s %>" <%= s === city.state ? 'selected' : '' %>><%= s %></option><% }) %>
-            </select>
-          </div>
-          <div class="hsb-divider"></div>
-          <div class="hsb-field">
-            <select class="hsb-select hsb-city-select" name="city" aria-label="City">
-              <option value="">Select City</option>
-              <% cities.forEach(function(c){ %><option value="<%= c.slug %>" data-state="<%= c.state %>" <%= c.slug === city.slug ? 'selected' : '' %>><%= c.name %></option><% }) %>
-            </select>
-          </div>
-          <button type="submit" class="hsb-btn"><i class="bi bi-search me-1"></i>Search</button>
-        </form>
         <div class="d-flex gap-4">
           <div>
             <h5 class="fw-bold mb-0 gradient-text"><%= ads.length %>+</h5>
@@ -93,6 +70,35 @@
         </div>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- Full-width Search Bar -->
+<section class="py-4" style="background:var(--gradient-hero);">
+  <div class="container">
+    <form class="hero-search-bar mx-auto" action="/search" method="GET" novalidate>
+      <div class="hsb-field">
+        <select class="hsb-select hsb-category-select" name="q" aria-label="Category">
+          <option value="">All Categories</option>
+          <% _hsbCats.forEach(function(cat){ %><option value="<%= cat %>"><%= cat %></option><% }) %>
+        </select>
+      </div>
+      <div class="hsb-divider"></div>
+      <div class="hsb-field">
+        <select class="hsb-select hsb-state-select" name="state" aria-label="State">
+          <option value="">Select State</option>
+          <% _hsbStates.forEach(function(s){ %><option value="<%= s %>" <%= s === city.state ? 'selected' : '' %>><%= s %></option><% }) %>
+        </select>
+      </div>
+      <div class="hsb-divider"></div>
+      <div class="hsb-field">
+        <select class="hsb-select hsb-city-select" name="city" aria-label="City">
+          <option value="">Select City</option>
+          <% cities.forEach(function(c){ %><option value="<%= c.slug %>" data-state="<%= c.state %>" <%= c.slug === city.slug ? 'selected' : '' %>><%= c.name %></option><% }) %>
+        </select>
+      </div>
+      <button type="submit" class="hsb-btn"><i class="bi bi-search me-1"></i>Search</button>
+    </form>
   </div>
 </section>
 

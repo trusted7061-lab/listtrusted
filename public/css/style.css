@@ -723,12 +723,13 @@ body {
 }
 .hsb-select {
   width: 100%;
+  min-width: 0;
   border: none;
   outline: none;
   background: transparent;
   font-size: 0.92rem;
   color: var(--text-dark);
-  padding: 15px 16px;
+  padding: 15px 12px;
   font-family: 'Lora', Georgia, serif;
   cursor: pointer;
   -webkit-appearance: none;
@@ -757,7 +758,7 @@ body {
   white-space: nowrap;
 }
 .hsb-btn:hover { background: #a50d1c; }
-@media (max-width: 640px) {
+@media (max-width: 480px) {
   .hero-search-bar {
     flex-direction: column;
     border-radius: 18px;
@@ -765,7 +766,7 @@ body {
   }
   .hsb-field { width: 100%; }
   .hsb-select {
-    padding: 13px 16px;
+    padding: 12px 14px;
     border-bottom: 1px solid #f0e8e8;
   }
   .hsb-divider { display: none; }

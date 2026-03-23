@@ -25,33 +25,6 @@
             <i class="bi bi-play-circle me-2"></i>How It Works
           </a>
         </div>
-
-        <!-- Hero Search Bar -->
-        <% var _hsbCats = ['Escort Service','Call Girls','VIP Escorts','Celebrity Escorts','College Girls','Russian Escorts','Housewife','Model']; %>
-        <% var _hsbStates = cities.reduce(function(a,c){if(a.indexOf(c.state)<0)a.push(c.state);return a;},[]).sort(); %>
-        <form class="hero-search-bar mt-4" action="/search" method="GET" novalidate>
-          <div class="hsb-field">
-            <select class="hsb-select hsb-category-select" name="q" aria-label="Category">
-              <option value="">All Categories</option>
-              <% _hsbCats.forEach(function(cat){ %><option value="<%= cat %>"><%= cat %></option><% }) %>
-            </select>
-          </div>
-          <div class="hsb-divider"></div>
-          <div class="hsb-field">
-            <select class="hsb-select hsb-state-select" name="state" aria-label="State">
-              <option value="">Select State</option>
-              <% _hsbStates.forEach(function(s){ %><option value="<%= s %>"><%= s %></option><% }) %>
-            </select>
-          </div>
-          <div class="hsb-divider"></div>
-          <div class="hsb-field">
-            <select class="hsb-select hsb-city-select" name="city" aria-label="City">
-              <option value="">Select City</option>
-              <% cities.forEach(function(c){ %><option value="<%= c.slug %>" data-state="<%= c.state %>"><%= c.name %></option><% }) %>
-            </select>
-          </div>
-          <button type="submit" class="hsb-btn"><i class="bi bi-search me-1"></i>Search</button>
-        </form>
         <div class="d-flex gap-4 mt-5">
           <div class="text-center">
             <h4 class="fw-bold mb-0 gradient-text">500+</h4>
@@ -87,6 +60,37 @@
             <i class="bi bi-megaphone-fill"></i>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- Full-width Hero Search Bar -->
+    <% var _hsbCats = ['Escort Service','Call Girls','VIP Escorts','Celebrity Escorts','College Girls','Russian Escorts','Housewife','Model']; %>
+    <% var _hsbStates = cities.reduce(function(a,c){if(a.indexOf(c.state)<0)a.push(c.state);return a;},[]).sort(); %>
+    <div class="row justify-content-center pb-5" data-aos="fade-up" data-aos-delay="200">
+      <div class="col-12 col-xl-10">
+        <form class="hero-search-bar mx-auto" action="/search" method="GET" novalidate>
+          <div class="hsb-field">
+            <select class="hsb-select hsb-category-select" name="q" aria-label="Category">
+              <option value="">All Categories</option>
+              <% _hsbCats.forEach(function(cat){ %><option value="<%= cat %>"><%= cat %></option><% }) %>
+            </select>
+          </div>
+          <div class="hsb-divider"></div>
+          <div class="hsb-field">
+            <select class="hsb-select hsb-state-select" name="state" aria-label="State">
+              <option value="">Select State</option>
+              <% _hsbStates.forEach(function(s){ %><option value="<%= s %>"><%= s %></option><% }) %>
+            </select>
+          </div>
+          <div class="hsb-divider"></div>
+          <div class="hsb-field">
+            <select class="hsb-select hsb-city-select" name="city" aria-label="City">
+              <option value="">Select City</option>
+              <% cities.forEach(function(c){ %><option value="<%= c.slug %>" data-state="<%= c.state %>"><%= c.name %></option><% }) %>
+            </select>
+          </div>
+          <button type="submit" class="hsb-btn"><i class="bi bi-search me-1"></i>Search</button>
+        </form>
       </div>
     </div>
   </div>
