@@ -278,6 +278,7 @@ const CITIES = [
   { name: 'Dharamshala',     slug: 'dharamshala',      state: 'Himachal Pradesh',  metro: false },
   { name: 'Mandi',           slug: 'mandi',            state: 'Himachal Pradesh',  metro: false },
   { name: 'Solan',           slug: 'solan',            state: 'Himachal Pradesh',  metro: false },
+  { name: 'Chalthan',        slug: 'chalthan',         state: 'Gujarat',            metro: false },
 ];
 
 // Build a slug → city lookup for fast access
