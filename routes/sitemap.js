@@ -42,7 +42,16 @@ router.get('/sitemap.xml', (req, res) => {
     });
   });
 
-  // Static pages
+  // Static info pages
+  urls.push(url(`${BASE}/about`, '0.5', 'monthly', today));
+  urls.push(url(`${BASE}/contact`, '0.5', 'monthly', today));
+  urls.push(url(`${BASE}/privacy-policy`, '0.4', 'monthly', today));
+  urls.push(url(`${BASE}/terms`, '0.4', 'monthly', today));
+  urls.push(url(`${BASE}/age-verification`, '0.4', 'monthly', today));
+  urls.push(url(`${BASE}/help-center`, '0.5', 'monthly', today));
+  urls.push(url(`${BASE}/search`, '0.6', 'weekly', today));
+
+  // Auth pages
   urls.push(url(`${BASE}/auth/login`, '0.4', 'monthly', today));
   urls.push(url(`${BASE}/auth/register`, '0.5', 'monthly', today));
 
