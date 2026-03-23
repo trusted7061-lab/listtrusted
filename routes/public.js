@@ -38,7 +38,7 @@ router.get('/search', async (req, res) => {
     res.render('search', {
       title: raw ? `"${raw}" — Search Results | Trusted Escort India` : 'Search | Trusted Escort India',
       metaDescription: `Search results for "${raw}" on Trusted Escort India.`,
-      canonical: `https://trustedescort.in/search?q=${encodeURIComponent(raw)}`,
+      canonical: raw ? `https://trustedescort.in/search?q=${encodeURIComponent(raw)}` : 'https://trustedescort.in/search',
       q: raw,
       cityFilter,
       results,

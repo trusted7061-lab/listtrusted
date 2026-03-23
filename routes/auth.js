@@ -7,7 +7,7 @@ router.get('/login', (req, res) => {
   if (req.session.userId) {
     return res.redirect(req.session.role === 'admin' ? '/admin/dashboard' : '/advertiser/dashboard');
   }
-  res.render('auth/login', { title: 'Login' });
+  res.render('auth/login', { title: 'Login | Trusted Escort India', metaDescription: 'Log in to your Trusted Escort India account.', canonical: 'https://trustedescort.in/auth/login' });
 });
 
 router.post('/login', async (req, res) => {
@@ -47,7 +47,7 @@ router.get('/register', (req, res) => {
   if (req.session.userId) {
     return res.redirect(req.session.role === 'admin' ? '/admin/dashboard' : '/advertiser/dashboard');
   }
-  res.render('auth/register', { title: 'Register' });
+  res.render('auth/register', { title: 'Register | Post a Free Ad | Trusted Escort India', metaDescription: 'Create a free advertiser account on Trusted Escort India and post your escort service listing today.', canonical: 'https://trustedescort.in/auth/register' });
 });
 
 router.post('/register', async (req, res) => {
