@@ -100,4 +100,70 @@ document.addEventListener('DOMContentLoaded', function () {
       endDateInput.setAttribute('min', this.value);
     });
   }
+
+  // ── Hero Search Bar: cascade state → city ────────────────────────────────
+  document.querySelectorAll('.hero-search-bar').forEach(function (form) {
+    var stateSelect = form.querySelector('.hsb-state-select');
+    var citySelect  = form.querySelector('.hsb-city-select');
+    if (!stateSelect || !citySelect) return;
+
+    var allOptions = Array.from(citySelect.options).map(function (opt) {
+      return { value: opt.value, text: opt.text, state: opt.dataset.state || '' };
+    });
+
+    function filterCities() {
+      var selectedState = stateSelect.value;
+      var currentCity = citySelect.value;
+      citySelect.innerHTML = '<option value="">Select City</option>';
+      allOptions.forEach(function (opt) {
+        if (!opt.value) return;
+        if (!selectedState || opt.state === selectedState) {
+          var el = document.createElement('option');
+          el.value = opt.value;
+          el.textContent = opt.text;
+          el.dataset.state = opt.state;
+          if (opt.value === currentCity) el.selected = true;
+          citySelect.appendChild(el);
+        }
+      });
+    }
+
+    stateSelect.addEventListener('change', filterCities);
+
+    // On page load, if a city is pre-selected filter its state dropdown too
+    if (citySelect.value) {
+      var preSelectedOpt = allOptions.find(function (o) { return o.value === citySelect.value; });
+      if (preSelectedOpt && preSelectedOpt.state && !stateSelect.value) {
+        stateSelect.value = preSelectedOpt.state;
+        filterCities();
+        citySelect.value = preSelectedOpt.value;
+      } else if (stateSelect.value) {
+        filterCities();
+        citySelect.value = currentCity;
+      }
+    } else if (stateSelect.value) {
+      filterCities();
+    }
+
+    // When city is chosen directly, sync state dropdown
+    citySelect.addEventListener('change', function () {
+      var chosen = allOptions.find(function (o) { return o.value === citySelect.value; });
+      if (chosen && chosen.state && stateSelect.value !== chosen.state) {
+        stateSelect.value = chosen.state;
+        filterCities();
+        citySelect.value = chosen.value;
+      }
+    });
+
+    // If only city selected (no category), redirect to city page directly
+    form.addEventListener('submit', function (e) {
+      var cityVal = citySelect.value;
+      var catVal  = (form.querySelector('.hsb-category-select') || {}).value || '';
+      var stateVal = stateSelect.value;
+      if (cityVal && !catVal && !stateVal) {
+        e.preventDefault();
+        window.location.href = '/escorts-service/' + cityVal + '/';
+      }
+    });
+  });
 });

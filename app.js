@@ -117,9 +117,9 @@ app.get('/location', (req, res) => {
 });
 
 // ── Routes ────────────────────────────────────────────────────────────────────
+app.use('/', require('./routes/sitemap'));
 app.use('/', require('./routes/public'));
 app.use('/escorts-service', require('./routes/escorts-service'));
-app.use('/', require('./routes/sitemap'));
 app.use('/auth', require('./routes/auth'));
 app.use('/advertiser', require('./routes/advertiser'));
 app.use('/admin', require('./routes/admin'));

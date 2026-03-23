@@ -7,6 +7,7 @@ const { CITIES, CITY_BY_SLUG } = require('../config/cities');
 router.get('/search', async (req, res) => {
   const raw = (req.query.q || '').trim();
   const cityFilter = (req.query.city || '').trim();
+  const stateFilter = (req.query.state || '').trim();
   const page  = Math.max(1, parseInt(req.query.page) || 1);
   const limit = 12;
 
@@ -26,6 +27,9 @@ router.get('/search', async (req, res) => {
     }
     if (cityFilter && CITY_BY_SLUG[cityFilter]) {
       filter.citySlug = cityFilter;
+    } else if (stateFilter) {
+      const stateSlugs = CITIES.filter(c => c.state === stateFilter).map(c => c.slug);
+      if (stateSlugs.length) filter.citySlug = { $in: stateSlugs };
     }
 
     const total   = await Ad.countDocuments(filter);
@@ -39,9 +43,10 @@ router.get('/search', async (req, res) => {
       title: raw ? `"${raw}" — Search Results | Trusted Escort India` : 'Search | Trusted Escort India',
       metaDescription: `Search results for "${raw}" on Trusted Escort India.`,
       canonical: raw ? `https://trustedescort.in/search?q=${encodeURIComponent(raw)}` : 'https://trustedescort.in/search',
-      noindex: !!raw,  // noindex search result pages; only the clean /search page is indexable
+      noindex: !!(raw || stateFilter || cityFilter),
       q: raw,
       cityFilter,
+      stateFilter,
       results,
       total,
       page,
@@ -55,7 +60,7 @@ router.get('/search', async (req, res) => {
       title: 'Search | Trusted Escort India',
       metaDescription: 'Search escort listings.',
       canonical: 'https://trustedescort.in/search',
-      q: raw, cityFilter, results: [], total: 0, page: 1, totalPages: 0, limit, cities: CITIES,
+      q: raw, cityFilter, stateFilter: '', results: [], total: 0, page: 1, totalPages: 0, limit, cities: CITIES,
     });
   }
 });

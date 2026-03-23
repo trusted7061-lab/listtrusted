@@ -42,16 +42,31 @@
           </a>
         </div>
 
-        <!-- Search Bar -->
-        <form action="/search" method="GET" class="site-search-form">
-          <div class="site-search-wrap d-flex align-items-center gap-2">
-            <div class="site-search-input-wrap flex-grow-1 d-flex align-items-center">
-              <i class="bi bi-search site-search-icon"></i>
-              <input type="text" name="q" placeholder="Search escorts in <%= city.name %>…" class="site-search-input" autocomplete="off" maxlength="100">
-            </div>
-            <input type="hidden" name="city" value="<%= city.slug %>">
-            <button type="submit" class="btn btn-primary rounded-pill px-4 fw-semibold">Search</button>
+        <!-- Hero Search Bar -->
+        <% var _hsbCats = ['Escort Service','Call Girls','VIP Escorts','Celebrity Escorts','College Girls','Russian Escorts','Housewife','Model']; %>
+        <% var _hsbStates = cities.reduce(function(a,c){if(a.indexOf(c.state)<0)a.push(c.state);return a;},[]).sort(); %>
+        <form class="hero-search-bar" action="/search" method="GET" novalidate>
+          <div class="hsb-field">
+            <select class="hsb-select hsb-category-select" name="q" aria-label="Category">
+              <option value="">All Categories</option>
+              <% _hsbCats.forEach(function(cat){ %><option value="<%= cat %>"><%= cat %></option><% }) %>
+            </select>
           </div>
+          <div class="hsb-divider"></div>
+          <div class="hsb-field">
+            <select class="hsb-select hsb-state-select" name="state" aria-label="State">
+              <option value="">Select State</option>
+              <% _hsbStates.forEach(function(s){ %><option value="<%= s %>" <%= s === city.state ? 'selected' : '' %>><%= s %></option><% }) %>
+            </select>
+          </div>
+          <div class="hsb-divider"></div>
+          <div class="hsb-field">
+            <select class="hsb-select hsb-city-select" name="city" aria-label="City">
+              <option value="">Select City</option>
+              <% cities.forEach(function(c){ %><option value="<%= c.slug %>" data-state="<%= c.state %>" <%= c.slug === city.slug ? 'selected' : '' %>><%= c.name %></option><% }) %>
+            </select>
+          </div>
+          <button type="submit" class="hsb-btn"><i class="bi bi-search me-1"></i>Search</button>
         </form>
         <div class="d-flex gap-4">
           <div>

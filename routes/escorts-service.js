@@ -204,7 +204,8 @@ router.get('/:citySlug', async (req, res, next) => {
       city,
       ads,
       areas,
-      nearByCities
+      nearByCities,
+      cities: CITIES
     });
   } catch (err) {
     console.error('City page error:', err.message);
@@ -220,7 +221,8 @@ router.get('/:citySlug', async (req, res, next) => {
       city,
       ads: [],
       areas,
-      nearByCities
+      nearByCities,
+      cities: CITIES
     });
   }
 });
