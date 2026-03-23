@@ -108,6 +108,14 @@ app.get('/escorts/in', (req, res) => {
   res.redirect(301, '/escorts-service/');
 });
 
+// ── Legacy /location/:slug redirects ────────────────────────────────────────
+app.get('/location/:slug', (req, res) => {
+  res.redirect(301, `/escorts-service/${req.params.slug}`);
+});
+app.get('/location', (req, res) => {
+  res.redirect(301, '/escorts-service/');
+});
+
 // ── Routes ────────────────────────────────────────────────────────────────────
 app.use('/', require('./routes/public'));
 app.use('/escorts-service', require('./routes/escorts-service'));
