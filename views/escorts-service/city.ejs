@@ -116,8 +116,10 @@
           <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="<%= (i % 6) * 80 %>">
             <div class="ad-card card border-0 shadow-sm h-100 overflow-hidden">
               <div class="ad-card-img-wrapper">
-                <img src="<%= ad.image %>" class="card-img-top" loading="lazy" decoding="async"
-                     alt="<%= ad.title %> — Escort Service in <%= city.name %>" loading="lazy">
+                <a href="/escorts-service/profile/<%= ad._id %>">
+                  <img src="<%= ad.image %>" class="card-img-top" loading="lazy" decoding="async"
+                       alt="<%= ad.title %> — Escort Service in <%= city.name %>">
+                </a>
                 <span class="ad-type-badge"><%= ad.category %></span>
                 <span class="city-badge"><i class="bi bi-geo-alt-fill me-1"></i><%= city.name %></span>
               </div>

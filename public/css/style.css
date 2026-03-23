@@ -9,6 +9,9 @@
 /* Reduce layout shift for images */
 img { height: auto; }
 .card-img-top { aspect-ratio: 16/9; object-fit: cover; }
+.ad-card-img-wrapper a { display: block; }
+.ad-card-img-wrapper a .card-img-top { cursor: pointer; transition: opacity 0.2s; }
+.ad-card-img-wrapper a:hover .card-img-top { opacity: 0.9; }
 
 :root {
   --primary:        #c8102e;
