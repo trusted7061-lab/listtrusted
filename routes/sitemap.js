@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { CITIES } = require('../config/cities');
 const { AREAS } = require('../config/areas');
+const Ad = require('../models/Ad');
 
 const BASE = 'https://trustedescort.in';
 
@@ -19,7 +20,7 @@ function url(loc, priority = '0.8', changefreq = 'weekly', lastmod = null) {
   return `  <url>\n    <loc>${escXml(loc)}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>${changefreq}</changefreq>\n    <priority>${priority}</priority>\n  </url>`;
 }
 
-router.get('/sitemap.xml', (req, res) => {
+router.get('/sitemap.xml', async (req, res) => {
   const today = new Date().toISOString().split('T')[0];
   const urls = [];
 
@@ -42,6 +43,17 @@ router.get('/sitemap.xml', (req, res) => {
     });
   });
 
+  // All approved ad profile pages
+  try {
+    const ads = await Ad.find({ status: 'approved' }, '_id updatedAt').lean();
+    ads.forEach(ad => {
+      const lastmod = ad.updatedAt ? ad.updatedAt.toISOString().split('T')[0] : today;
+      urls.push(url(`${BASE}/escorts-service/profile/${ad._id}`, '0.8', 'weekly', lastmod));
+    });
+  } catch (e) {
+    // DB unavailable — skip profiles silently
+  }
+
   // Static info pages
   urls.push(url(`${BASE}/about`, '0.5', 'monthly', today));
   urls.push(url(`${BASE}/contact`, '0.5', 'monthly', today));
@@ -49,7 +61,6 @@ router.get('/sitemap.xml', (req, res) => {
   urls.push(url(`${BASE}/terms`, '0.4', 'monthly', today));
   urls.push(url(`${BASE}/age-verification`, '0.4', 'monthly', today));
   urls.push(url(`${BASE}/help-center`, '0.5', 'monthly', today));
-  urls.push(url(`${BASE}/search`, '0.6', 'weekly', today));
 
   // Auth pages
   urls.push(url(`${BASE}/auth/login`, '0.4', 'monthly', today));

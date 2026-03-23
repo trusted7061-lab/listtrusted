@@ -39,6 +39,7 @@ router.get('/search', async (req, res) => {
       title: raw ? `"${raw}" — Search Results | Trusted Escort India` : 'Search | Trusted Escort India',
       metaDescription: `Search results for "${raw}" on Trusted Escort India.`,
       canonical: raw ? `https://trustedescort.in/search?q=${encodeURIComponent(raw)}` : 'https://trustedescort.in/search',
+      noindex: !!raw,  // noindex search result pages; only the clean /search page is indexable
       q: raw,
       cityFilter,
       results,
