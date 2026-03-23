@@ -279,6 +279,7 @@ const CITIES = [
   { name: 'Mandi',           slug: 'mandi',            state: 'Himachal Pradesh',  metro: false },
   { name: 'Solan',           slug: 'solan',            state: 'Himachal Pradesh',  metro: false },
   { name: 'Chalthan',        slug: 'chalthan',         state: 'Gujarat',            metro: false },
+  { name: 'Kakolem Beach',   slug: 'kakolem-beach',    state: 'Goa',                metro: false },
 ];
 
 // Build a slug → city lookup for fast access
