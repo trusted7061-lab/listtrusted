@@ -56,8 +56,14 @@ router.get('/', (req, res) => {
 // GET /escorts-service/:city/   →  City page
 // ─────────────────────────────────────────────
 router.get('/:citySlug', async (req, res, next) => {
-  const city = CITY_BY_SLUG[req.params.citySlug];
-  if (!city) return next(); // fall through to 404
+  const slug = req.params.citySlug;
+  // Build a synthetic city object for slugs not in the config
+  const city = CITY_BY_SLUG[slug] || {
+    name: slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+    slug,
+    state: 'India',
+    metro: false
+  };
 
   try {
     const ads = await Ad.find({ status: 'approved', citySlug: city.slug })
@@ -195,8 +201,13 @@ router.get('/:citySlug', async (req, res, next) => {
 // GET /escorts-service/:city/:area/   →  Area page
 // ─────────────────────────────────────────────
 router.get('/:citySlug/:areaSlug', async (req, res, next) => {
-  const city = CITY_BY_SLUG[req.params.citySlug];
-  if (!city) return next();
+  const slug = req.params.citySlug;
+  const city = CITY_BY_SLUG[slug] || {
+    name: slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+    slug,
+    state: 'India',
+    metro: false
+  };
 
   const area = getArea(city.slug, req.params.areaSlug);
   if (!area) return next();
