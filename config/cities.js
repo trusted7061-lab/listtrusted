@@ -281,6 +281,7 @@ const CITIES = [
   { name: 'Chalthan',        slug: 'chalthan',         state: 'Gujarat',            metro: false },
   { name: 'Kakolem Beach',   slug: 'kakolem-beach',    state: 'Goa',                metro: false },
   { name: 'Yerwada',         slug: 'yerwada',          state: 'Maharashtra',         metro: false },
+  { name: 'Chinchpokli',      slug: 'chinchpokli',      state: 'Maharashtra',         metro: false },
 ];
 
 // Build a slug → city lookup for fast access
