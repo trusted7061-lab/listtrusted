@@ -15,6 +15,15 @@ function escXml(str) {
     .replace(/'/g, '&apos;');
 }
 
+// Ensure image URL is always absolute
+function absUrl(url) {
+  if (!url) return `${BASE}/logo.png`;
+  // Already absolute (http:// or https://)
+  if (/^https?:\/\//i.test(url)) return url;
+  // Relative path — prepend domain
+  return `${BASE}${url.startsWith('/') ? '' : '/'}${url}`;
+}
+
 // Build a <url> block with optional <image:image> children
 function urlBlock({ loc, priority = '0.8', changefreq = 'weekly', lastmod = null, images = [] }) {
   const today = lastmod || new Date().toISOString().split('T')[0];
@@ -139,7 +148,7 @@ router.get('/sitemap-profiles.xml', async (req, res) => {
       const imgBlocks = [];
       if (ad.image) {
         imgBlocks.push({
-          loc: ad.image,
+          loc: absUrl(ad.image),
           title: escXml(`${ad.title || 'Escort Service'} — ${ad.city || 'India'}`),
           caption: escXml(`Verified escort service listing in ${ad.city || 'India'}. Admin-approved profile on Trusted Escort India.`)
         });
@@ -183,7 +192,7 @@ router.get('/sitemap-images.xml', async (req, res) => {
     <loc>${escXml(`${BASE}/escorts-service/profile/${ad._id}`)}</loc>
     <lastmod>${lastmod}</lastmod>
     <image:image>
-      <image:loc>${escXml(ad.image)}</image:loc>
+      <image:loc>${escXml(absUrl(ad.image))}</image:loc>
       <image:title>${escXml(`${ad.title || 'Escort Service'} — ${ad.city || 'India'}`)}</image:title>
       <image:caption>${escXml(`Verified escort service in ${ad.city || 'India'}. Admin-approved listing on Trusted Escort India.`)}</image:caption>
       <image:geo_location>${escXml(`${ad.city || 'India'}`)}</image:geo_location>
