@@ -15,60 +15,189 @@ function escXml(str) {
     .replace(/'/g, '&apos;');
 }
 
-function url(loc, priority = '0.8', changefreq = 'weekly', lastmod = null) {
+// Build a <url> block with optional <image:image> children
+function urlBlock({ loc, priority = '0.8', changefreq = 'weekly', lastmod = null, images = [] }) {
   const today = lastmod || new Date().toISOString().split('T')[0];
-  return `  <url>\n    <loc>${escXml(loc)}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>${changefreq}</changefreq>\n    <priority>${priority}</priority>\n  </url>`;
+  const imageXml = images.map(img => `    <image:image>
+      <image:loc>${escXml(img.loc)}</image:loc>
+      <image:title>${escXml(img.title)}</image:title>
+      <image:caption>${escXml(img.caption)}</image:caption>
+    </image:image>`).join('\n');
+  return `  <url>
+    <loc>${escXml(loc)}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>${changefreq}</changefreq>
+    <priority>${priority}</priority>
+${imageXml ? imageXml + '\n' : ''}  </url>`;
 }
 
-router.get('/sitemap.xml', async (req, res) => {
+// ─── Sitemap Index ────────────────────────────────────────────────────────────
+router.get('/sitemap-index.xml', (req, res) => {
   const today = new Date().toISOString().split('T')[0];
-  const urls = [];
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap>
+    <loc>${BASE}/sitemap.xml</loc>
+    <lastmod>${today}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>${BASE}/sitemap-profiles.xml</loc>
+    <lastmod>${today}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>${BASE}/sitemap-images.xml</loc>
+    <lastmod>${today}</lastmod>
+  </sitemap>
+</sitemapindex>`;
+
+  res.header('Content-Type', 'application/xml; charset=UTF-8');
+  res.header('Cache-Control', 'public, max-age=3600, s-maxage=0, must-revalidate');
+  res.send(xml);
+});
+
+// ─── Main Sitemap (pages only, no profiles) ───────────────────────────────────
+router.get('/sitemap.xml', (req, res) => {
+  const today = new Date().toISOString().split('T')[0];
+  const blocks = [];
 
   // Homepage
-  urls.push(url(`${BASE}/`, '1.0', 'daily', today));
+  blocks.push(urlBlock({ loc: `${BASE}/`, priority: '1.0', changefreq: 'daily', lastmod: today,
+    images: [{ loc: `${BASE}/logo.png`, title: 'Trusted Escort India', caption: 'India\'s most trusted escort service directory' }]
+  }));
 
   // Escorts service index
-  urls.push(url(`${BASE}/escorts-service/`, '0.9', 'daily', today));
+  blocks.push(urlBlock({ loc: `${BASE}/escorts-service/`, priority: '0.9', changefreq: 'daily', lastmod: today }));
 
-  // All city pages
+  // All city pages with OG image
   CITIES.forEach(city => {
-    const priority = city.metro ? '0.8' : '0.7';
-    urls.push(url(`${BASE}/escorts-service/${city.slug}/`, priority, 'weekly', today));
+    blocks.push(urlBlock({
+      loc: `${BASE}/escorts-service/${city.slug}/`,
+      priority: city.metro ? '0.8' : '0.7',
+      changefreq: 'daily',
+      lastmod: today,
+      images: [{
+        loc: `${BASE}/logo.png`,
+        title: `Escort Service in ${city.name}, ${city.state}`,
+        caption: `Verified escort service listings in ${city.name}. Admin-approved profiles — safe, discreet, 24/7.`
+      }]
+    }));
   });
 
-  // All area pages (for cities that have areas)
+  // All area pages
   Object.keys(AREAS).forEach(citySlug => {
+    const city = CITIES.find(c => c.slug === citySlug);
     (AREAS[citySlug] || []).forEach(area => {
-      urls.push(url(`${BASE}/escorts-service/${citySlug}/${area.slug}/`, '0.6', 'weekly', today));
+      blocks.push(urlBlock({
+        loc: `${BASE}/escorts-service/${citySlug}/${area.slug}/`,
+        priority: '0.6',
+        changefreq: 'weekly',
+        lastmod: today,
+        images: [{
+          loc: `${BASE}/logo.png`,
+          title: `Escort Service in ${area.name}, ${city ? city.name : citySlug}`,
+          caption: `Find verified escort service in ${area.name}. Admin-approved profiles only.`
+        }]
+      }));
     });
   });
 
-  // All approved ad profile pages
-  try {
-    const ads = await Ad.find({ status: 'approved' }, '_id updatedAt').lean();
-    ads.forEach(ad => {
-      const lastmod = ad.updatedAt ? ad.updatedAt.toISOString().split('T')[0] : today;
-      urls.push(url(`${BASE}/escorts-service/profile/${ad._id}`, '0.8', 'weekly', lastmod));
-    });
-  } catch (e) {
-    // DB unavailable — skip profiles silently
-  }
-
-  // Static info pages
-  urls.push(url(`${BASE}/about`, '0.5', 'monthly', today));
-  urls.push(url(`${BASE}/contact`, '0.5', 'monthly', today));
-  urls.push(url(`${BASE}/privacy-policy`, '0.4', 'monthly', today));
-  urls.push(url(`${BASE}/terms`, '0.4', 'monthly', today));
-  urls.push(url(`${BASE}/age-verification`, '0.4', 'monthly', today));
-  urls.push(url(`${BASE}/help-center`, '0.5', 'monthly', today));
-
-  // Auth pages
-  urls.push(url(`${BASE}/auth/login`, '0.4', 'monthly', today));
-  urls.push(url(`${BASE}/auth/register`, '0.5', 'monthly', today));
+  // Static pages
+  [
+    { path: '/about',            p: '0.5', freq: 'monthly' },
+    { path: '/contact',          p: '0.5', freq: 'monthly' },
+    { path: '/privacy-policy',   p: '0.4', freq: 'monthly' },
+    { path: '/terms',            p: '0.4', freq: 'monthly' },
+    { path: '/age-verification', p: '0.4', freq: 'monthly' },
+    { path: '/help-center',      p: '0.5', freq: 'monthly' },
+    { path: '/auth/login',       p: '0.4', freq: 'monthly' },
+    { path: '/auth/register',    p: '0.5', freq: 'monthly' },
+  ].forEach(({ path, p, freq }) => {
+    blocks.push(urlBlock({ loc: `${BASE}${path}`, priority: p, changefreq: freq, lastmod: today }));
+  });
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls.join('\n')}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+${blocks.join('\n')}
+</urlset>`;
+
+  res.header('Content-Type', 'application/xml; charset=UTF-8');
+  res.header('Cache-Control', 'public, max-age=1800, s-maxage=0, must-revalidate');
+  res.header('CDN-Cache-Control', 'no-store');
+  res.send(xml);
+});
+
+// ─── Profiles Sitemap ─────────────────────────────────────────────────────────
+router.get('/sitemap-profiles.xml', async (req, res) => {
+  const today = new Date().toISOString().split('T')[0];
+  const blocks = [];
+
+  try {
+    const ads = await Ad.find({ status: 'approved' }, '_id title city image updatedAt').lean();
+    ads.forEach(ad => {
+      const lastmod = ad.updatedAt ? ad.updatedAt.toISOString().split('T')[0] : today;
+      const imgBlocks = [];
+      if (ad.image) {
+        imgBlocks.push({
+          loc: ad.image,
+          title: escXml(`${ad.title || 'Escort Service'} — ${ad.city || 'India'}`),
+          caption: escXml(`Verified escort service listing in ${ad.city || 'India'}. Admin-approved profile on Trusted Escort India.`)
+        });
+      }
+      blocks.push(urlBlock({
+        loc: `${BASE}/escorts-service/profile/${ad._id}`,
+        priority: '0.8',
+        changefreq: 'weekly',
+        lastmod,
+        images: imgBlocks
+      }));
+    });
+  } catch (e) {
+    // DB unavailable — return empty but valid sitemap
+  }
+
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+${blocks.join('\n')}
+</urlset>`;
+
+  res.header('Content-Type', 'application/xml; charset=UTF-8');
+  res.header('Cache-Control', 'public, max-age=1800, s-maxage=0, must-revalidate');
+  res.header('CDN-Cache-Control', 'no-store');
+  res.send(xml);
+});
+
+// ─── Dedicated Image Sitemap ──────────────────────────────────────────────────
+// Submitted separately to Google Image Search
+router.get('/sitemap-images.xml', async (req, res) => {
+  const today = new Date().toISOString().split('T')[0];
+  const blocks = [];
+
+  try {
+    const ads = await Ad.find({ status: 'approved' }, '_id title city citySlug image updatedAt').lean();
+    ads.forEach(ad => {
+      if (!ad.image) return;
+      const lastmod = ad.updatedAt ? ad.updatedAt.toISOString().split('T')[0] : today;
+      blocks.push(`  <url>
+    <loc>${escXml(`${BASE}/escorts-service/profile/${ad._id}`)}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <image:image>
+      <image:loc>${escXml(ad.image)}</image:loc>
+      <image:title>${escXml(`${ad.title || 'Escort Service'} — ${ad.city || 'India'}`)}</image:title>
+      <image:caption>${escXml(`Verified escort service in ${ad.city || 'India'}. Admin-approved listing on Trusted Escort India.`)}</image:caption>
+      <image:geo_location>${escXml(`${ad.city || 'India'}`)}</image:geo_location>
+    </image:image>
+  </url>`);
+    });
+  } catch (e) {
+    // DB unavailable — return empty but valid sitemap
+  }
+
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+${blocks.join('\n')}
 </urlset>`;
 
   res.header('Content-Type', 'application/xml; charset=UTF-8');

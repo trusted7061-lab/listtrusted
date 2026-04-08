@@ -9,7 +9,16 @@
     <!-- Left: Image + Contact -->
     <div class="col-lg-4">
       <div class="card border-0 shadow-sm overflow-hidden sticky-lg-top" style="top: 90px;">
-        <img src="<%= ad.image %>" alt="<%= ad.title %>" class="img-fluid w-100" style="max-height:420px;object-fit:cover;">
+        <img src="<%= ad.image %>"
+             alt="<%= ad.title %> — Escort Service in <%= ad.city %>, India"
+             title="<%= ad.title %> — Verified Escort in <%= ad.city %>"
+             class="img-fluid w-100"
+             style="max-height:420px;object-fit:cover;"
+             itemprop="image"
+             loading="eager"
+             decoding="async"
+             width="420"
+             height="420">
         <div class="card-body p-4">
           <h4 class="fw-bold mb-1"><%= ad.title %></h4>
           <p class="text-muted small mb-3">

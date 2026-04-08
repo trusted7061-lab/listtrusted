@@ -1,0 +1,166 @@
+<div class="admin-section">
+  <div class="container py-5" style="margin-top: 70px;">
+    <!-- Header -->
+    <div class="mb-4">
+      <h2 class="fw-bold mb-1">
+        <% if (locationAd) { %>
+          Edit Location Ad
+        <% } else { %>
+          Create Location Ad
+        <% } %>
+      </h2>
+      <p class="text-muted mb-0">Add featured ads to location pages</p>
+    </div>
+
+    <!-- Form -->
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body p-4 p-lg-5">
+            <form method="POST" action="<% if (locationAd) { %>/admin/location-ads/<%= locationAd._id %><% } else { %>/admin/location-ads<% } %>">
+              
+              <!-- Title -->
+              <div class="mb-4">
+                <label for="title" class="form-label fw-semibold">
+                  Ad Title <span class="text-danger">*</span>
+                </label>
+                <input type="text" class="form-control" id="title" name="title" 
+                       value="<%= locationAd ? locationAd.title : '' %>" 
+                       placeholder="e.g., Premium Partner for Delhi" required>
+                <small class="text-muted">The headline visitors will see</small>
+              </div>
+
+              <!-- Description -->
+              <div class="mb-4">
+                <label for="description" class="form-label fw-semibold">
+                  Description
+                </label>
+                <textarea class="form-control" id="description" name="description" rows="3" 
+                          placeholder="Optional description or tagline"><%= locationAd ? locationAd.description : '' %></textarea>
+                <small class="text-muted">Brief description shown on the card</small>
+              </div>
+
+              <!-- Image URL -->
+              <div class="mb-4">
+                <label for="image" class="form-label fw-semibold">
+                  Image URL <span class="text-danger">*</span>
+                </label>
+                <input type="url" class="form-control" id="image" name="image" 
+                       value="<%= locationAd ? locationAd.image : '' %>" 
+                       placeholder="https://example.com/image.jpg" required>
+                <small class="text-muted">HTTPS URL to the ad image (JPG, PNG)</small>
+                <% if (locationAd && locationAd.image) { %>
+                  <div class="mt-2">
+                    <img src="<%= locationAd.image %>" alt="Preview" style="max-height: 150px; border-radius: 4px;">
+                  </div>
+                <% } %>
+              </div>
+
+              <!-- Link URL -->
+              <div class="mb-4">
+                <label for="link" class="form-label fw-semibold">
+                  Ad Link URL <span class="text-danger">*</span>
+                </label>
+                <input type="url" class="form-control" id="link" name="link" 
+                       value="<%= locationAd ? locationAd.link : '' %>" 
+                       placeholder="https://example.com/campaign" required>
+                <small class="text-muted">Where visitors are directed when clicking "Learn More"</small>
+              </div>
+
+              <!-- Position -->
+              <div class="mb-4">
+                <label for="position" class="form-label fw-semibold">
+                  Position
+                </label>
+                <select class="form-select" id="position" name="position">
+                  <option value="1" <% if (!locationAd || locationAd.position === 1) { %>selected<% } %>>Position 1 (Left)</option>
+                  <option value="2" <% if (locationAd && locationAd.position === 2) { %>selected<% } %>>Position 2 (Right)</option>
+                </select>
+                <small class="text-muted">Which slot to display this ad in (max 2 ads per page)</small>
+              </div>
+
+              <!-- Target Cities -->
+              <div class="mb-4">
+                <label for="targetCities" class="form-label fw-semibold">
+                  Target Cities
+                </label>
+                <select class="form-select" id="targetCities" name="targetCities" multiple size="6">
+                  <option value="">All Cities (leave empty for all)</option>
+                  <% cities.forEach(city => { %>
+                    <option value="<%= city.slug %>" 
+                            <% if (locationAd && locationAd.targetCities.includes(city.slug)) { %>selected<% } %>>
+                      <%= city.name %>, <%= city.state %>
+                    </option>
+                  <% }) %>
+                </select>
+                <small class="text-muted">Hold Ctrl/Cmd to select multiple cities. Leave empty to show on all location pages.</small>
+              </div>
+
+              <!-- Dates -->
+              <div class="row">
+                <div class="col-md-6 mb-4">
+                  <label for="startDate" class="form-label fw-semibold">
+                    Start Date <span class="text-danger">*</span>
+                  </label>
+                  <input type="datetime-local" class="form-control" id="startDate" name="startDate" 
+                         value="<%= locationAd ? new Date(locationAd.startDate).toISOString().slice(0, 16) : '' %>" 
+                         required>
+                </div>
+                <div class="col-md-6 mb-4">
+                  <label for="endDate" class="form-label fw-semibold">
+                    End Date <span class="text-danger">*</span>
+                  </label>
+                  <input type="datetime-local" class="form-control" id="endDate" name="endDate" 
+                         value="<%= locationAd ? new Date(locationAd.endDate).toISOString().slice(0, 16) : '' %>" 
+                         required>
+                </div>
+              </div>
+
+              <!-- Active Status -->
+              <% if (locationAd) { %>
+                <div class="mb-4">
+                  <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="isActive" name="isActive" 
+                           <% if (locationAd.isActive) { %>checked<% } %>>
+                    <label class="form-check-label fw-semibold" for="isActive">
+                      Active (show this ad)
+                    </label>
+                  </div>
+                </div>
+              <% } %>
+
+              <!-- Submit Buttons -->
+              <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary rounded-pill px-5">
+                  <i class="bi bi-check-circle me-2"></i>
+                  <% if (locationAd) { %>
+                    Update Ad
+                  <% } else { %>
+                    Create Ad
+                  <% } %>
+                </button>
+                <a href="/admin/location-ads" class="btn btn-outline-secondary rounded-pill px-5">
+                  <i class="bi bi-x-circle me-2"></i>Cancel
+                </a>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Info Box -->
+        <div class="alert alert-info mt-4" role="alert">
+          <h6 class="alert-heading fw-bold">
+            <i class="bi bi-info-circle me-2"></i>How Location Ads Work
+          </h6>
+          <ul class="small mb-0">
+            <li>Up to <strong>2 featured ads</strong> are displayed per location page</li>
+            <li>Ads appear above the regular escort listings</li>
+            <li>The ad must be <strong>active, not expired</strong> to display</li>
+            <li>Leave target cities empty to show on <strong>all location pages</strong></li>
+            <li>Ads are displayed in pinned order first, then by creation date</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -131,6 +131,34 @@
       <p class="lead text-muted">All listings below are approved by our admin team</p>
     </div>
 
+    <!-- Featured Location Ads -->
+    <% if (locationAds && locationAds.length > 0) { %>
+      <div class="row g-4 mb-5">
+        <% locationAds.forEach((ad, i) => { %>
+          <div class="col-lg-6" data-aos="fade-up" data-aos-delay="<%= i * 100 %>">
+            <div class="location-ad-card card border-2 border-warning h-100 overflow-hidden shadow-lg position-relative">
+              <div class="featured-badge position-absolute top-0 end-0 m-3">
+                <span class="badge bg-warning text-dark"><i class="bi bi-star-fill me-1"></i>Featured</span>
+              </div>
+              <a href="<%= ad.link %>" target="_blank" rel="noopener noreferrer" class="text-decoration-none">
+                <img src="<%= ad.image %>" class="card-img-top" style="height: 200px; object-fit: cover;" loading="lazy" decoding="async"
+                     alt="<%= ad.title %>">
+              </a>
+              <div class="card-body">
+                <h5 class="card-title fw-bold mb-2"><%= ad.title %></h5>
+                <% if (ad.description) { %>
+                  <p class="card-text text-muted small mb-3"><%= ad.description %></p>
+                <% } %>
+                <a href="<%= ad.link %>" target="_blank" rel="noopener noreferrer" class="btn btn-warning btn-sm rounded-pill w-100">
+                  <i class="bi bi-arrow-right me-1"></i>Learn More
+                </a>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+
     <% if (ads && ads.length > 0) { %>
       <div class="row g-4">
         <% ads.forEach((ad, i) => { %>

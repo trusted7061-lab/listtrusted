@@ -2,71 +2,141 @@
 <html lang="en" data-bs-theme="light">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta http-equiv="content-language" content="en-IN">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  
   <title><%= title %></title>
   <meta name="description" content="<%= typeof metaDescription !== 'undefined' ? metaDescription : title %>">
+  <meta name="title" content="<%= title %>">
+  
   <% if (typeof metaKeywords !== 'undefined' && metaKeywords) { %>
   <meta name="keywords" content="<%= metaKeywords %>">
   <% } %>
+  
   <% if (typeof noindex !== 'undefined' && noindex) { %>
   <meta name="robots" content="noindex, nofollow">
   <% } else { %>
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
   <% } %>
+  
+  <!-- Geo Tags -->
   <meta name="geo.region" content="IN">
   <% if (typeof city !== 'undefined' && city) { %>
   <meta name="geo.placename" content="<%= city.name %>, <%= city.state %>">
+  <meta name="geo.position" content="28.7041;77.1025">
   <% } else { %>
   <meta name="geo.placename" content="India">
+  <meta name="geo.position" content="20.5937;78.9629">
   <% } %>
+  
+  <!-- Canonical URL -->
   <link rel="canonical" href="<%= typeof canonical !== 'undefined' ? canonical : 'https://trustedescort.in' %>">
-  <!-- Open Graph -->
+  
+  <!-- Alternate Links for Mobile -->
+  <link rel="alternate" media="only screen and (max-width: 640px)" href="<%= typeof canonical !== 'undefined' ? canonical : 'https://trustedescort.in' %>">
+  
+  <!-- Open Graph / Social Meta -->
   <meta property="og:type" content="website">
   <meta property="og:locale" content="en_IN">
   <meta property="og:title" content="<%= title %>">
   <meta property="og:description" content="<%= typeof metaDescription !== 'undefined' ? metaDescription : title %>">
   <meta property="og:url" content="<%= typeof canonical !== 'undefined' ? canonical : 'https://trustedescort.in' %>">
   <meta property="og:site_name" content="Trusted Escort India">
-  <% if (typeof ogImage !== 'undefined' && ogImage) { %>
-  <meta property="og:image" content="<%= ogImage %>">
-  <% } else { %>
-  <meta property="og:image" content="https://trustedescort.in/logo.png">
-  <% } %>
+  <meta property="og:image" content="<%= typeof ogImage !== 'undefined' && ogImage ? ogImage : 'https://trustedescort.in/logo.png' %>">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="<%= title %>">
+  
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:site" content="@TrustedEscortIN">
+  <meta name="twitter:creator" content="@TrustedEscortIN">
   <meta name="twitter:title" content="<%= title %>">
   <meta name="twitter:description" content="<%= typeof metaDescription !== 'undefined' ? metaDescription : title %>">
   <meta name="twitter:image" content="<%= typeof ogImage !== 'undefined' && ogImage ? ogImage : 'https://trustedescort.in/logo.png' %>">
+  <meta name="twitter:image:alt" content="<%= title %>">
+  
+  <!-- Apple / Mobile Meta -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Trusted Escort India">
+  <meta name="theme-color" content="#5B4BFF">
+  <meta name="msapplication-TileColor" content="#5B4BFF">
+  
+  <!-- Additional Meta Tags -->
+  <meta name="author" content="Trusted Escort India">
+  <meta name="publisher" content="Trusted Escort India">
+  <meta name="content-type" content="text/html; charset=UTF-8">
+  <meta name="language" content="English">
+  <meta name="revisit-after" content="7 days">
+  <meta name="expires" content="<%= new Date(Date.now() + 30*24*60*60*1000).toUTCString() %>">
+  
   <!-- JSON-LD Structured Data -->
   <% if (typeof schema !== 'undefined' && schema) { %>
   <script type="application/ld+json"><%- schema %></script>
+  <% } else { %>
+  <!-- Default Organization Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Trusted Escort India",
+    "url": "https://trustedescort.in",
+    "logo": "https://trustedescort.in/logo.png",
+    "description": "India's most trusted platform for verified escort service listings. Browse admin-approved escort profiles across 79+ cities.",
+    "sameAs": [
+      "https://www.facebook.com/TrustedEscortIndia",
+      "https://twitter.com/TrustedEscortIN",
+      "https://www.instagram.com/TrustedEscortIndia"
+    ],
+    "address": {
+      "@type": "PostalAddress",
+      "addressCountry": "IN",
+      "addressLocality": "New Delhi",
+      "postalCode": "110001"
+    },
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "Customer Support",
+      "email": "support@trustedescort.in"
+    }
+  }
+  </script>
   <% } %>
+  
   <!-- DNS Prefetch + Preconnect for performance -->
   <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
   <link rel="dns-prefetch" href="//fonts.googleapis.com">
+  <link rel="dns-prefetch" href="//fonts.gstatic.com">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  
   <!-- Bootstrap 5 CSS — critical, load first -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  
   <!-- Custom CSS — critical -->
   <link href="/css/style.css?v=20260322c" rel="stylesheet">
+  
   <!-- Google Fonts — trimmed to minimum weights, display=swap prevents FOIT -->
   <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+  
   <!-- Bootstrap Icons — non-blocking (large file, not needed for first paint) -->
   <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"></noscript>
+  
   <!-- AOS Animations CSS — non-blocking (not needed for first paint) -->
   <link rel="preload" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css"></noscript>
+  
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="/logo.png">
   <link rel="apple-touch-icon" href="/logo.png">
+  <link rel="shortcut icon" href="/logo.png" type="image/png">
+  
+  <!-- Preload critical images -->
+  <link rel="preload" as="image" href="/logo.png">
 </head>
 <body>
   <%- include('../partials/navbar') %>

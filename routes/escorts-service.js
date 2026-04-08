@@ -1,8 +1,30 @@
 const express = require('express');
 const router = express.Router();
 const Ad = require('../models/Ad');
+const LocationAd = require('../models/LocationAd');
 const { CITIES, CITY_BY_SLUG } = require('../config/cities');
 const { getAreasForCity, getArea } = require('../config/areas');
+
+// Helper function to fetch location ads for a city
+async function getLocationAdsForCity(citySlug) {
+  try {
+    const now = new Date();
+    const locationAds = await LocationAd.find({
+      isActive: true,
+      startDate: { $lte: now },
+      endDate: { $gte: now },
+      $or: [
+        { targetCities: { $size: 0 } }, // Show on all cities if array is empty
+        { targetCities: citySlug }     // Or if this city is in the array
+      ]
+    }).sort({ isPinned: -1, createdAt: -1 }).limit(2);
+    
+    return locationAds;
+  } catch (err) {
+    console.error('Error fetching location ads:', err);
+    return [];
+  }
+}
 
 // ─────────────────────────────────────────────
 // GET /escorts-service/   →  All cities index
@@ -205,13 +227,16 @@ router.get('/:citySlug', async (req, res, next) => {
       ads,
       areas,
       nearByCities,
-      cities: CITIES
+      cities: CITIES,
+      locationAds: await getLocationAdsForCity(city.slug)
     });
   } catch (err) {
     console.error('City page error:', err.message);
     // Fall back — render page with empty ads so it doesn't show error
     const areas = getAreasForCity(city.slug);
     const nearByCities = CITIES.filter(c => c.slug !== city.slug).slice(0, 18);
+    const locationAds = await getLocationAdsForCity(city.slug);
+    
     res.render('escorts-service/city', {
       title: `Escort Service in ${city.name} | Trusted Escort India`,
       metaDescription: `Find verified escort service in ${city.name}, ${city.state}. Admin-approved listings.`,
@@ -222,7 +247,8 @@ router.get('/:citySlug', async (req, res, next) => {
       ads: [],
       areas,
       nearByCities,
-      cities: CITIES
+      cities: CITIES,
+      locationAds
     });
   }
 });
@@ -286,12 +312,15 @@ router.get('/:citySlug/:areaSlug', async (req, res, next) => {
       city,
       area,
       ads,
-      otherAreas
+      otherAreas,
+      locationAds: await getLocationAdsForCity(city.slug)
     });
   } catch (err) {
     console.error('Area page error:', err.message);
     const allAreas = getAreasForCity(city.slug);
     const otherAreas = allAreas.filter(a => a.slug !== area.slug);
+    const locationAds = await getLocationAdsForCity(city.slug);
+    
     res.render('escorts-service/area', {
       title: `Escort Service in ${area.name}, ${city.name} | Trusted Escort India`,
       metaDescription: `Find verified escort service in ${area.name}, ${city.name}.`,
@@ -301,7 +330,8 @@ router.get('/:citySlug/:areaSlug', async (req, res, next) => {
       city,
       area,
       ads: [],
-      otherAreas
+      otherAreas,
+      locationAds
     });
   }
 });
@@ -314,10 +344,66 @@ router.get('/profile/:id', async (req, res) => {
     if (!ad) {
       return res.status(404).render('404', { title: 'Profile Not Found' });
     }
+
+    const profileUrl = `https://trustedescort.in/escorts-service/profile/${ad._id}`;
+    const imageUrl = ad.image || 'https://trustedescort.in/logo.png';
+    const truncatedDesc = ad.description.length > 155
+      ? ad.description.substring(0, 152) + '...'
+      : ad.description;
+
+    const schema = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'ProfilePage',
+          '@id': `${profileUrl}#webpage`,
+          'url': profileUrl,
+          'name': `${ad.title} — Escort Service in ${ad.city}`,
+          'description': truncatedDesc,
+          'image': {
+            '@type': 'ImageObject',
+            'url': imageUrl,
+            'name': `${ad.title} — ${ad.city}`,
+            'description': `Verified escort service listing in ${ad.city}. Admin-approved on Trusted Escort India.`,
+            'contentUrl': imageUrl,
+            'thumbnail': imageUrl
+          }
+        },
+        {
+          '@type': 'BreadcrumbList',
+          'itemListElement': [
+            { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://trustedescort.in' },
+            { '@type': 'ListItem', 'position': 2, 'name': 'Escorts Service India', 'item': 'https://trustedescort.in/escorts-service/' },
+            { '@type': 'ListItem', 'position': 3, 'name': `Escort Service in ${ad.city}`, 'item': `https://trustedescort.in/escorts-service/${ad.citySlug}/` },
+            { '@type': 'ListItem', 'position': 4, 'name': ad.title, 'item': profileUrl }
+          ]
+        },
+        {
+          '@type': 'Person',
+          'name': ad.title,
+          'image': {
+            '@type': 'ImageObject',
+            'url': imageUrl,
+            'name': `${ad.title} – Escort Service Profile Photo`,
+            'description': `Profile photo of ${ad.title}, verified escort service in ${ad.city}, India.`
+          },
+          'address': {
+            '@type': 'PostalAddress',
+            'addressLocality': ad.city,
+            'addressCountry': 'IN'
+          },
+          'url': profileUrl
+        }
+      ]
+    });
+
     res.render('escorts-service/profile', {
       title: `${ad.title} — Escort Service in ${ad.city} | Trusted Escort India`,
-      metaDescription: `${ad.description.substring(0, 155)}`,
-      canonical: `https://trustedescort.in/escorts-service/profile/${ad._id}`,
+      metaDescription: truncatedDesc,
+      metaKeywords: `escort service ${(ad.city || 'india').toLowerCase()}, ${(ad.title || '').toLowerCase()}, verified escort ${(ad.city || '').toLowerCase()}, call girls ${(ad.city || '').toLowerCase()}`,
+      canonical: profileUrl,
+      ogImage: imageUrl,
+      schema,
       ad
     });
   } catch (err) {

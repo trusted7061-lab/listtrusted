@@ -1,13 +1,14 @@
 const fs = require('fs');
 const { CITIES } = require('./config/cities');
+const { AREAS } = require('./config/areas');
 
 const BASE = 'https://trustedescort.in';
 const TODAY = new Date().toISOString().split('T')[0];
 
 // ── sitemap.xml ───────────────────────────────────────────────────────────────
 const staticUrls = [
-  { loc: BASE + '/',                    priority: '1.0', freq: 'daily' },
-  { loc: BASE + '/escorts-service/',    priority: '0.9', freq: 'daily' },
+  { loc: BASE + '/',                    priority: '1.0', freq: 'daily', lastmod: TODAY },
+  { loc: BASE + '/escorts-service/',    priority: '0.9', freq: 'daily', lastmod: TODAY },
   { loc: BASE + '/auth/login',          priority: '0.5', freq: 'monthly' },
   { loc: BASE + '/auth/register',       priority: '0.6', freq: 'monthly' },
 ];
@@ -15,27 +16,52 @@ const staticUrls = [
 const cityUrls = CITIES.map(c => ({
   loc: `${BASE}/escorts-service/${c.slug}/`,
   priority: c.metro ? '0.8' : '0.7',
-  freq: 'weekly'
+  freq: 'daily',
+  lastmod: TODAY
 }));
 
-const allUrls = [...staticUrls, ...cityUrls];
+// Add area pages to sitemap
+const areaUrls = [];
+Object.keys(AREAS).forEach(citySlug => {
+  const city = CITIES.find(c => c.slug === citySlug);
+  if (city && AREAS[citySlug]) {
+    AREAS[citySlug].forEach(area => {
+      areaUrls.push({
+        loc: `${BASE}/escorts-service/${citySlug}/${area.slug}/`,
+        priority: '0.6',
+        freq: 'weekly',
+        lastmod: TODAY
+      });
+    });
+  }
+});
+
+const allUrls = [...staticUrls, ...cityUrls, ...areaUrls];
 
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 ${allUrls.map(u => `  <url>
     <loc>${u.loc}</loc>
-    <lastmod>${TODAY}</lastmod>
+    <lastmod>${u.lastmod || TODAY}</lastmod>
     <changefreq>${u.freq}</changefreq>
     <priority>${u.priority}</priority>
   </url>`).join('\n')}
 </urlset>`;
 
 fs.writeFileSync('public/sitemap.xml', sitemap);
-console.log(`sitemap.xml — ${allUrls.length} URLs`);
+console.log(`sitemap.xml — ${allUrls.length} URLs (${cityUrls.length} cities + ${areaUrls.length} areas)`);
 
 // ── robots.txt ────────────────────────────────────────────────────────────────
-const robots = `User-agent: *
+const robots = `# Trusted Escort India Robots.txt
+# Generated: ${new Date().toISOString()}
+
+User-agent: *
 Allow: /
+
+# Crawl rate regulation
+Crawl-delay: 1
 
 # Block admin and private areas
 Disallow: /admin/
@@ -50,7 +76,25 @@ Allow: /escorts-service/
 Allow: /auth/login
 Allow: /auth/register
 
+# Specific directives for Googlebot
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0.5
+
+# Specific directives for Bingbot
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+# Sitemap Index (contains all sitemaps)
+Sitemap: ${BASE}/sitemap-index.xml
+
+# Individual Sitemaps
 Sitemap: ${BASE}/sitemap.xml
+Sitemap: ${BASE}/sitemap-profiles.xml
+Sitemap: ${BASE}/sitemap-images.xml
+
+# Updated: ${TODAY}
 `;
 
 fs.writeFileSync('public/robots.txt', robots);
@@ -93,3 +137,8 @@ ${BASE}/sitemap.xml
 
 fs.writeFileSync('public/llms.txt', llms);
 console.log('llms.txt written');
+
+console.log('\n✓ SEO files generated successfully!');
+console.log('- sitemap.xml: ' + allUrls.length + ' URLs');
+console.log('- robots.txt: Enhanced for search engines');
+console.log('- llms.txt: Updated with platform info');

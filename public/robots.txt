@@ -1,5 +1,11 @@
+# Trusted Escort India Robots.txt
+# Generated: 2026-04-08T16:47:11.987Z
+
 User-agent: *
 Allow: /
+
+# Crawl rate regulation
+Crawl-delay: 1
 
 # Block admin and private areas
 Disallow: /admin/
@@ -14,4 +20,22 @@ Allow: /escorts-service/
 Allow: /auth/login
 Allow: /auth/register
 
+# Specific directives for Googlebot
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0.5
+
+# Specific directives for Bingbot
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+# Sitemap Index (contains all sitemaps)
+Sitemap: https://trustedescort.in/sitemap-index.xml
+
+# Individual Sitemaps
 Sitemap: https://trustedescort.in/sitemap.xml
+Sitemap: https://trustedescort.in/sitemap-profiles.xml
+Sitemap: https://trustedescort.in/sitemap-images.xml
+
+# Updated: 2026-04-08
