@@ -281,6 +281,17 @@ router.get('/:citySlug/:areaSlug', async (req, res, next) => {
       '@context': 'https://schema.org',
       '@graph': [
         {
+          '@type': 'WebPage',
+          '@id': `https://trustedescort.in/escorts-service/${city.slug}/${area.slug}/#webpage`,
+          'url': `https://trustedescort.in/escorts-service/${city.slug}/${area.slug}/`,
+          'name': `Escort Service in ${area.name}, ${city.name}`,
+          'description': `Find verified escort service in ${area.name}, ${city.name}. Admin-approved escort profiles — 100% genuine, safe & discreet.`,
+          'speakable': {
+            '@type': 'SpeakableSpecification',
+            'cssSelector': ['.speakable-content', '.answer-box p', 'h1', '.seo-content-box p']
+          }
+        },
+        {
           '@type': 'BreadcrumbList',
           'itemListElement': [
             { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://trustedescort.in' },
@@ -294,6 +305,7 @@ router.get('/:citySlug/:areaSlug', async (req, res, next) => {
           'name': `Escort Service in ${area.name}, ${city.name}`,
           'description': `Verified escort service in ${area.name}, ${city.name}. Admin-approved listings.`,
           'url': `https://trustedescort.in/escorts-service/${city.slug}/${area.slug}/`,
+          'image': 'https://trustedescort.in/logo.png',
           'areaServed': {
             '@type': 'Place',
             'name': `${area.name}, ${city.name}`,
@@ -308,6 +320,7 @@ router.get('/:citySlug/:areaSlug', async (req, res, next) => {
       metaDescription: `Find verified escort service in ${area.name}, ${city.name}. Admin-approved escort profiles — 100% genuine, safe & discreet.`,
       metaKeywords: `escort service ${area.name.toLowerCase()}, escorts in ${area.name.toLowerCase()} ${city.name.toLowerCase()}, ${area.name.toLowerCase()} escort service`,
       canonical: `https://trustedescort.in/escorts-service/${city.slug}/${area.slug}/`,
+      ogImage: 'https://trustedescort.in/logo.png',
       schema,
       city,
       area,
@@ -342,7 +355,7 @@ router.get('/profile/:id', async (req, res) => {
     const ad = await Ad.findOne({ _id: req.params.id, status: 'approved' })
       .populate('advertiser', 'name company');
     if (!ad) {
-      return res.status(404).render('404', { title: 'Profile Not Found' });
+      return res.status(404).render('404', { title: 'Profile Not Found', noindex: true });
     }
 
     const profileUrl = `https://trustedescort.in/escorts-service/profile/${ad._id}`;
@@ -403,12 +416,13 @@ router.get('/profile/:id', async (req, res) => {
       metaKeywords: `escort service ${(ad.city || 'india').toLowerCase()}, ${(ad.title || '').toLowerCase()}, verified escort ${(ad.city || '').toLowerCase()}, call girls ${(ad.city || '').toLowerCase()}`,
       canonical: profileUrl,
       ogImage: imageUrl,
+      ogType: 'profile',
       schema,
       ad
     });
   } catch (err) {
     console.error('Profile page error:', err.message);
-    res.status(404).render('404', { title: 'Profile Not Found' });
+    res.status(404).render('404', { title: 'Profile Not Found', noindex: true });
   }
 });
 

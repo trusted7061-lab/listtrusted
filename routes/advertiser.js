@@ -78,7 +78,7 @@ router.get('/dashboard', isAdvertiser, async (req, res) => {
       approved: ads.filter(a => a.status === 'approved').length,
       rejected: ads.filter(a => a.status === 'rejected').length
     };
-    res.render('advertiser/dashboard', { title: 'Advertiser Dashboard', ads: ads.slice(0, 5), stats });
+    res.render('advertiser/dashboard', { title: 'Advertiser Dashboard', noindex: true, ads: ads.slice(0, 5), stats });
   } catch (err) {
     console.error(err);
     req.flash('error', 'Error loading dashboard');
@@ -93,7 +93,7 @@ router.get('/my-ads', isAdvertiser, async (req, res) => {
     const query = { advertiser: req.session.userId };
     if (statusFilter) query.status = statusFilter;
     const ads = await Ad.find(query).sort({ createdAt: -1 });
-    res.render('advertiser/my-ads', { title: 'My Ads', ads, statusFilter });
+    res.render('advertiser/my-ads', { title: 'My Ads', noindex: true, ads, statusFilter });
   } catch (err) {
     console.error(err);
     req.flash('error', 'Error loading ads');
@@ -103,13 +103,14 @@ router.get('/my-ads', isAdvertiser, async (req, res) => {
 
 // Create Ad - form
 router.get('/create-ad', isAdvertiser, (req, res) => {
-  res.render('advertiser/create-ad', { title: 'Create New Ad', cities: CITIES, formData: {}, uploadedImage: null, errorMsg: null });
+  res.render('advertiser/create-ad', { title: 'Create New Ad', noindex: true, cities: CITIES, formData: {}, uploadedImage: null, errorMsg: null });
 });
 
 // Create Ad - submit
 function renderCreateAdForm(res, { formData = {}, uploadedImage = null, errorMsg = null } = {}) {
   return res.render('advertiser/create-ad', {
     title: 'Create New Ad',
+    noindex: true,
     cities: CITIES,
     formData,
     uploadedImage,
@@ -250,7 +251,7 @@ router.get('/edit-ad/:id', isAdvertiser, async (req, res) => {
       req.flash('error', 'Only pending ads can be edited');
       return res.redirect('/advertiser/my-ads');
     }
-    res.render('advertiser/edit-ad', { title: 'Edit Ad', ad });
+    res.render('advertiser/edit-ad', { title: 'Edit Ad', noindex: true, ad });
   } catch (err) {
     console.error(err);
     req.flash('error', 'Error loading ad');

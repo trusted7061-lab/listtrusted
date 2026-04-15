@@ -37,7 +37,7 @@
   <link rel="alternate" media="only screen and (max-width: 640px)" href="<%= typeof canonical !== 'undefined' ? canonical : 'https://trustedescort.in' %>">
   
   <!-- Open Graph / Social Meta -->
-  <meta property="og:type" content="website">
+  <meta property="og:type" content="<%= typeof ogType !== 'undefined' ? ogType : 'website' %>">
   <meta property="og:locale" content="en_IN">
   <meta property="og:title" content="<%= title %>">
   <meta property="og:description" content="<%= typeof metaDescription !== 'undefined' ? metaDescription : title %>">

@@ -126,7 +126,7 @@ app.use('/admin', require('./routes/admin'));
 
 // ── 404 ───────────────────────────────────────────────────────────────────────
 app.use((req, res) => {
-  res.status(404).render('404', { title: 'Page Not Found' });
+  res.status(404).render('404', { title: 'Page Not Found', noindex: true });
 });
 
 // ── Global error handler ──────────────────────────────────────────────────────

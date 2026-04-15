@@ -24,6 +24,7 @@ router.get('/dashboard', isAdmin, async (req, res) => {
 
     res.render('admin/dashboard', {
       title: 'Admin Dashboard',
+      noindex: true,
       stats: { totalAds, pendingAds, approvedAds, rejectedAds, totalUsers },
       recentAds
     });
@@ -47,7 +48,7 @@ router.get('/ads', isAdmin, async (req, res) => {
       .populate('advertiser', 'name email company')
       .sort({ createdAt: -1 });
 
-    res.render('admin/ads', { title: 'Manage Ads', ads, statusFilter, categoryFilter });
+    res.render('admin/ads', { title: 'Manage Ads', noindex: true, ads, statusFilter, categoryFilter });
   } catch (err) {
     console.error(err);
     req.flash('error', 'Error loading ads');
@@ -63,7 +64,7 @@ router.get('/ad/:id', isAdmin, async (req, res) => {
       req.flash('error', 'Ad not found');
       return res.redirect('/admin/ads');
     }
-    res.render('admin/ad-detail', { title: 'Ad Detail', ad });
+    res.render('admin/ad-detail', { title: 'Ad Detail', noindex: true, ad });
   } catch (err) {
     console.error(err);
     req.flash('error', 'Error loading ad');
@@ -127,7 +128,7 @@ router.get('/users', isAdmin, async (req, res) => {
       ...u.toObject(),
       adCount: countMap[u._id.toString()] || 0
     }));
-    res.render('admin/users', { title: 'Manage Users', users: usersWithCounts });
+    res.render('admin/users', { title: 'Manage Users', noindex: true, users: usersWithCounts });
   } catch (err) {
     console.error(err);
     req.flash('error', 'Error loading users');
@@ -166,7 +167,8 @@ router.get('/location-ads', isAdmin, async (req, res) => {
       .sort({ createdAt: -1 });
     
     res.render('admin/location-ads', { 
-      title: 'Location Ads', 
+      title: 'Location Ads',
+      noindex: true,
       locationAds,
       cities: CITIES
     });
@@ -181,6 +183,7 @@ router.get('/location-ads', isAdmin, async (req, res) => {
 router.get('/location-ads/create', isAdmin, (req, res) => {
   res.render('admin/location-ad-form', { 
     title: 'Create Location Ad',
+    noindex: true,
     locationAd: null,
     cities: CITIES
   });
@@ -230,6 +233,7 @@ router.get('/location-ads/:id/edit', isAdmin, async (req, res) => {
 
     res.render('admin/location-ad-form', { 
       title: 'Edit Location Ad',
+      noindex: true,
       locationAd,
       cities: CITIES
     });
