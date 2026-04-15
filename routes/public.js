@@ -247,18 +247,56 @@ router.get('/', async (req, res) => {
 
 // ── Static pages ─────────────────────────────────────────────────────────────
 router.get('/about', (req, res) => {
+  const schema = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'AboutPage',
+    '@id': 'https://trustedescort.in/about#webpage',
+    'url': 'https://trustedescort.in/about',
+    'name': 'About Us — Trusted Escort India',
+    'description': "Learn about Trusted Escort India — India's most trusted verified escort service directory covering 75+ cities.",
+    'mainEntity': {
+      '@type': 'Organization',
+      'name': 'Trusted Escort India',
+      'url': 'https://trustedescort.in',
+      'description': "India's most trusted platform for verified escort service listings. Browse admin-approved escort profiles across 75+ cities.",
+      'founded': '2024'
+    }
+  });
+
   res.render('pages/about', {
     title: 'About Us | Trusted Escort India',
     metaDescription: "Learn about Trusted Escort India — India's most trusted verified escort service directory covering 75+ cities.",
     canonical: 'https://trustedescort.in/about',
+    schema
   });
 });
 
 router.get('/contact', (req, res) => {
+  const schema = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'ContactPage',
+    '@id': 'https://trustedescort.in/contact#webpage',
+    'url': 'https://trustedescort.in/contact',
+    'name': 'Contact Us — Trusted Escort India',
+    'description': 'Get in touch with the Trusted Escort India team.',
+    'mainEntity': {
+      '@type': 'Organization',
+      'name': 'Trusted Escort India',
+      'contactPoint': {
+        '@type': 'ContactPoint',
+        '@id': 'https://trustedescort.in/contact#contactpoint',
+        'contactType': 'Customer Support',
+        'email': 'support@trustedescort.in',
+        'availableLanguage': 'en'
+      }
+    }
+  });
+
   res.render('pages/contact', {
     title: 'Contact Us | Trusted Escort India',
     metaDescription: 'Get in touch with the Trusted Escort India team. Support, abuse reports and business enquiries.',
     canonical: 'https://trustedescort.in/contact',
+    schema
   });
 });
 
@@ -282,34 +320,84 @@ router.post('/contact', (req, res) => {
 });
 
 router.get('/privacy-policy', (req, res) => {
+  const schema = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': 'https://trustedescort.in/privacy-policy#webpage',
+    'url': 'https://trustedescort.in/privacy-policy',
+    'name': 'Privacy Policy — Trusted Escort India',
+    'description': 'Read the Trusted Escort India privacy policy — how we collect, use and protect your data.',
+    'mainEntity': {
+      '@type': 'Organization',
+      'name': 'Trusted Escort India',
+      'url': 'https://trustedescort.in'
+    }
+  });
+
   res.render('pages/privacy-policy', {
     title: 'Privacy Policy | Trusted Escort India',
     metaDescription: 'Read the Trusted Escort India privacy policy — how we collect, use and protect your data.',
     canonical: 'https://trustedescort.in/privacy-policy',
+    schema
   });
 });
 
 router.get('/terms', (req, res) => {
+  const schema = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': 'https://trustedescort.in/terms#webpage',
+    'url': 'https://trustedescort.in/terms',
+    'name': 'Terms & Conditions — Trusted Escort India',
+    'description': 'Read the Trusted Escort India terms and conditions of use.',
+    'mainEntity': {
+      '@type': 'Organization',
+      'name': 'Trusted Escort India',
+      'url': 'https://trustedescort.in'
+    }
+  });
+
   res.render('pages/terms', {
     title: 'Terms & Conditions | Trusted Escort India',
     metaDescription: 'Read the Trusted Escort India terms and conditions of use.',
     canonical: 'https://trustedescort.in/terms',
+    schema
   });
 });
 
 router.get('/age-verification', (req, res) => {
+  const schema = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': 'https://trustedescort.in/age-verification#webpage',
+    'url': 'https://trustedescort.in/age-verification',
+    'name': 'Age Verification — Adults 18+ Only',
+    'description': 'Trusted Escort India is strictly for adults aged 18 and above. Read our age verification and child protection policy.'
+  });
+
   res.render('pages/age-verification', {
     title: 'Age Verification — Adults 18+ Only | Trusted Escort India',
     metaDescription: 'Trusted Escort India is strictly for adults aged 18 and above. Read our age verification and child protection policy.',
     canonical: 'https://trustedescort.in/age-verification',
+    schema
   });
 });
 
 router.get('/help-center', (req, res) => {
+  const schema = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    '@id': 'https://trustedescort.in/help-center#webpage',
+    'url': 'https://trustedescort.in/help-center',
+    'name': 'Help Center — Trusted Escort India',
+    'description': 'Browse frequently asked questions and get help with browsing, posting ads, accounts and safety on Trusted Escort India.'
+  });
+
   res.render('pages/help-center', {
     title: 'Help Center | Trusted Escort India',
     metaDescription: 'Browse frequently asked questions and get help with browsing, posting ads, accounts and safety on Trusted Escort India.',
     canonical: 'https://trustedescort.in/help-center',
+    schema
   });
 });
 

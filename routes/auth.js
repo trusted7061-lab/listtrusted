@@ -7,7 +7,22 @@ router.get('/login', (req, res) => {
   if (req.session.userId) {
     return res.redirect(req.session.role === 'admin' ? '/admin/dashboard' : '/advertiser/dashboard');
   }
-  res.render('auth/login', { title: 'Login | Trusted Escort India', metaDescription: 'Log in to your Trusted Escort India account.', canonical: 'https://trustedescort.in/auth/login' });
+
+  const schema = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': 'https://trustedescort.in/auth/login#webpage',
+    'url': 'https://trustedescort.in/auth/login',
+    'name': 'Login — Trusted Escort India',
+    'description': 'Log in to your Trusted Escort India account.'
+  });
+
+  res.render('auth/login', {
+    title: 'Login | Trusted Escort India',
+    metaDescription: 'Log in to your Trusted Escort India account.',
+    canonical: 'https://trustedescort.in/auth/login',
+    schema
+  });
 });
 
 router.post('/login', async (req, res) => {
@@ -47,7 +62,22 @@ router.get('/register', (req, res) => {
   if (req.session.userId) {
     return res.redirect(req.session.role === 'admin' ? '/admin/dashboard' : '/advertiser/dashboard');
   }
-  res.render('auth/register', { title: 'Register | Post a Free Ad | Trusted Escort India', metaDescription: 'Create a free advertiser account on Trusted Escort India and post your escort service listing today.', canonical: 'https://trustedescort.in/auth/register' });
+
+  const schema = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': 'https://trustedescort.in/auth/register#webpage',
+    'url': 'https://trustedescort.in/auth/register',
+    'name': 'Register — Post a Free Ad',
+    'description': 'Create a free advertiser account on Trusted Escort India and post your escort service listing today.'
+  });
+
+  res.render('auth/register', {
+    title: 'Register | Post a Free Ad | Trusted Escort India',
+    metaDescription: 'Create a free advertiser account on Trusted Escort India and post your escort service listing today.',
+    canonical: 'https://trustedescort.in/auth/register',
+    schema
+  });
 });
 
 router.post('/register', async (req, res) => {
