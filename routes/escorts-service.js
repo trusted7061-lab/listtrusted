@@ -4,6 +4,8 @@ const Ad = require('../models/Ad');
 const LocationAd = require('../models/LocationAd');
 const { CITIES, CITY_BY_SLUG } = require('../config/cities');
 const { getAreasForCity, getArea } = require('../config/areas');
+const { CITY_CONTENT } = require('../config/cityContent');
+const { getAreaContent } = require('../config/areaContent');
 
 // Helper function to fetch location ads for a city
 async function getLocationAdsForCity(citySlug) {
@@ -228,6 +230,7 @@ router.get('/:citySlug', async (req, res, next) => {
       areas,
       nearByCities,
       cities: CITIES,
+      cityData: CITY_CONTENT[city.slug] || null,
       locationAds: await getLocationAdsForCity(city.slug)
     });
   } catch (err) {
@@ -248,6 +251,7 @@ router.get('/:citySlug', async (req, res, next) => {
       areas,
       nearByCities,
       cities: CITIES,
+      cityData: CITY_CONTENT[city.slug] || null,
       locationAds
     });
   }
@@ -269,8 +273,8 @@ router.get('/:citySlug/:areaSlug', async (req, res, next) => {
   if (!area) return next();
 
   try {
-    // Show all city ads on area page (area-level filtering can be added when area field is added to Ad model)
-    const ads = await Ad.find({ status: 'approved', citySlug: city.slug })
+    // Only show ads that specifically target this area (unique content per area page)
+    const ads = await Ad.find({ status: 'approved', citySlug: city.slug, areaSlug: area.slug })
       .populate('advertiser', 'name')
       .sort({ createdAt: -1 });
 
@@ -326,6 +330,7 @@ router.get('/:citySlug/:areaSlug', async (req, res, next) => {
       area,
       ads,
       otherAreas,
+      areaContent: getAreaContent(city.slug, area.slug),
       locationAds: await getLocationAdsForCity(city.slug)
     });
   } catch (err) {
@@ -344,13 +349,20 @@ router.get('/:citySlug/:areaSlug', async (req, res, next) => {
       area,
       ads: [],
       otherAreas,
+      areaContent: getAreaContent(city.slug, area.slug),
       locationAds
     });
   }
 });
 
 // ── Individual Ad Profile ──────────────────────────────────────────────────
-router.get('/profile/:id', async (req, res) => {
+// Redirect non-trailing-slash to canonical form
+router.get('/profile/:id', (req, res, next) => {
+  if (!req.path.endsWith('/')) return res.redirect(301, `/escorts-service/profile/${req.params.id}/`);
+  next();
+});
+
+router.get('/profile/:id/', async (req, res) => {
   try {
     const ad = await Ad.findOne({ _id: req.params.id, status: 'approved' })
       .populate('advertiser', 'name company');
@@ -358,7 +370,7 @@ router.get('/profile/:id', async (req, res) => {
       return res.status(404).render('404', { title: 'Profile Not Found', noindex: true });
     }
 
-    const profileUrl = `https://trustedescort.in/escorts-service/profile/${ad._id}`;
+    const profileUrl = `https://trustedescort.in/escorts-service/profile/${ad._id}/`;
     const imageUrl = ad.image || 'https://trustedescort.in/logo.png';
     const truncatedDesc = ad.description.length > 155
       ? ad.description.substring(0, 152) + '...'

@@ -6,6 +6,7 @@ const cloudinary = require('cloudinary').v2;
 const Ad = require('../models/Ad');
 const { isAdvertiser } = require('../middleware/auth');
 const { CITIES, CITY_BY_SLUG } = require('../config/cities');
+const { AREAS } = require('../config/areas');
 
 // Upload a buffer to Cloudinary.
 // cloudinary.config(true) resets the SDK singleton to {} so no stale/cached
@@ -103,7 +104,7 @@ router.get('/my-ads', isAdvertiser, async (req, res) => {
 
 // Create Ad - form
 router.get('/create-ad', isAdvertiser, (req, res) => {
-  res.render('advertiser/create-ad', { title: 'Create New Ad', noindex: true, cities: CITIES, formData: {}, uploadedImage: null, errorMsg: null });
+  res.render('advertiser/create-ad', { title: 'Create New Ad', noindex: true, cities: CITIES, areas: AREAS, formData: {}, uploadedImage: null, errorMsg: null });
 });
 
 // Create Ad - submit
@@ -112,6 +113,7 @@ function renderCreateAdForm(res, { formData = {}, uploadedImage = null, errorMsg
     title: 'Create New Ad',
     noindex: true,
     cities: CITIES,
+    areas: AREAS,
     formData,
     uploadedImage,
     errorMsg
@@ -159,6 +161,7 @@ router.post('/create-ad', isAdvertiser, (req, res, next) => {
       showPhoneNumber: rawShowPhoneNumber,
       showWhatsappNumber: rawShowWhatsappNumber,
       citySlug: rawCitySlug,
+      areaSlug: rawAreaSlug,
       services: rawServices,
       aboutMe: rawAboutMe
     } = req.body;
@@ -224,6 +227,7 @@ router.post('/create-ad', isAdvertiser, (req, res, next) => {
       showWhatsappNumber,
       city: cityObj ? cityObj.name : '',
       citySlug: cityObj ? cityObj.slug : '',
+      areaSlug: rawAreaSlug,
       advertiser: req.session.userId
     });
 
@@ -251,7 +255,7 @@ router.get('/edit-ad/:id', isAdvertiser, async (req, res) => {
       req.flash('error', 'Only pending ads can be edited');
       return res.redirect('/advertiser/my-ads');
     }
-    res.render('advertiser/edit-ad', { title: 'Edit Ad', noindex: true, ad });
+    res.render('advertiser/edit-ad', { title: 'Edit Ad', noindex: true, ad, cities: CITIES, areas: AREAS });
   } catch (err) {
     console.error(err);
     req.flash('error', 'Error loading ad');
@@ -343,6 +347,7 @@ router.post('/edit-ad/:id', isAdvertiser, (req, res, next) => {
     ad.whatsappNumber = whatsappNumber;
     ad.showPhoneNumber = showPhoneNumber;
     ad.showWhatsappNumber = showWhatsappNumber;
+    ad.areaSlug = (req.body.areaSlug || '').trim();
 
     if (req.file) {
       // Delete old image from Cloudinary if it was a Cloudinary URL

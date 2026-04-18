@@ -29,17 +29,19 @@
             <span class="ms-2 badge bg-success-subtle text-success"><i class="bi bi-patch-check-fill me-1"></i>Verified</span>
           </p>
 
-          <% const phoneHref = ad.phoneNumber ? ad.phoneNumber.replace(/[^\d+]/g,'') : '' %>
-          <% const waHref    = ad.whatsappNumber ? ad.whatsappNumber.replace(/\D/g,'') : '' %>
+          <% const phoneHref    = ad.phoneNumber ? ad.phoneNumber.replace(/[^\d+]/g,'') : '' %>
+          <% const waHref      = ad.whatsappNumber ? ad.whatsappNumber.replace(/\D/g,'') : '' %>
+          <% const phoneDisplay = phoneHref ? ('+' + phoneHref).replace(/^\+\+/,'+') : '' %>
+          <% const waDisplay    = waHref ? ('+' + waHref).replace(/^\+\+/,'+') : '' %>
           <div class="d-grid gap-2">
             <% if (ad.showPhoneNumber && ad.phoneNumber) { %>
               <a href="tel:<%= phoneHref %>" class="btn btn-primary rounded-pill">
-                <i class="bi bi-telephone-fill me-2"></i>Call <%= ad.phoneNumber %>
+                <i class="bi bi-telephone-fill me-2"></i>Call <%= phoneDisplay %>
               </a>
             <% } %>
             <% if (ad.showWhatsappNumber && ad.whatsappNumber) { %>
               <a href="https://wa.me/<%= waHref %>" target="_blank" rel="noopener noreferrer" class="btn btn-success rounded-pill">
-                <i class="bi bi-whatsapp me-2"></i>WhatsApp <%= ad.whatsappNumber %>
+                <i class="bi bi-whatsapp me-2"></i>WhatsApp <%= waDisplay %>
               </a>
             <% } %>
           </div>
@@ -161,12 +163,12 @@
             <div class="d-grid gap-2">
               <% if (ad.showPhoneNumber && ad.phoneNumber) { %>
                 <a href="tel:<%= phoneHref %>" class="btn btn-primary rounded-pill">
-                  <i class="bi bi-telephone-fill me-2"></i>Call <%= ad.phoneNumber %>
+                  <i class="bi bi-telephone-fill me-2"></i>Call <%= phoneDisplay %>
                 </a>
               <% } %>
               <% if (ad.showWhatsappNumber && ad.whatsappNumber) { %>
                 <a href="https://wa.me/<%= waHref %>" target="_blank" rel="noopener noreferrer" class="btn btn-success rounded-pill">
-                  <i class="bi bi-whatsapp me-2"></i>WhatsApp <%= ad.whatsappNumber %>
+                  <i class="bi bi-whatsapp me-2"></i>WhatsApp <%= waDisplay %>
                 </a>
               <% } %>
             </div>

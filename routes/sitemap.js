@@ -92,7 +92,7 @@ router.get('/sitemap.xml', (req, res) => {
     }));
   });
 
-  // All area pages
+  // All area pages — each shows only ads specifically targeting that area (unique content)
   Object.keys(AREAS).forEach(citySlug => {
     const city = CITIES.find(c => c.slug === citySlug);
     (AREAS[citySlug] || []).forEach(area => {
@@ -154,7 +154,7 @@ router.get('/sitemap-profiles.xml', async (req, res) => {
         });
       }
       blocks.push(urlBlock({
-        loc: `${BASE}/escorts-service/profile/${ad._id}`,
+        loc: `${BASE}/escorts-service/profile/${ad._id}/`,
         priority: '0.8',
         changefreq: 'weekly',
         lastmod,
@@ -189,7 +189,7 @@ router.get('/sitemap-images.xml', async (req, res) => {
       if (!ad.image) return;
       const lastmod = ad.updatedAt ? ad.updatedAt.toISOString().split('T')[0] : today;
       blocks.push(`  <url>
-    <loc>${escXml(`${BASE}/escorts-service/profile/${ad._id}`)}</loc>
+    <loc>${escXml(`${BASE}/escorts-service/profile/${ad._id}/`)}</loc>
     <lastmod>${lastmod}</lastmod>
     <image:image>
       <image:loc>${escXml(absUrl(ad.image))}</image:loc>

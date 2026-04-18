@@ -203,6 +203,15 @@
           <h2 class="fw-bold mb-3">
             Escort Service in <%= area.name %>, <%= city.name %>
           </h2>
+
+          <% if (areaContent) { %>
+          <p class="text-muted lh-lg"><%= areaContent.desc %></p>
+          <% if (areaContent.highlight) { %>
+          <div class="alert alert-primary border-start border-primary border-4 py-2 px-3 mb-3 bg-white">
+            <small><i class="bi bi-geo-alt-fill me-1 text-primary"></i><%= areaContent.highlight %></small>
+          </div>
+          <% } %>
+          <% } else { %>
           <p class="text-muted">
             Trusted Escort India provides the most reliable escort service listings in
             <strong><%= area.name %></strong>, <%= city.name %>. All advertiser profiles are
@@ -213,6 +222,8 @@
             Browse verified escort listings in <%= area.name %>, <%= city.name %>,
             <%= city.state %>. Call or WhatsApp directly for safe, discreet service.
           </p>
+          <% } %>
+
           <h3 class="fw-semibold fs-5 mt-4 mb-2">
             Why Choose Trusted Escort India for Escort Service in <%= area.name %>?
           </h3>

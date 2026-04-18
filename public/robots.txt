@@ -1,5 +1,5 @@
 # Trusted Escort India Robots.txt
-# Generated: 2026-04-08T16:47:11.987Z
+# Updated: 2026-04-17
 
 User-agent: *
 Allow: /
@@ -12,10 +12,13 @@ Disallow: /admin/
 Disallow: /admin
 Disallow: /advertiser/dashboard
 Disallow: /advertiser/post-ad
+Disallow: /advertiser/my-ads
+Disallow: /advertiser/edit-ad/
+Disallow: /advertiser/create-ad
 Disallow: /auth/reset-password
 Disallow: /auth/verify-email
 
-# Allow all crawlers on public content
+# Allow public content
 Allow: /escorts-service/
 Allow: /auth/login
 Allow: /auth/register
@@ -37,5 +40,3 @@ Sitemap: https://trustedescort.in/sitemap-index.xml
 Sitemap: https://trustedescort.in/sitemap.xml
 Sitemap: https://trustedescort.in/sitemap-profiles.xml
 Sitemap: https://trustedescort.in/sitemap-images.xml
-
-# Updated: 2026-04-08

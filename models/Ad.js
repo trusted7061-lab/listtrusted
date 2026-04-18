@@ -75,6 +75,11 @@ const adSchema = new mongoose.Schema({
     trim: true,
     default: ''
   },
+  areaSlug: {
+    type: String,
+    trim: true,
+    default: ''
+  },
   citySlug: {
     type: String,
     trim: true,

@@ -1,10 +1,10 @@
 # Trusted Escort India — https://trustedescort.in
 
-> India's most trusted platform for verified escort service listings. Browse admin-approved escort profiles across 79+ cities. Safe, discreet, and premium quality guaranteed.
+> India's most trusted platform for verified escort service listings. Browse admin-approved escort profiles across 252+ cities and 724+ locality areas. Safe, discreet, and premium quality guaranteed.
 
 ## About
 
-Trusted Escort India is a classified advertising platform where adult service providers can post verified ads. All listings are manually reviewed and approved by our admin team before going live.
+Trusted Escort India is a classified advertising platform where adult service providers can post verified ads. All listings are manually reviewed and approved by our admin team before going live. We cover 252 cities and 724 locality areas across India.
 
 ## Key Pages
 
@@ -12,8 +12,13 @@ Trusted Escort India is a classified advertising platform where adult service pr
 - [All Cities — Escorts Service India](https://trustedescort.in/escorts-service/)
 - [Post an Ad](https://trustedescort.in/auth/register)
 - [Advertiser Login](https://trustedescort.in/auth/login)
+- [About Us](https://trustedescort.in/about)
+- [Contact](https://trustedescort.in/contact)
+- [Help Center](https://trustedescort.in/help-center)
+- [Privacy Policy](https://trustedescort.in/privacy-policy)
+- [Terms of Service](https://trustedescort.in/terms)
 
-## City Pages (79 cities)
+## City Pages (252 cities)
 
 - [Escorts Service in Delhi](https://trustedescort.in/escorts-service/delhi/)
 - [Escorts Service in Mumbai](https://trustedescort.in/escorts-service/mumbai/)
@@ -262,20 +267,18 @@ Trusted Escort India is a classified advertising platform where adult service pr
 - [Escorts Service in Dharamshala](https://trustedescort.in/escorts-service/dharamshala/)
 - [Escorts Service in Mandi](https://trustedescort.in/escorts-service/mandi/)
 - [Escorts Service in Solan](https://trustedescort.in/escorts-service/solan/)
-- [Escorts Service in Chalthan](https://trustedescort.in/escorts-service/chalthan/)
-- [Escorts Service in Kakolem Beach](https://trustedescort.in/escorts-service/kakolem-beach/)
-- [Escorts Service in Yerwada](https://trustedescort.in/escorts-service/yerwada/)
-- [Escorts Service in Chinchpokli](https://trustedescort.in/escorts-service/chinchpokli/)
-- [Escorts Service in Palwal](https://trustedescort.in/escorts-service/palwal/)
 
 ## Platform Details
 
-- **Category:** Adult classified advertising
-- **Coverage:** 79+ cities across India
-- **Verification:** All profiles manually reviewed
-- **Language:** English
-- **Country:** India
+- **Total Cities Covered:** 252 cities across all Indian states and union territories
+- **Total Area Pages:** 724+ locality/area pages with unique listings per area
+- **Listing Verification:** All ads manually admin-reviewed before publishing
+- **Contact Method:** Direct Call & WhatsApp — no booking fees, no middlemen
+- **Availability:** 24/7 browsing, listings updated daily
+- **Registration:** Free to browse — account required only to post ads
 
-## Sitemap
+## Content Policy
 
-https://trustedescort.in/sitemap.xml
+All escort service listings on Trusted Escort India are adult classified advertisements. The platform operates as a directory only. All advertised services must be legal. Listings that violate our terms are removed within 24 hours of reporting.
+
+## Updated: 2026-04-17

@@ -34,6 +34,21 @@
               <label class="form-label fw-medium">Target Audience <span class="text-danger">*</span></label>
               <input type="text" name="targetAudience" class="form-control" value="<%= ad.targetAudience %>" required>
             </div>
+            <div class="col-md-6">
+              <label class="form-label fw-medium">City / Location</label>
+              <select name="citySlug" id="citySlug" class="form-select">
+                <option value="">— keep current city —</option>
+                <% (typeof cities !== 'undefined' ? cities : []).forEach(function(city) { %>
+                  <option value="<%= city.slug %>" <%= ad.citySlug === city.slug ? 'selected' : '' %>><%= city.name %>, <%= city.state %></option>
+                <% }) %>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-medium">Area / Locality <span class="text-muted small">(optional)</span></label>
+              <select name="areaSlug" id="areaSlug" class="form-select">
+                <option value="">All areas in city</option>
+              </select>
+            </div>
             <div class="col-12">
               <label class="form-label fw-medium">Current Image</label>
               <div class="mb-2">
@@ -96,3 +111,26 @@
     </div>
   </div>
 </div>
+<script>
+(function () {
+  const AREAS = <%- JSON.stringify(typeof areas !== 'undefined' ? areas : {}) %>;
+  const preselectedArea = '<%= ad.areaSlug || "" %>';
+  const citySelect = document.getElementById('citySlug');
+  const areaSelect = document.getElementById('areaSlug');
+
+  function populateAreas(citySlug) {
+    const list = AREAS[citySlug] || [];
+    areaSelect.innerHTML = '<option value="">All areas in city</option>';
+    list.forEach(function (a) {
+      const opt = document.createElement('option');
+      opt.value = a.slug;
+      opt.textContent = a.name;
+      if (a.slug === preselectedArea) opt.selected = true;
+      areaSelect.appendChild(opt);
+    });
+  }
+
+  if (citySelect.value) populateAreas(citySelect.value);
+  citySelect.addEventListener('change', function () { populateAreas(this.value); });
+}());
+</script>
