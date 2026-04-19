@@ -517,6 +517,33 @@ const CITY_CONTENT = {
     ]
   },
 
+  // ─── PATNA ─────────────────────────────────────────────────────────────────
+  patna: {
+    tagline: "Bihar's Capital on the Ganges — Ancient Pataliputra, Modern Ambitions",
+    intro: `Patna is one of the world's oldest continuously inhabited cities. As ancient Pataliputra, it was the capital of the Maurya and Gupta empires — the political nerve centre of a civilisation that gave the world the concept of zero, Ayurveda, and the first codified legal system. Today, as Bihar's state capital, Patna is a city of striking contrasts: a booming administrative economy, a rapidly growing private sector, and a university and medical college belt that draws students and professionals from across the state and neighbouring Jharkhand, UP, and West Bengal. Our Patna escort service listings serve this layered, historically rich city with admin-verified profiles across all its key commercial and residential zones.`,
+    sections: [
+      {
+        h3: "Patna's Administrative and Commercial Economy",
+        text: `As Bihar's capital, Patna is the seat of state government and the hub for every kind of government-linked commercial activity. Bihar Secretariat, Patna High Court, and the offices of dozens of state departments attract lawyers, contractors, consultants, and officials from across the state. Bailey Road — Patna's most prestigious address — is lined with government bungalows, private hospitals, luxury hotels, and upscale restaurants. Boring Road and its surrounding lanes form the city's most active commercial and retail belt, where business meetings happen daily and the hospitality sector keeps pace with steady demand. Rajendra Nagar and Patliputra Colony are the city's established upper-middle-class residential zones, home to IAS officers, senior doctors, and senior lawyers.`
+      },
+      {
+        h3: "Education, Medicine, and the Young Professional Population",
+        text: `Patna Medical College and Hospital (PMCH), Nalanda Medical College, and the All India Institute of Medical Sciences (AIIMS Patna) make Patna one of Bihar's primary medical education centres. Patients, their families, and medical professionals from across Bihar and eastern UP regularly stay in Patna for extended periods — creating steady, consistent demand. Patna University — one of India's oldest universities — along with Bihar National College, Patna Science College, and dozens of private institutions keep the city's student population large and diverse. The Patna Sahib and Danapur areas near the cantonment have their own professional community. All of this creates a broad market that our admin-verified listings are designed to serve.`
+      },
+      {
+        h3: "Key Areas Covered in Patna",
+        text: `Our Patna listings cover the city's full geography. Patna Junction — the main railway station, one of the busiest in eastern India — is the city's primary transit hub, and the hotel and guesthouse zone surrounding it is well represented. Fraser Road and Exhibition Road form Patna's traditional commercial heart, with banks, hotels, and offices concentrated here. Kankarbagh is a large planned township on the south side of the city, home to a broad cross-section of Patna's middle-class population. Dakbangla Chauraha is the city centre landmark, where major roads converge. Gangapur, Danapur, and the expanding western suburbs represent the city's growth corridor. Use the area links at the top of this page to browse listings for a specific locality within Patna.`
+      }
+    ],
+    features: [
+      'Covering Bailey Road, Boring Road, Kankarbagh, Fraser Road & Patna Junction area',
+      'Serving government officials, legal professionals, medical community & students',
+      'Historic city, modern demand — admin-verified listings for a discerning clientele',
+      'Active across all major Patna localities including Danapur and Rajendra Nagar',
+      'Direct call and WhatsApp contact — available 24/7 across Bihar\'s capital'
+    ]
+  },
+
   // ─── COIMBATORE ────────────────────────────────────────────────────────────
   coimbatore: {
     tagline: "Manchester of South India — Industry, Innovation, and the Western Ghats",
@@ -541,6 +568,33 @@ const CITY_CONTENT = {
       'Gateway to Ooty & Nilgiris — active for transit visitors',
       'Admin-verified listings — Tamil Nadu quality standard maintained',
       'Direct call and WhatsApp from every verified listing'
+    ]
+  },
+
+  // ─── RANCHI ────────────────────────────────────────────────────────────────
+  ranchi: {
+    tagline: "Jharkhand's Capital — Steel, Forests, Waterfalls & a Growing Economy",
+    intro: `Ranchi is the capital of Jharkhand and one of eastern India's most strategically important cities. Surrounded by plateaus, waterfalls, and dense forest reserves, Ranchi is often called the 'City of Waterfalls' — but beneath its natural beauty lies a serious industrial and administrative powerhouse. The Heavy Engineering Corporation (HEC), MECON Limited, and the Steel Authority of India have deep roots here. Ranchi also hosts IIM Ranchi, XLRI Jamshedpur is nearby, and BIT Mesra — one of India's oldest and most respected engineering colleges — sits just outside the city. The result is a population that is young, educated, well-paid, and increasingly aspirational. Our Ranchi escort service listings serve this growing, professional city with admin-verified, reliable profiles across all its key localities.`,
+    sections: [
+      {
+        h3: "Ranchi's Industrial and Government Economy",
+        text: `Ranchi's economy is anchored by heavy industry and state government. The HEC township in Dhurwa is one of Jharkhand's most planned residential zones — home to thousands of government and PSU employees whose stable incomes create consistent demand. The Jharkhand Secretariat and High Court bring lawyers, contractors, consultants, and officials from across the state. Lalpur and the Main Road commercial area form Ranchi's traditional business heart, with banks, offices, hotels, and the city's main retail zone concentrated here. Harmu, Hinoo, and the areas around Firayalal Chowk are established middle-class residential zones that house much of Ranchi's professional class.`
+      },
+      {
+        h3: "IIM Ranchi, BIT Mesra, and the Young Professional Population",
+        text: `IIM Ranchi has quickly established itself among India's leading management institutions. Its presence — along with St Xavier's College, Ranchi University, and the proximity of BIT Mesra — has made Ranchi a genuine university city with a large student and young professional community. Recruiting companies, visiting faculty, alumni, and corporate delegations pass through Ranchi regularly. The Bariatu and Morabadi areas near the university zones have the highest concentration of young professionals and students in the city. Our Ranchi listings are admin-verified and cater to this educated, discerning demographic.`
+      },
+      {
+        h3: "Key Areas Covered in Ranchi",
+        text: `Our Ranchi listings cover the city's full geography. Doranda — Ranchi's most upscale and centrally located residential zone — is where senior officials, executives, and established professionals live and work. Lalpur covers the city's densest commercial activity along the main road. Harmu and Hinoo are large, established localities on the city's eastern side. Bariatu is the university-adjacent zone with a young, active population. Morabadi, known for its open grounds and the Ranchi Maidan, houses a broad cross-section of the city's middle class. Use the area links above to browse listings for your specific locality within Ranchi.`
+      }
+    ],
+    features: [
+      'Covering Doranda, Lalpur, Harmu, Hinoo, Bariatu & Morabadi',
+      'Serving HEC/MECON employees, government officials, IIM professionals & students',
+      'Eastern India\'s fastest-growing capital — admin-verified listings for every locality',
+      'BIT Mesra and university zone demand served with discretion and reliability',
+      'Direct call and WhatsApp — 24/7 contact, no booking fees, no middlemen'
     ]
   }
 

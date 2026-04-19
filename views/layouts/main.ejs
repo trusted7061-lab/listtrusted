@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="light">
+<html lang="en-IN" data-bs-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -21,14 +21,28 @@
   <% } %>
   
   <!-- Geo Tags -->
-  <meta name="geo.region" content="IN">
-  <% if (typeof city !== 'undefined' && city) { %>
-  <meta name="geo.placename" content="<%= city.name %>, <%= city.state %>">
-  <meta name="geo.position" content="28.7041;77.1025">
+  <%
+    var _stateCodes = {
+      'Delhi':'IN-DL','Maharashtra':'IN-MH','Karnataka':'IN-KA','Telangana':'IN-TG',
+      'Tamil Nadu':'IN-TN','West Bengal':'IN-WB','Gujarat':'IN-GJ','Uttar Pradesh':'IN-UP',
+      'Haryana':'IN-HR','Rajasthan':'IN-RJ','Bihar':'IN-BR','Jharkhand':'IN-JH',
+      'Madhya Pradesh':'IN-MP','Kerala':'IN-KL','Punjab':'IN-PB','Goa':'IN-GA',
+      'Assam':'IN-AS','Odisha':'IN-OR','Andhra Pradesh':'IN-AP','Chhattisgarh':'IN-CT',
+      'Himachal Pradesh':'IN-HP','Jammu and Kashmir':'IN-JK','Uttarakhand':'IN-UT'
+    };
+    var _cityObj = (typeof city !== 'undefined' && city) ? city : null;
+    var _geoRegion = _cityObj && _stateCodes[_cityObj.state] ? _stateCodes[_cityObj.state] : 'IN';
+    var _geoLat  = _cityObj && _cityObj.lat  ? _cityObj.lat  : 20.5937;
+    var _geoLon  = _cityObj && _cityObj.lon  ? _cityObj.lon  : 78.9629;
+  %>
+  <meta name="geo.region" content="<%= _geoRegion %>">
+  <% if (_cityObj) { %>
+  <meta name="geo.placename" content="<%= _cityObj.name %>, <%= _cityObj.state %>">
   <% } else { %>
   <meta name="geo.placename" content="India">
-  <meta name="geo.position" content="20.5937;78.9629">
   <% } %>
+  <meta name="geo.position" content="<%= _geoLat %>;<%= _geoLon %>">
+  <meta name="ICBM" content="<%= _geoLat %>, <%= _geoLon %>">
   
   <!-- Canonical URL -->
   <link rel="canonical" href="<%= typeof canonical !== 'undefined' ? canonical : 'https://trustedescort.in' %>">

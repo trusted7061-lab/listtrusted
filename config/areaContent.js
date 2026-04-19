@@ -203,6 +203,170 @@ const AREA_CONTENT = {
     desc: `MG Road Gurugram (Mehrauli-Gurgaon Road) is the city's original commercial spine — the artery connecting Gurugram to Delhi that has seen the city's explosive growth firsthand. The IFFCO Chowk area, Sector 14, and the Galaxy Hotel corridor along MG Road represent a high-footfall commercial zone with both business and leisure visitors. Our MG Road Gurugram escort listings serve the professionals, hotel guests, and business travellers based in this core commercial zone.`,
     highlight: 'Gurugram\'s original commercial artery — IFFCO Chowk, hotel corridor, and business hub'
   },
+  'gurugram:dlf-phase-1': {
+    desc: `DLF Phase 1 is Gurugram's original premium residential township — the first phase of the DLF Group's massive development that transformed a farming town into India's fastest-growing corporate city. Today Phase 1 houses a mix of DLF's earliest bungalows, upscale apartment complexes, and a mature commercial zone along the main roads. Its location adjacent to Cyber City makes it one of the most sought-after residential addresses for corporate professionals. Our DLF Phase 1 escort listings serve this established, affluent Gurugram neighbourhood.`,
+    highlight: 'Gurugram\'s original premium residential zone — adjacent to Cyber City, established DLF township'
+  },
+  'gurugram:sohna-road': {
+    desc: `Sohna Road is Gurugram's fastest-growing residential and commercial corridor — a long artery running south from NH-48 that has seen massive apartment township development over the past decade. Sectors 47, 48, 49, and 50 along this road house some of Gurugram's largest residential communities, with hundreds of thousands of residents who work in Cyber City, Golf Course Road, or Manesar. The commercial strips at IFFCO Chowk and Rajiv Chowk provide full-service retail and hospitality. Our Sohna Road escort listings serve this huge, growing residential population.`,
+    highlight: 'Gurugram\'s fastest-growing southern corridor — massive residential townships, key commercial nodes'
+  },
+  'gurugram:udyog-vihar': {
+    desc: `Udyog Vihar is Gurugram's industrial and manufacturing heartland — a large industrial estate divided into phases (1 through 6) that houses the back-office operations of major multinationals, light manufacturing units, and BPO/KPO operations. Its proximity to the Delhi border makes it a key zone for businesses operating between the two cities. The large working population and constant business visitor traffic generates significant demand. Our Udyog Vihar escort listings serve the professionals and executives based in this active industrial zone.`,
+    highlight: 'Gurugram\'s industrial estate — MNC back offices, manufacturing, BPO/KPO operations'
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // AHMEDABAD AREAS
+  // ═══════════════════════════════════════════════════════════════════════════
+  'ahmedabad:cg-road': {
+    desc: `CG Road (Chimanlal Girdharlal Road) is Ahmedabad's most upscale shopping and dining street — the boulevard that defines the city's aspirational consumer culture. Lined with designer stores, premium restaurants, multiplexes, and the city's best cafes, CG Road and the surrounding Navrangpura zone is where Ahmedabad's affluent middle class shops, socialises, and conducts business meetings over lunch. The proximity to major corporate offices and premium hotels makes it a consistently high-demand zone. Our CG Road escort listings serve this premium Ahmedabad commercial hub.`,
+    highlight: 'Ahmedabad\'s premier shopping and dining boulevard — upscale retail, corporate offices, premium hotels'
+  },
+  'ahmedabad:navrangpura': {
+    desc: `Navrangpura is the traditional commercial and professional heart of Ahmedabad — the neighbourhood where the city's lawyers, chartered accountants, medical professionals, and corporate executives have their offices. It is home to the Ahmedabad Stock Exchange, numerous banks, law firms, and the offices of major Gujarati business families. The dense commercial activity and the concentration of business hotels make Navrangpura one of the highest-demand zones in our Ahmedabad directory. Our admin-verified listings here serve a discerning professional clientele.`,
+    highlight: 'Ahmedabad\'s professional and corporate hub — stock exchange, law firms, business community'
+  },
+  'ahmedabad:satellite': {
+    desc: `Satellite is Ahmedabad's most desirable upper-middle-class residential zone — a planned development in the city's western corridor that houses the families of senior professionals, business owners, and corporate executives. Its proximity to SG Road, Prahlad Nagar, and the commercial development of the western Ahmedabad belt makes it one of the city's most livable and most in-demand addresses. Premium apartments, gated communities, and some of the city's best schools are all within the Satellite zone. Our Satellite escort listings serve this affluent, established residential community.`,
+    highlight: 'Ahmedabad\'s premium residential enclave — gated communities, professional families, western corridor'
+  },
+  'ahmedabad:sg-highway': {
+    desc: `SG Highway (Sardar Patel Ring Road / Science City Road) is Ahmedabad's primary commercial artery — the high-speed road that has transformed the city's western suburbs into a world-class commercial zone. GIFT City (India's International Financial Services Centre) lies at its northern end; Science City, the city's premier tech and science attraction, sits along its course; and luxury malls like Iscon Mega Mall and The Grand Bhagwati anchor the central sections. This is where Ahmedabad's next-generation commercial growth is concentrated. Our SG Highway escort listings serve this dynamic, high-income corridor.`,
+    highlight: 'Ahmedabad\'s premier commercial artery — GIFT City, Science City, luxury malls, new development'
+  },
+  'ahmedabad:vastrapur': {
+    desc: `Vastrapur is the upscale residential and lifestyle hub of west Ahmedabad — centred around the beautiful Vastrapur Lake, which provides a rare green lung in the city's dense western development. The neighbourhood is home to the Ahmedabad University, premium apartment complexes, and the vibrant commercial zone around IIM Road. Alpha One Mall and the commercial strip along Vastrapur are among the most active retail zones in west Ahmedabad. Our Vastrapur escort listings serve this educated, affluent residential and academic community.`,
+    highlight: 'West Ahmedabad\'s premium lake-side residential hub — Ahmedabad University, IIM Road, Alpha One Mall'
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // NOIDA AREAS
+  // ═══════════════════════════════════════════════════════════════════════════
+  'noida:sector-18': {
+    desc: `Sector 18 is Noida's commercial and entertainment heartland — the most densely active commercial zone in the entire Delhi-NCR eastern corridor. Atta Market, Sector 18 Market, DLF Mall of India (adjacent in Sector 18A), and dozens of restaurants, bars, and entertainment venues make this the social hub of Noida. The metroconnectivity (Blue Line's Noida Sector 18 station) and the constant footfall from across the NCR make this one of the highest-demand zones in our directory. Our Sector 18 escort listings serve this perpetually busy Noida hub.`,
+    highlight: 'Noida\'s premier commercial hub — Atta Market, DLF Mall of India, metro connectivity'
+  },
+  'noida:sector-62': {
+    desc: `Sector 62 is Noida's technology and IT corridor — home to the campuses of HCL Technologies, Adobe India, Sapient, and dozens of other major technology companies. The sector has developed a dense ecosystem of restaurants, hotels, and residential complexes to serve its large employed population. The Noida Electronic City metro station provides excellent connectivity to Delhi and the broader NCR. Our Sector 62 escort listings serve this large, well-paid IT professional community in north Noida.`,
+    highlight: 'Noida\'s IT hub — HCL, Adobe, Sapient and major tech campuses with metro connectivity'
+  },
+  'noida:sector-63': {
+    desc: `Sector 63 is one of Noida's largest industrial and commercial sectors — a sprawling zone of offices, warehouses, and service industry establishments that has grown alongside the technology sector. Its extensive road network and proximity to the Noida-Greater Noida Expressway make it a key logistics and commercial node. A large working population generates consistent demand for all services throughout the day and evening. Our Sector 63 escort listings serve the professionals and business visitors based in this active Noida sector.`,
+    highlight: 'Noida\'s major commercial and industrial sector — extensive business and service industry presence'
+  },
+  'noida:sector-50': {
+    desc: `Sector 50 is one of Noida's most upscale residential sectors — a planned residential zone with wide roads, green cover, and a strong community character. Home to senior professionals, government officials, and upper-middle-class families who value Noida's organised layout over Delhi's density. The sector's proximity to the Sector 50 metro station (Aqua Line) and the commercial zones of Sectors 18 and 45 makes it very well-connected. Our Sector 50 escort listings serve this established, professional Noida residential community.`,
+    highlight: 'Noida\'s premium planned residential sector — professionals, metro connectivity, organised layout'
+  },
+  'noida:greater-noida': {
+    desc: `Greater Noida is Uttar Pradesh's most planned and spacious urban development — a meticulously designed city with 60-metre-wide boulevards, an integrated metro, the Yamuna Expressway, and the Formula 1 circuit (Buddh International Circuit). Pari Chowk is its commercial hub; the Knowledge Park areas house GALGOTIAS, Sharda University, and dozens of other institutions. It is younger, quieter, and more ordered than Noida or Delhi, but its large student and IT/professional population creates significant demand. Our Greater Noida escort listings serve this growing, expansive NCR zone.`,
+    highlight: 'UP\'s best-planned city — F1 circuit, Yamuna Expressway, universities, spacious boulevards'
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // HYDERABAD — ADDITIONAL AREAS
+  // ═══════════════════════════════════════════════════════════════════════════
+  'hyderabad:madhapur': {
+    desc: `Madhapur is the residential spine of HITEC City — the neighbourhood where tens of thousands of technology professionals who work in the adjacent IT parks actually live. Premium apartment complexes, serviced apartments, hotels, restaurants, and all the lifestyle infrastructure of a modern tech professional zone characterise Madhapur. The weekday buzz of corporate life and the weekend social activity make this one of Hyderabad's most consistently active zones. Our Madhapur escort listings serve this large, young, tech-professional community.`,
+    highlight: 'Residential hub of HITEC City — tech professionals\' preferred neighbourhood, premium apartments'
+  },
+  'hyderabad:secunderabad': {
+    desc: `Secunderabad is the twin city to Hyderabad — a British cantonment town that developed its own distinct character alongside the Nizam's capital. Today it is a major commercial and transit hub: Secunderabad Railway Station is one of India's busiest, and the city's cantonment heritage gives it a wide-road, ordered character quite different from old Hyderabad. MG Road Secunderabad, Clock Tower, and Paradise Circle are the key commercial zones. Our Secunderabad escort listings serve the business visitors, government employees, and residential population of this important Hyderabad twin city.`,
+    highlight: 'Hyderabad\'s cantonment twin city — major railway hub, Clock Tower, MG Road commercial zone'
+  },
+  'hyderabad:kukatpally': {
+    desc: `Kukatpally is one of Hyderabad's most active commercial and residential zones — a large, densely populated neighbourhood in the north-western part of the city that houses one of Telangana's most important housing developments (KPHB Colony) and major retail hubs (Forum Sujana Mall). Its excellent metro connectivity (Blue Line) and central location between HITEC City and the old city makes it a critical node. Our Kukatpally escort listings serve this large, diverse, and commercially active Hyderabad community.`,
+    highlight: 'Hyderabad\'s western commercial hub — KPHB Colony, Forum Mall, Blue Line metro connectivity'
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // CHENNAI — ADDITIONAL AREAS
+  // ═══════════════════════════════════════════════════════════════════════════
+  'chennai:mylapore': {
+    desc: `Mylapore is Chennai's cultural and spiritual heartland — the neighbourhood of the Kapaleeshwarar Temple, ancient heritage houses, classical music sabhas, and the Kutcheri season that draws musicians and connoisseurs from across the country every December. It is also where many of Chennai's most accomplished professionals and business leaders maintain family homes, prizing the area's cultural roots and central location. Our Mylapore escort listings serve this refined, culturally rich Chennai neighbourhood with discreet, admin-verified profiles.`,
+    highlight: 'Chennai\'s ancient cultural heart — Kapaleeshwarar Temple, classical music hub, heritage community'
+  },
+  'chennai:velachery': {
+    desc: `Velachery has transformed over the past two decades from a quiet south Chennai suburb into one of the city's most active commercial and residential zones. Its position between OMR (IT Corridor) and the city centre, combined with a major metro station and the Phoenix MarketCity mall, has made Velachery a high-demand address. The large resident population, IT professional community from nearby OMR, and strong retail infrastructure all generate consistent demand. Our Velachery escort listings serve this growing, well-connected south Chennai zone.`,
+    highlight: 'South Chennai\'s booming commercial hub — Phoenix MarketCity, metro station, OMR connectivity'
+  },
+  'chennai:besant-nagar': {
+    desc: `Besant Nagar is Chennai's most beloved beach neighbourhood — a premium residential enclave on the southern coast where Elliot's Beach (Bessie Beach) provides a rare, calm seaside escape from the city's density. The neighbourhood has a strong expat community, excellent restaurants and cafes along 4th Avenue, and a high-income resident base of professionals and NRIs. Our Besant Nagar escort listings serve this premium, beach-adjacent south Chennai neighbourhood with admin-verified, discreet profiles.`,
+    highlight: 'Chennai\'s premium beach neighbourhood — Elliot\'s Beach, expat community, south Chennai coast'
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // KOLKATA — ADDITIONAL AREAS
+  // ═══════════════════════════════════════════════════════════════════════════
+  'kolkata:alipore': {
+    desc: `Alipore is Kolkata's most prestigious residential address — the city's equivalent of New Delhi's Lutyen's Zone. The largest private bungalows, the most established industrial and business families, the Calcutta Club, the Tollygunge Club, and Alipore Zoological Gardens are all here. It is where Kolkata's old money lives, and where the city's most discreet escort market operates. Our Alipore escort listings serve this affluent, privacy-conscious community with admin-verified, genuinely reliable profiles.`,
+    highlight: 'Kolkata\'s most prestigious residential address — old money, heritage clubs, largest bungalows'
+  },
+  'kolkata:gariahat': {
+    desc: `Gariahat is South Kolkata's most famous commercial hub — a bustling market area where textile, clothing, and jewellery traders draw shoppers from across the city every day. The Gariahat Market, Hindustan Park, and the Rashbehari Avenue junction form a dense commercial nerve centre. The neighbourhood is surrounded by premium south Kolkata residential areas, making it a key transit and commercial point for the city's upper-middle class. Our Gariahat escort listings serve both the commercial visitors and the residential community of south Kolkata.`,
+    highlight: 'South Kolkata\'s busiest commercial market — textile and jewellery hub, upper-middle class zone'
+  },
+  'kolkata:tollygunge': {
+    desc: `Tollygunge is Kolkata's film city — the neighbourhood that houses Tollywood (Bengali cinema) studios, the prestigious Tollygunge Club (one of India's finest golf and social clubs), and a residential community strongly connected to the arts, entertainment, and professional world. The film studio complex draws directors, producers, and talent from across West Bengal. The Tollygunge Club's grounds provide a social anchor for Kolkata's most established community. Our Tollygunge escort listings serve this creative, affluent south Kolkata neighbourhood.`,
+    highlight: 'Kolkata\'s Tollywood film hub — Bengali cinema studios, Tollygunge Club, creative professional community'
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // PUNE — ADDITIONAL AREAS
+  // ═══════════════════════════════════════════════════════════════════════════
+  'pune:kalyani-nagar': {
+    desc: `Kalyani Nagar is Pune's most cosmopolitan and socially active neighbourhood after Koregaon Park — an upscale residential zone immediately across the Mula-Mutha River from Koregaon Park that shares its premium character and social energy. Home to young IT professionals, startup founders, and expats, it has excellent restaurants, international cafes, boutique gyms, and a lively weekend scene. Its central location and connectivity make it one of Pune's most in-demand residential zones. Our Kalyani Nagar escort listings serve this young, affluent, internationally-connected community.`,
+    highlight: 'Pune\'s upscale IT professional hub — cosmopolitan dining, expat community, premium apartments'
+  },
+  'pune:baner': {
+    desc: `Baner is one of Pune's fastest-growing residential and commercial zones — a neighbourhood in the city's north-west that has seen explosive development driven by its proximity to Hinjewadi IT Park (just 5km away) and excellent road connectivity to the rest of the city. The Baner-Balewadi High Street has become one of Pune's most active restaurant and entertainment corridors. Premium apartment projects, serviced apartments, and business hotels cater to the large IT professional and startup community based here. Our Baner escort listings serve this dynamic, growing Pune neighbourhood.`,
+    highlight: 'Pune\'s fastest-growing IT-adjacent zone — Baner-Balewadi High Street, proximity to Hinjewadi'
+  },
+  'pune:magarpatta': {
+    desc: `Magarpatta City is one of India's most successful integrated township projects — a self-contained city within Pune where residential towers, the Magarpatta Cybercity IT Park (housing Cognizant, HSBC, Accenture, and others), schools, hospitals, hotels, and retail are all within a planned township boundary. Its large, captive professional population and the isolation of township life create consistent, year-round demand for companionship services. Our Magarpatta escort listings serve this large, employed professional community.`,
+    highlight: 'Pune\'s landmark integrated township — Cybercity IT Park, Cognizant, HSBC, Accenture offices'
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // MUMBAI — ADDITIONAL AREAS
+  // ═══════════════════════════════════════════════════════════════════════════
+  'mumbai:dadar': {
+    desc: `Dadar is Mumbai's most central suburb — the point where the Eastern and Western railway lines converge, making it the highest-footfall station in the entire Mumbai suburban rail network. It is a commercially intense zone: the Dadar flower market, vegetable wholesale market, Shivaji Park (the world's most cricket-played ground by volume), and the dense hotel and restaurant strip around Dadar TT Circle all coexist. Its central location means both working-class and middle-class Mumbai passes through Dadar daily. Our Dadar escort listings serve this massively active central Mumbai zone.`,
+    highlight: 'Mumbai\'s most central transit hub — busiest railway junction, Shivaji Park, Dadar flower market'
+  },
+  'mumbai:borivali': {
+    desc: `Borivali is the most significant commercial and residential node in Mumbai's northern suburbs — a large, densely populated zone that serves as a gateway to the city for residents of Mira Road, Vasai, Virar, and the rapidly developing areas beyond the Dahisar river. The Borivali railway station is one of the Western Line's busiest. National Park proximity, large residential towers, and active commercial markets make Borivali a self-sufficient north Mumbai hub. Our Borivali escort listings serve this large, diverse northern suburb population.`,
+    highlight: 'Mumbai\'s northern suburban hub — major railway junction, gateway to MMR north zone'
+  },
+  'mumbai:goregaon': {
+    desc: `Goregaon is Mumbai's media and creative industry heartland — home to Film City (India's largest film and television production complex), the corporate offices of Star TV, Sony, Zee, and dozens of other media companies, along with a large and growing residential base served by strong Western Line connectivity. The commercial zone around Oberoi Mall and the Aarey Colony's green buffer make Goregaon unique among Mumbai's suburbs. Our Goregaon escort listings serve the large media, entertainment, and corporate professional community based here.`,
+    highlight: 'Mumbai\'s media suburb — Film City, Star TV, Sony, Zee HQs, Oberoi Mall'
+  },
+  'mumbai:mumbai-airport': {
+    desc: `The Mumbai Airport zone — Sahar, Chakala, and Vile Parle East — is the city's premier transit and business hotel corridor. Adjacent to Chhatrapati Shivaji Maharaj International Airport (India's second busiest), this area is home to the highest concentration of international and business hotels in western India: ITC Maratha, Grand Hyatt, JW Marriott, Novotel, Lalit, and dozens of others. The 24/7 nature of aviation means this zone never truly sleeps. Our Mumbai Airport escort listings serve the constant stream of transiting executives, airline crew, and business visitors.`,
+    highlight: 'Mumbai\'s 5-star airport hotel hub — Grand Hyatt, ITC Maratha, JW Marriott, 24/7 activity'
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // BANGALORE — ADDITIONAL AREAS
+  // ═══════════════════════════════════════════════════════════════════════════
+  'bangalore:marathahalli': {
+    desc: `Marathahalli is the eastern Bangalore neighbourhood that connects Whitefield's tech campuses to the city's inner areas — and has developed into one of the city's most active commercial hubs in its own right. The Marathahalli Bridge junction is one of Bangalore's most recognisable commercial landmarks. IT parks, retail strips, restaurants, and dense residential development serve the enormous professional population that works in Whitefield or in the many IT offices along the Outer Ring Road. Our Marathahalli escort listings serve this large, tech-adjacent eastern Bangalore community.`,
+    highlight: 'Bangalore\'s eastern IT gateway — Marathahalli Bridge, Outer Ring Road tech corridor'
+  },
+  'bangalore:btm-layout': {
+    desc: `BTM Layout (Byrasandra, Tavarekere, Madiwala) is one of South Bangalore's most active and densely populated residential zones — an affordable, well-connected neighbourhood that houses a large population of IT professionals, students from nearby institutions, and young working professionals. BTM's Stage 1 and Stage 2 market areas are packed with restaurants, salons, gyms, and retail, giving the neighbourhood a complete, self-sufficient urban character. Our BTM Layout escort listings serve this large, young, working-professional community in south Bangalore.`,
+    highlight: 'South Bangalore\'s vibrant affordable zone — IT professionals, students, complete neighbourhood amenities'
+  },
+  'bangalore:sarjapur-road': {
+    desc: `Sarjapur Road is one of Bangalore's fastest-growing residential corridors — a long artery extending south-east from the Outer Ring Road that has seen massive township development driven by IT professionals working at nearby Bellandur, Whitefield, and Electronic City campuses. Apartment townships by Prestige, Sobha, Godrej, and Brigade line the road. The residential population is young, highly educated, well-paid, and increasingly sophisticated in its expectations. Our Sarjapur Road escort listings serve this large, growing, tech-professional community.`,
+    highlight: 'Bangalore\'s fast-growing SE corridor — Prestige, Sobha, Godrej townships, IT professional families'
+  },
+  'bangalore:hebbal': {
+    desc: `Hebbal is North Bangalore's most strategically important zone — positioned at the junction of NH-44 (to the airport) and the Outer Ring Road, it serves as the gateway between the city and Kempegowda International Airport. The development of Manyata Tech Park (housing IBM, Target, Bosch, 3M, and hundreds of other companies) has made Hebbal one of Bangalore's most important tech employment zones. The Leela Galleria and premium hotels cater to corporate visitors. Our Hebbal escort listings serve this busy, tech-oriented north Bangalore zone.`,
+    highlight: 'North Bangalore\'s IT gateway — Manyata Tech Park, IBM, Target, airport corridor'
+  },
 
 };
 
