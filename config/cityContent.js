@@ -409,6 +409,33 @@ const CITY_CONTENT = {
     ]
   },
 
+  // ─── PANAJI ────────────────────────────────────────────────────────────────
+  panaji: {
+    tagline: "Goa's Capital City — Heritage, Hospitality, and Year-Round Tourism",
+    intro: `Panaji (officially Panjim) is the capital of Goa and its political, administrative, and cultural nerve centre. Unlike the party-beach towns of Calangute and Baga, Panaji has a different character — Portuguese colonial architecture lining the Fontainhas Latin Quarter, the serene Mandovi River waterfront, government offices, corporate headquarters, and some of Goa's finest dining and hotel properties. It draws a distinct visitor: the bureaucrat on official work, the business traveller attending meetings in the state capital, the cultural tourist exploring Goa beyond the beaches, and the long-stay resident. Our Panaji escort service listings reflect this sophisticated, year-round demand with admin-verified profiles suited to the city's unique visitor mix.`,
+    sections: [
+      {
+        h3: 'Panaji — More Than Just a Gateway to Goa',
+        text: `Most tourists pass through Panaji on their way to the beaches, but a growing number choose to stay in the capital itself. The Fontainhas Latin Quarter — Goa's only officially gazetted heritage precinct — draws heritage travellers who prefer cobblestoned lanes and colonial houses to beach-side shacks. The Kala Academy, Miramar Beach, Casino Cruise boats on the Mandovi, and the busy Panaji Market give the city its own identity separate from North and South Goa's beach belt. Hotels like Marriott, Vivanta, and Holiday Inn anchor the corporate and luxury travel segment in Panaji, and our verified escort listings are well-suited to travellers staying across all these properties.`
+      },
+      {
+        h3: 'Government, Business, and the Corporate Visitor',
+        text: `As Goa's state capital, Panaji is home to every major government department, the High Court, the Secretariat, and state-level corporate offices. This drives consistent demand from professionals visiting on official business — consultants, contractors, journalists, politicians, and executives attending state-level meetings and events. The Panaji–Ponda–Vasco corridor is Goa's primary business belt, and our escort service listings cater to this professional demographic with verified, discreet profiles available via direct Call or WhatsApp contact with no booking agents or middlemen.`
+      },
+      {
+        h3: 'Casino Cruises, Events, and Entertainment in Panaji',
+        text: `Panaji is Goa's entertainment capital in a way the beaches are not. The famous offshore casino cruise ships — Deltin Royale, Delta Corp, and others — dock on the Mandovi River, drawing high-spending visitors from across India and abroad every night of the year. The Serendipity Arts Festival, the International Film Festival of India (IFFI), and state-level government events bring thousands of high-profile visitors to Panaji annually. During these peak events, demand for premium escort service in Panaji rises significantly. Our admin-approved listings ensure only genuine, verified profiles serve this sophisticated Panaji clientele.`
+      }
+    ],
+    features: [
+      'Covering Fontainhas, Miramar, Dona Paula, Campal & Panaji city centre',
+      'Suited to casino cruise visitors, IFFI attendees, and government guests',
+      'Admin-verified profiles for Panaji\'s discerning, year-round clientele',
+      'Direct contact via Call or WhatsApp — no agencies or booking fees',
+      'Available 24/7 to match Panaji\'s round-the-clock visitor demand'
+    ]
+  },
+
   // ─── AGRA ──────────────────────────────────────────────────────────────────
   agra: {
     tagline: "Taj Mahal's City — History, Tourism, and Round-the-Clock Visitors",

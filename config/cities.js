@@ -272,7 +272,7 @@ const CITIES = [
   { name: 'Aizawl',          slug: 'aizawl',           state: 'Mizoram',           metro: false },
   { name: 'Itanagar',        slug: 'itanagar',         state: 'Arunachal Pradesh', metro: false },
   { name: 'Kohima',          slug: 'kohima',           state: 'Nagaland',          metro: false },
-  { name: 'Panaji',          slug: 'panaji',           state: 'Goa',               metro: false },
+  { name: 'Panaji',          slug: 'panaji',           state: 'Goa',               metro: false, lat: 15.4989, lon: 73.8278 },
   { name: 'Margao',          slug: 'margao',           state: 'Goa',               metro: false },
   { name: 'Leh',             slug: 'leh',              state: 'Ladakh',            metro: false },
   { name: 'Dharamshala',     slug: 'dharamshala',      state: 'Himachal Pradesh',  metro: false },
