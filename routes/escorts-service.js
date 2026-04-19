@@ -512,6 +512,8 @@ router.get('/:citySlug/:areaSlug', async (req, res, next) => {
             }
           ]
         }
+      ]
+    });
 
     res.render('escorts-service/area', {
       title: `Escort Service in ${area.name}, ${city.name} | Trusted Escort India`,
