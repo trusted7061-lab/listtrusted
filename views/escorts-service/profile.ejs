@@ -178,3 +178,173 @@
     </div>
   </div>
 </div>
+
+<!-- SEO Content Block -->
+<section class="py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="seo-content-box p-4 p-lg-5 rounded-4 bg-light-subtle border">
+          <h2 class="fw-bold mb-3">
+            <%= ad.title %> — Escort Service in <%= ad.city %>
+          </h2>
+          <p class="text-muted lh-lg">
+            Trusted Escort India provides the most reliable escort service listings in <strong><%= ad.city %></strong>. Every advertiser profile is manually reviewed by our admin team before going live — no fake profiles, no misleading contact details. This listing has been verified and approved.
+          </p>
+          <p class="text-muted lh-lg">
+            You can contact <strong><%= ad.title %></strong> directly via Call or WhatsApp — no middlemen, no booking fees. Browse the profile details above and reach out at your convenience, 24/7.
+          </p>
+
+          <h3 class="fw-semibold fs-5 mt-4 mb-2">Why Choose Trusted Escort India in <%= ad.city %>?</h3>
+          <ul class="text-muted">
+            <li><strong>100% Admin Verified</strong> — every listing reviewed by a real person before going live</li>
+            <li><strong>Safe &amp; Discreet</strong> — no account needed to browse; your privacy is protected</li>
+            <li><strong>Genuine Profiles Only</strong> — fake, duplicate, and misleading listings are permanently removed</li>
+            <li><strong>24/7 Available</strong> — our <%= ad.city %> directory is accessible and updated around the clock</li>
+            <li><strong>Direct Contact</strong> — call or WhatsApp the advertiser directly from the listing page</li>
+            <li><strong>Free to Browse</strong> — no registration, no fees to view any listing</li>
+          </ul>
+
+          <div class="mt-4">
+            <a href="/escorts-service/<%= ad.citySlug %>/" class="btn btn-outline-primary rounded-pill me-2">
+              <i class="bi bi-arrow-left me-1"></i>All <%= ad.city %> Listings
+            </a>
+            <a href="/escorts-service/" class="btn btn-outline-secondary rounded-pill">
+              <i class="bi bi-grid me-1"></i>All India Cities
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="py-5 bg-light-subtle" itemscope itemtype="https://schema.org/FAQPage">
+  <div class="container">
+    <div class="text-center mb-5" data-aos="fade-up">
+      <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill mb-3">Common Questions</span>
+      <h2 class="display-5 fw-bold">FAQs — Escort Service in <span class="gradient-text"><%= ad.city %></span></h2>
+      <div class="gold-divider mt-2"></div>
+      <p class="lead text-muted mt-3">Answers to common questions about this listing and escort service in <%= ad.city %></p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-lg-6" data-aos="fade-up" data-aos-delay="0">
+        <div class="accordion accordion-flush" id="pfaqL">
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#pfaq1" itemprop="name">
+                How do I contact <%= ad.title %> for escort service in <%= ad.city %>?
+              </button>
+            </h3>
+            <div id="pfaq1" class="accordion-collapse collapse show" data-bs-parent="#pfaqL" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                You can contact <strong><%= ad.title %></strong> directly using the Call or WhatsApp buttons on this profile page. No middlemen, no booking fees — reach out directly and arrange at your convenience. Available 24/7.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#pfaq2" itemprop="name">
+                Is this escort listing in <%= ad.city %> verified and genuine?
+              </button>
+            </h3>
+            <div id="pfaq2" class="accordion-collapse collapse" data-bs-parent="#pfaqL" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                Yes. Every escort listing on Trusted Escort India — including this one — is manually reviewed by our admin team before going live. We reject fake, misleading, or low-quality profiles. Only verified, genuine advertisers appear on this platform.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#pfaq3" itemprop="name">
+                Are the escort photographs on this profile real?
+              </button>
+            </h3>
+            <div id="pfaq3" class="accordion-collapse collapse" data-bs-parent="#pfaqL" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                Yes. Profile images on Trusted Escort India are reviewed during the admin approval process. All approved listings — including this profile — have verified photos. What you see is the actual listing submitted by the advertiser and approved by our team.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#pfaq4" itemprop="name">
+                How do I post my own escort ad in <%= ad.city %>?
+              </button>
+            </h3>
+            <div id="pfaq4" class="accordion-collapse collapse" data-bs-parent="#pfaqL" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                Register free on Trusted Escort India, complete your profile, upload photos, select <%= ad.city %> as your city, and submit for admin review. Your ad will appear on the <%= ad.city %> listing page within 24 hours of approval.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+        <div class="accordion accordion-flush" id="pfaqR">
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#pfaq5" itemprop="name">
+                What are the timings for escort service in <%= ad.city %>?
+              </button>
+            </h3>
+            <div id="pfaq5" class="accordion-collapse collapse" data-bs-parent="#pfaqR" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                Escort listings on Trusted Escort India — including those in <%= ad.city %> — are available 24/7. You can browse and contact advertisers at any hour. For specific availability, contact the advertiser directly via Call or WhatsApp as shown on this profile.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#pfaq6" itemprop="name">
+                Can I contact via WhatsApp or phone call?
+              </button>
+            </h3>
+            <div id="pfaq6" class="accordion-collapse collapse" data-bs-parent="#pfaqR" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                Yes. If the advertiser has enabled contact options, you will see Call and/or WhatsApp buttons on this profile. Tap the button to connect directly. WhatsApp is fast, private, and lets you share availability and preferences easily. Phone calls are also supported where listed.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#pfaq7" itemprop="name">
+                Are escort services in <%= ad.city %> available for hotel visits?
+              </button>
+            </h3>
+            <div id="pfaq7" class="accordion-collapse collapse" data-bs-parent="#pfaqR" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                Many escort advertisers in <%= ad.city %> offer hotel visit services. Contact the advertiser directly via Call or WhatsApp to discuss availability, location, and arrangements. Always confirm details with the advertiser before meeting.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item faq-item border rounded-3 mb-3" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed rounded-3 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#pfaq8" itemprop="name">
+                Is browsing escort profiles on Trusted Escort India free?
+              </button>
+            </h3>
+            <div id="pfaq8" class="accordion-collapse collapse" data-bs-parent="#pfaqR" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <div class="accordion-body text-muted" itemprop="text">
+                Yes. Browsing all escort profiles on Trusted Escort India — including this one — is completely free. No registration or sign-up is required to view any listing. Contact the advertiser directly at no charge.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
