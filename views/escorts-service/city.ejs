@@ -274,18 +274,6 @@
             <% }) %>
           </ul>
 
-          <% if (areas && areas.length > 0) { %>
-          <h3 class="fw-semibold fs-5 mt-4 mb-2">Escort Service by Area in <%= city.name %></h3>
-          <p class="text-muted mb-2">Browse listings by specific neighbourhood or locality within <%= city.name %>:</p>
-          <div class="d-flex flex-wrap gap-2">
-            <% areas.forEach(area => { %>
-              <a href="/escorts-service/<%= city.slug %>/<%= area.slug %>/"
-                 class="area-pill text-decoration-none">
-                <i class="bi bi-geo-alt me-1"></i><%= area.name %>
-              </a>
-            <% }) %>
-          </div>
-          <% } %>
         </div>
 
         <% } else { %>
@@ -337,18 +325,6 @@
             <h3 class="fw-semibold fs-6 mb-2 text-primary speakable-content">Are the escort listings in <%= city.name %> genuine?</h3>
             <p class="text-muted small mb-0">Yes. Every profile in our <%= city.name %> directory has been manually reviewed by our admin team. We reject fake, misleading, or unverified listings before they ever appear on this page. What you see here is real.</p>
           </div>
-          <% if (areas && areas.length > 0) { %>
-          <h3 class="fw-semibold fs-5 mt-4 mb-2">Escort Service by Area in <%= city.name %></h3>
-          <p class="text-muted mb-2">We cover specific areas and localities within <%= city.name %>:</p>
-          <div class="d-flex flex-wrap gap-2">
-            <% areas.forEach(area => { %>
-              <a href="/escorts-service/<%= city.slug %>/<%= area.slug %>/"
-                 class="area-pill text-decoration-none">
-                <i class="bi bi-geo-alt me-1"></i><%= area.name %>
-              </a>
-            <% }) %>
-          </div>
-          <% } %>
         </div>
         <% } %>
 
