@@ -77,13 +77,12 @@ app.use(setLocals);
 // ── Ensure DB is connected before any route handler runs ─────────────────────
 // bufferCommands:false means queries fail immediately when not connected,
 // so we must explicitly await the connection on every cold-start request.
-app.use(async (req, res, next) => {
-  try {
-    await connectDB();
-  } catch (err) {
-    console.error('DB connect middleware error:', err.message);
-    // Don't block the request — let route handlers handle DB errors individually
-  }
+app.use((req, res, next) => {
+  connectDB()
+    .catch(err => {
+      console.error('DB connect middleware error:', err.message);
+      // Don't block the request — let route handlers handle DB errors individually
+    });
   next();
 });
 
@@ -133,9 +132,21 @@ app.use((req, res) => {
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   console.error('Unhandled error:', err);
+  // Only send error response, don't redirect to avoid infinite redirect loops
+  const referer = req.get('Referrer');
+  const referrerPath = referer ? new URL(referer).pathname : null;
+  
+  // Prevent redirecting to the same page that caused the error
+  if (referrerPath && referrerPath === req.originalUrl) {
+    return res.status(500).render('404', { 
+      title: 'Error', 
+      noindex: true,
+      error: 'An error occurred processing your request. Please try again.'
+    });
+  }
+  
   if (req.flash) req.flash('error', err.message || 'An unexpected error occurred. Please try again.');
-  const referer = req.get('Referrer') || '/';
-  res.redirect(referer);
+  res.redirect(referer || '/');
 });
 
 // ── Database connection (non-blocking — Mongoose buffers queries until ready) ─
