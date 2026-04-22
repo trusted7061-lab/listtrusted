@@ -132,6 +132,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // On page load, if a city is pre-selected filter its state dropdown too
     if (citySelect.value) {
+      var currentCity = citySelect.value;
       var preSelectedOpt = allOptions.find(function (o) { return o.value === citySelect.value; });
       if (preSelectedOpt && preSelectedOpt.state && !stateSelect.value) {
         stateSelect.value = preSelectedOpt.state;
