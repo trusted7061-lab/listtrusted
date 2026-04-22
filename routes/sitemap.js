@@ -116,10 +116,7 @@ router.get('/sitemap.xml', (req, res) => {
     { path: '/contact',          p: '0.5', freq: 'monthly' },
     { path: '/privacy-policy',   p: '0.4', freq: 'monthly' },
     { path: '/terms',            p: '0.4', freq: 'monthly' },
-    { path: '/age-verification', p: '0.4', freq: 'monthly' },
     { path: '/help-center',      p: '0.5', freq: 'monthly' },
-    { path: '/auth/login',       p: '0.4', freq: 'monthly' },
-    { path: '/auth/register',    p: '0.5', freq: 'monthly' },
   ].forEach(({ path, p, freq }) => {
     blocks.push(urlBlock({ loc: `${BASE}${path}`, priority: p, changefreq: freq, lastmod: today }));
   });
