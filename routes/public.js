@@ -379,6 +379,7 @@ router.get('/age-verification', (req, res) => {
     title: 'Age Verification — Adults 18+ Only | Trusted Escort India',
     metaDescription: 'Trusted Escort India is strictly for adults aged 18 and above. Read our age verification and child protection policy.',
     canonical: 'https://trustedescort.in/age-verification',
+    noindex: true,
     schema
   });
 });

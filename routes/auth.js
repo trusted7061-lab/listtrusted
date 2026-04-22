@@ -21,6 +21,7 @@ router.get('/login', (req, res) => {
     title: 'Login | Trusted Escort India',
     metaDescription: 'Log in to your Trusted Escort India account.',
     canonical: 'https://trustedescort.in/auth/login',
+    noindex: true,
     schema
   });
 });
@@ -76,6 +77,7 @@ router.get('/register', (req, res) => {
     title: 'Register | Post a Free Ad | Trusted Escort India',
     metaDescription: 'Create a free advertiser account on Trusted Escort India and post your escort service listing today.',
     canonical: 'https://trustedescort.in/auth/register',
+    noindex: true,
     schema
   });
 });
