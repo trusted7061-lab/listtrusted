@@ -97,9 +97,56 @@ router.get('/:citySlug', async (req, res, next) => {
     const areas = getAreasForCity(city.slug);
     const nearByCities = CITIES.filter(c => c.slug !== city.slug).slice(0, 18);
 
-    const schema = JSON.stringify({
-      '@context': 'https://schema.org',
-      '@graph': [
+    // Determine city tier — matches the logic in city.ejs to decide what FAQ is visible on the page
+    const faqMetroTier1 = ['mumbai','delhi','bangalore','chennai','kolkata','hyderabad','pune','ahmedabad','goa','noida','gurgaon','gurugram','thane','navi-mumbai','faridabad','ghaziabad'];
+    const faqMetroTier2 = ['jaipur','lucknow','chandigarh','indore','bhopal','nagpur','kochi','coimbatore','vadodara','surat','visakhapatnam','patna','ranchi','bhubaneswar','jamshedpur','dehradun','agra','varanasi','kanpur','ludhiana','amritsar','jodhpur','udaipur','mysore','mysuru','mangalore','mangaluru'];
+    const showFaqAccordion = faqMetroTier1.indexOf(city.slug) === -1 && faqMetroTier2.indexOf(city.slug) === -1;
+
+    // FAQ entries that exactly match the visible accordion on the page (non-metro cities only)
+    const faqAccordionEntries = [
+      {
+        '@type': 'Question',
+        'name': 'Are the profiles on this website real and verified?',
+        'acceptedAnswer': { '@type': 'Answer', 'text': `The people on our website are real. We check them carefully so you can feel safe when you look around. Trust is a deal to us. That is why we work hard to make sure the information on our website is real. We want you to see accurate pictures of the people. We look at each escort's profile before we put it on our website. This way, you do not have to worry about fake profiles or wrong information. We try to be very clear and open about everything. We tell you what someone looks like, if they are available, and what they like. Someone's plan might change, so we often update our website so it always has accurate information. Before you book, our support team may check if someone is available for the profile you like.` }
+      },
+      {
+        '@type': 'Question',
+        'name': `How much does a ${city.name} escort call girl usually cost?`,
+        'acceptedAnswer': { '@type': 'Answer', 'text': `${city.name} escort service costs can vary. It depends on the type of companion you want, how long you book them for, where you want to meet, and any extra things you want. Sometimes if you book for one hour it will cost around ₹4000 to ₹5000. If you want to book for a longer time, like three hours or even overnight, the booking will cost more. Some popular escorts are more expensive — this includes international escorts and premium profiles. Most people ask about pricing before making a reservation. Good services are honest about their rates with no extra hidden costs.` }
+      },
+      {
+        '@type': 'Question',
+        'name': `Do young escorts in ${city.name} get to pick the people they want to meet?`,
+        'acceptedAnswer': { '@type': 'Answer', 'text': `Yes, many young escorts in ${city.name} do get to pick their clients. They pick them based on how they feel about the person, if they think they will be safe with them, if it fits their schedule, and if they like the person. The people who run these services make sure that both the client and the young escorts in ${city.name} are comfortable and treated with respect. Some escorts prefer different kinds of meetings — for example dinner dates, events, hotel meets, or trips. If a client is nice and respectful, this makes both ${city.name} escorts and clients happy and ensures a more professional experience.` }
+      },
+      {
+        '@type': 'Question',
+        'name': `Can I see real ${city.name} escort photographs?`,
+        'acceptedAnswer': { '@type': 'Answer', 'text': `Yes. When you look at listings on our website you can see pictures of the escorts before you contact them. This helps you figure out what the escorts are like. You can see what they look like, where they are from, when they are available, and what kind of companionship they offer on verified escort profiles. This makes things more open and honest between the client and the escort. Some escort profiles might not show all their pictures on the website because they want to keep some things private and be safe. If you contact the support staff they may provide additional photographs privately.` }
+      },
+      {
+        '@type': 'Question',
+        'name': `What is the process for booking ${city.name} escorts?`,
+        'acceptedAnswer': { '@type': 'Answer', 'text': `Booking an escort in ${city.name} is really easy. Browse the profiles on this page, check out pictures, and read information about the escorts. When you have decided, speak to our support team on WhatsApp or call them to find out if the escort is available, what time they are free, where they are, and how much it will cost. After you have talked about all the details, the booking is set up quickly and you get a confirmation fast. It is a good idea to book ahead of time, especially on weekends or late at night, so you do not have any problems finding the escort you want.` }
+      },
+      {
+        '@type': 'Question',
+        'name': `Can I contact ${city.name} call girls through WhatsApp or a phone call?`,
+        'acceptedAnswer': { '@type': 'Answer', 'text': `Yes. You can contact escorts directly using WhatsApp or by making a phone call — whichever is easier for you. WhatsApp is popular because it is fast and private. You can easily share things like what time you are free, where you are, and what you are looking for. You can also call the support team directly. Both WhatsApp and phone calls are usually available all the time, so you can check availability, discuss details, and book without any problems.` }
+      },
+      {
+        '@type': 'Question',
+        'name': 'Is the price that is shown inclusive of all charges?',
+        'acceptedAnswer': { '@type': 'Answer', 'text': `At our website the price we show you includes the booking charges, so you know what you are going to pay upfront. We believe it is really important to be clear about what you are paying for. If you want additional things like a hotel visit, a trip outside the city, or a late-night booking, these may cost a bit more. We will always talk to you about any extra costs before you confirm, so you are never surprised with charges later on.` }
+      },
+      {
+        '@type': 'Question',
+        'name': 'Can escorts go to hotels, homes, or places outside the city?',
+        'acceptedAnswer': { '@type': 'Answer', 'text': `Yes, our escort services let companions visit hotels, homes, and even places outside the city if it is available and planned ahead. Hotel visits happen frequently because they are private and convenient for both people. Home visits can also happen if the location is safe and not too far away. For trips outside the city, it is best to book well in advance so we can figure out travel, timing, and all the other details.` }
+      }
+    ];
+
+    const graphNodes = [
         {
           '@type': 'WebPage',
           '@id': `https://trustedescort.in/escorts-service/${city.slug}/#webpage`,
@@ -160,50 +207,21 @@ router.get('/:citySlug', async (req, res, next) => {
           'areaServed': { '@type': 'City', 'name': city.name },
           'description': `Verified escort service listings in ${city.name}, ${city.state}. Browse admin-approved profiles and contact directly via Call or WhatsApp.`,
           'audience': { '@type': 'Audience', 'audienceType': 'Adults' }
-        },
-        {
-          '@type': 'FAQPage',
-          'mainEntity': [
-            {
-              '@type': 'Question',
-              'name': `How do I find escort service in ${city.name}?`,
-              'acceptedAnswer': { '@type': 'Answer', 'text': `Browse the verified listings on this page for escort service in ${city.name}. All ads are admin-approved before going live. Tap the Call or WhatsApp button on any listing to directly contact the advertiser — no middlemen, no booking fees.` }
-            },
-            {
-              '@type': 'Question',
-              'name': `Are escort listings in ${city.name} verified?`,
-              'acceptedAnswer': { '@type': 'Answer', 'text': `Yes. Every escort service listing in ${city.name} is manually reviewed and approved by our admin team. Fake, misleading or low-quality profiles are rejected and never shown. This makes our ${city.name} escort directory the most trusted in ${city.state}.` }
-            },
-            {
-              '@type': 'Question',
-              'name': `How do I post an escort ad in ${city.name}?`,
-              'acceptedAnswer': { '@type': 'Answer', 'text': `Register free on Trusted Escort India, fill in your service details, upload photos, and select ${city.name} as your city. Submit for admin review. Your listing goes live on this ${city.name} page within 24 hours of approval.` }
-            },
-            {
-              '@type': 'Question',
-              'name': `What areas in ${city.name} are covered?`,
-              'acceptedAnswer': { '@type': 'Answer', 'text': `We cover all major localities and areas within ${city.name}. Use the area links at the top of this page to browse escort service listings for a specific neighbourhood or locality in ${city.name}, ${city.state}.` }
-            },
-            {
-              '@type': 'Question',
-              'name': `Is escort service available 24/7 in ${city.name}?`,
-              'acceptedAnswer': { '@type': 'Answer', 'text': `Many escort service advertisers in ${city.name} are available 24 hours a day, 7 days a week. Each listing shows the advertiser's contact details — call or WhatsApp them directly to confirm availability and timings for ${city.name}.` }
-            },
-            {
-              '@type': 'Question',
-              'name': `Is it safe to book escort service in ${city.name}?`,
-              'acceptedAnswer': { '@type': 'Answer', 'text': `All listings on this page are admin-verified before going live. We screen all ${city.name} escort advertisers for authenticity. However, always exercise personal discretion. Only deal directly with the advertiser and never share sensitive financial information.` }
-            },
-            {
-              '@type': 'Question',
-              'name': `What types of escort services are available in ${city.name}?`,
-              'acceptedAnswer': { '@type': 'Answer', 'text': `Escort service listings in ${city.name} include companionship services, social escort, dinner date companions, event and party companions, and travel escort services. All listed services are legal. Category is clearly labelled on each ad card.` }
-            },
-            {
-              '@type': 'Question',
-              'name': `How do I contact an escort in ${city.name}?`,
-              'acceptedAnswer': { '@type': 'Answer', 'text': `Click the Call or WhatsApp button displayed on any approved listing on this page. You will be connected directly to the advertiser in ${city.name} — no agency, no fees. Each listing shows the phone number or WhatsApp contact chosen by the advertiser.` }
-            },
+        }
+    ];
+
+    // Only add FAQPage schema when the FAQ accordion is actually visible on the page
+    if (showFaqAccordion) {
+      graphNodes.push({
+        '@type': 'FAQPage',
+        'mainEntity': faqAccordionEntries
+      });
+    }
+
+    const schema = JSON.stringify({ '@context': 'https://schema.org', '@graph': graphNodes });
+
+    // ── dead code removal: old inline FAQ questions follow (replaced above) ──
+    if (false) { const _old = [
             {
               '@type': 'Question',
               'name': `Can I report a suspicious listing in ${city.name}?`,
@@ -214,80 +232,7 @@ router.get('/:citySlug', async (req, res, next) => {
               'name': `How many escort listings are there in ${city.name}?`,
               'acceptedAnswer': { '@type': 'Answer', 'text': `The number of live escort service listings in ${city.name} changes daily as new ads are approved and old ads expire. Check the live count shown at the top of this page. For metro cities like Delhi and Mumbai, we typically have dozens of verified listings active at any time.` }
             },
-            {
-              '@type': 'Question',
-              'name': `Can I advertise escort service in ${city.name} for free?`,
-              'acceptedAnswer': { '@type': 'Answer', 'text': `Yes. Posting your first escort service ad in ${city.name} is completely free. Register, fill in your details, select ${city.name}, and submit. Our admin team will review and approve your listing within 24 hours at no charge.` }
-            },
-            {
-              '@type': 'Question',
-              'name': `Why choose Trusted Escort India for ${city.name} listings?`,
-              'acceptedAnswer': { '@type': 'Answer', 'text': `Trusted Escort India is the most reliable escort service directory in ${city.name}. Every ad is admin-approved, contact details are genuine, and the platform is free to use. We cover all areas within ${city.name} and update listings daily.` }
-            },
-            {
-              '@type': 'Question',
-              'name': `What is the difference between incall and outcall escort service in ${city.name}?`,
-              'acceptedAnswer': { '@type': 'Answer', 'text': `Incall escort service means you visit the advertiser at their location in ${city.name}. Outcall escort service means the advertiser comes to your location — hotel room, residence, or another agreed venue in ${city.name}. Each listing specifies the service type available. Contact the advertiser directly to confirm.` }
-            },
-            {
-              '@type': 'Question',
-              'name': `Is my personal information private when I contact an escort in ${city.name}?`,
-              'acceptedAnswer': { '@type': 'Answer', 'text': `Yes. Contacting an advertiser via Call or WhatsApp does not require you to register or share any personal details with Trusted Escort India. Your contact is direct and private between you and the advertiser in ${city.name}. We do not record or share contact interactions.` }
-            },
-            {
-              '@type': 'Question',
-              'name': `Can I book escort service in ${city.name} for a hotel room?`,
-              'acceptedAnswer': { '@type': 'Answer', 'text': `Yes. Many escort service advertisers in ${city.name} offer outcall service to hotels across the city. Contact the advertiser directly via WhatsApp or Call to confirm hotel outcall availability, the areas of ${city.name} they cover, and timing. Always check hotel policies independently.` }
-            },
-            {
-              '@type': 'Question',
-              'name': `What should I do if an escort advertiser in ${city.name} asks for advance payment?`,
-              'acceptedAnswer': { '@type': 'Answer', 'text': `Never send advance payment to any escort advertiser in ${city.name} without meeting them in person first. Legitimate advertisers on Trusted Escort India do not require prepayment through digital wallets or unknown links. If any advertiser demands upfront payment, report them immediately using our contact form.` }
-            },
-            {
-              '@type': 'Question',
-              'name': `Are foreign or international escorts available in ${city.name}?`,
-              'acceptedAnswer': { '@type': 'Answer', 'text': `Some escort advertisers in ${city.name} may be of foreign or international origin. Check each listing's profile details — nationality and ethnicity information is provided by advertisers who choose to share it. Use the category filters to search for specific escort types in ${city.name}.` }
-            },
-            {
-              '@type': 'Question',
-              'name': `What is the minimum age for escort advertisers on this platform in ${city.name}?`,
-              'acceptedAnswer': { '@type': 'Answer', 'text': `All escort service advertisers on Trusted Escort India, including in ${city.name}, must be 18 years of age or older. Our admin team verifies this during the listing approval process. Any listing suspected of involving a minor is immediately rejected and reported.` }
-            },
-            {
-              '@type': 'Question',
-              'name': `How quickly are new escort listings updated in ${city.name}?`,
-              'acceptedAnswer': { '@type': 'Answer', 'text': `New escort listings in ${city.name} are reviewed and approved by our admin team typically within 24 hours of submission. The ${city.name} page is updated in real time once a listing is approved — you will see the live count on this page reflect the current number of active, approved listings.` }
-            },
-            {
-              '@type': 'Question',
-              'name': `How do I choose the best escort service in ${city.name} for my requirements?`,
-              'acceptedAnswer': { '@type': 'Answer', 'text': `Read each listing's full profile — including photos, description, services offered, and contact method. Use the area filter to find escort service in a specific part of ${city.name}. Look for listings with a detailed description and clear contact information, as these are typically more reliable and professional.` }
-            },
-            {
-              '@type': 'Question',
-              'name': `What languages do escort service advertisers in ${city.name} speak?`,
-              'acceptedAnswer': { '@type': 'Answer', 'text': `Most escort service advertisers in ${city.name} speak Hindi and English. Depending on the city's demographics, some may speak regional languages — for example, Tamil in Chennai, Bengali in Kolkata, Kannada in Bangalore, or Gujarati in Ahmedabad. Language is indicated on profiles where advertisers have shared this information.` }
-            },
-            {
-              '@type': 'Question',
-              'name': `Is VIP or premium escort service available in ${city.name}?`,
-              'acceptedAnswer': { '@type': 'Answer', 'text': `Yes. Many advertisers in ${city.name} offer premium and VIP escort service — often featuring professional model escorts, high-discretion outcall service, and availability for corporate events, business dinners, and private parties. Use the category filter on the main ${city.name} listing page to find premium listings.` }
-            },
-            {
-              '@type': 'Question',
-              'name': `Can I see photos of the escort before contacting them in ${city.name}?`,
-              'acceptedAnswer': { '@type': 'Answer', 'text': `Yes. Every approved escort service listing in ${city.name} on Trusted Escort India includes at least one admin-verified photo. All profile images are checked during the admin approval process. Click any listing to view the full profile photo before making contact.` }
-            },
-            {
-              '@type': 'Question',
-              'name': `How is Trusted Escort India different from other escort directories in ${city.name}?`,
-              'acceptedAnswer': { '@type': 'Answer', 'text': `Unlike unmoderated directories, every single listing on Trusted Escort India for ${city.name} is manually admin-approved before going live. We reject fake, misleading, and low-quality ads. We also provide dedicated area-level pages for every locality within ${city.name}, making it easy to find verified escort service exactly where you need it.` }
-            }
-          ]
-        }
-      ]
-    });
+    ]; } // end dead code block
 
     res.render('escorts-service/city', {
       title: `Escort Service in ${city.name} | Verified Listings | Trusted Escort India`,
