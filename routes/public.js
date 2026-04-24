@@ -124,7 +124,7 @@ router.get('/', async (req, res) => {
             '@type': 'SearchAction',
             'target': {
               '@type': 'EntryPoint',
-              'urlTemplate': 'https://trustedescort.in/escorts-service/{search_term_string}/'
+              'urlTemplate': 'https://trustedescort.in/search?q={search_term_string}'
             },
             'query-input': 'required name=search_term_string'
           }
@@ -287,18 +287,29 @@ router.get('/', async (req, res) => {
 router.get('/about', (req, res) => {
   const schema = JSON.stringify({
     '@context': 'https://schema.org',
-    '@type': 'AboutPage',
-    '@id': 'https://trustedescort.in/about#webpage',
-    'url': 'https://trustedescort.in/about',
-    'name': 'About Us — Trusted Escort India',
-    'description': "Learn about Trusted Escort India — India's most trusted verified escort service directory covering 75+ cities.",
-    'mainEntity': {
-      '@type': 'Organization',
-      'name': 'Trusted Escort India',
-      'url': 'https://trustedescort.in',
-      'description': "India's most trusted platform for verified escort service listings. Browse admin-approved escort profiles across 75+ cities.",
-      'founded': '2024'
-    }
+    '@graph': [
+      {
+        '@type': 'AboutPage',
+        '@id': 'https://trustedescort.in/about#webpage',
+        'url': 'https://trustedescort.in/about',
+        'name': 'About Us — Trusted Escort India',
+        'description': "Learn about Trusted Escort India — India's most trusted verified escort service directory covering 75+ cities.",
+        'mainEntity': {
+          '@type': 'Organization',
+          'name': 'Trusted Escort India',
+          'url': 'https://trustedescort.in',
+          'description': "India's most trusted platform for verified escort service listings. Browse admin-approved escort profiles across 75+ cities.",
+          'founded': '2024'
+        }
+      },
+      {
+        '@type': 'BreadcrumbList',
+        'itemListElement': [
+          { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://trustedescort.in' },
+          { '@type': 'ListItem', 'position': 2, 'name': 'About Us', 'item': 'https://trustedescort.in/about' }
+        ]
+      }
+    ]
   });
 
   res.render('pages/about', {
@@ -312,22 +323,33 @@ router.get('/about', (req, res) => {
 router.get('/contact', (req, res) => {
   const schema = JSON.stringify({
     '@context': 'https://schema.org',
-    '@type': 'ContactPage',
-    '@id': 'https://trustedescort.in/contact#webpage',
-    'url': 'https://trustedescort.in/contact',
-    'name': 'Contact Us — Trusted Escort India',
-    'description': 'Get in touch with the Trusted Escort India team.',
-    'mainEntity': {
-      '@type': 'Organization',
-      'name': 'Trusted Escort India',
-      'contactPoint': {
-        '@type': 'ContactPoint',
-        '@id': 'https://trustedescort.in/contact#contactpoint',
-        'contactType': 'Customer Support',
-        'email': 'support@trustedescort.in',
-        'availableLanguage': 'en'
+    '@graph': [
+      {
+        '@type': 'ContactPage',
+        '@id': 'https://trustedescort.in/contact#webpage',
+        'url': 'https://trustedescort.in/contact',
+        'name': 'Contact Us — Trusted Escort India',
+        'description': 'Get in touch with the Trusted Escort India team.',
+        'mainEntity': {
+          '@type': 'Organization',
+          'name': 'Trusted Escort India',
+          'contactPoint': {
+            '@type': 'ContactPoint',
+            '@id': 'https://trustedescort.in/contact#contactpoint',
+            'contactType': 'Customer Support',
+            'email': 'support@trustedescort.in',
+            'availableLanguage': 'en'
+          }
+        }
+      },
+      {
+        '@type': 'BreadcrumbList',
+        'itemListElement': [
+          { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://trustedescort.in' },
+          { '@type': 'ListItem', 'position': 2, 'name': 'Contact', 'item': 'https://trustedescort.in/contact' }
+        ]
       }
-    }
+    ]
   });
 
   res.render('pages/contact', {
@@ -360,16 +382,27 @@ router.post('/contact', (req, res) => {
 router.get('/privacy-policy', (req, res) => {
   const schema = JSON.stringify({
     '@context': 'https://schema.org',
-    '@type': 'WebPage',
-    '@id': 'https://trustedescort.in/privacy-policy#webpage',
-    'url': 'https://trustedescort.in/privacy-policy',
-    'name': 'Privacy Policy — Trusted Escort India',
-    'description': 'Read the Trusted Escort India privacy policy — how we collect, use and protect your data.',
-    'mainEntity': {
-      '@type': 'Organization',
-      'name': 'Trusted Escort India',
-      'url': 'https://trustedescort.in'
-    }
+    '@graph': [
+      {
+        '@type': 'WebPage',
+        '@id': 'https://trustedescort.in/privacy-policy#webpage',
+        'url': 'https://trustedescort.in/privacy-policy',
+        'name': 'Privacy Policy — Trusted Escort India',
+        'description': 'Read the Trusted Escort India privacy policy — how we collect, use and protect your data.',
+        'mainEntity': {
+          '@type': 'Organization',
+          'name': 'Trusted Escort India',
+          'url': 'https://trustedescort.in'
+        }
+      },
+      {
+        '@type': 'BreadcrumbList',
+        'itemListElement': [
+          { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://trustedescort.in' },
+          { '@type': 'ListItem', 'position': 2, 'name': 'Privacy Policy', 'item': 'https://trustedescort.in/privacy-policy' }
+        ]
+      }
+    ]
   });
 
   res.render('pages/privacy-policy', {
@@ -383,16 +416,27 @@ router.get('/privacy-policy', (req, res) => {
 router.get('/terms', (req, res) => {
   const schema = JSON.stringify({
     '@context': 'https://schema.org',
-    '@type': 'WebPage',
-    '@id': 'https://trustedescort.in/terms#webpage',
-    'url': 'https://trustedescort.in/terms',
-    'name': 'Terms & Conditions — Trusted Escort India',
-    'description': 'Read the Trusted Escort India terms and conditions of use.',
-    'mainEntity': {
-      '@type': 'Organization',
-      'name': 'Trusted Escort India',
-      'url': 'https://trustedescort.in'
-    }
+    '@graph': [
+      {
+        '@type': 'WebPage',
+        '@id': 'https://trustedescort.in/terms#webpage',
+        'url': 'https://trustedescort.in/terms',
+        'name': 'Terms & Conditions — Trusted Escort India',
+        'description': 'Read the Trusted Escort India terms and conditions of use.',
+        'mainEntity': {
+          '@type': 'Organization',
+          'name': 'Trusted Escort India',
+          'url': 'https://trustedescort.in'
+        }
+      },
+      {
+        '@type': 'BreadcrumbList',
+        'itemListElement': [
+          { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://trustedescort.in' },
+          { '@type': 'ListItem', 'position': 2, 'name': 'Terms & Conditions', 'item': 'https://trustedescort.in/terms' }
+        ]
+      }
+    ]
   });
 
   res.render('pages/terms', {
@@ -425,11 +469,22 @@ router.get('/age-verification', (req, res) => {
 router.get('/help-center', (req, res) => {
   const schema = JSON.stringify({
     '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    '@id': 'https://trustedescort.in/help-center#webpage',
-    'url': 'https://trustedescort.in/help-center',
-    'name': 'Help Center — Trusted Escort India',
-    'description': 'Browse frequently asked questions and get help with browsing, posting ads, accounts and safety on Trusted Escort India.'
+    '@graph': [
+      {
+        '@type': 'FAQPage',
+        '@id': 'https://trustedescort.in/help-center#webpage',
+        'url': 'https://trustedescort.in/help-center',
+        'name': 'Help Center — Trusted Escort India',
+        'description': 'Browse frequently asked questions and get help with browsing, posting ads, accounts and safety on Trusted Escort India.'
+      },
+      {
+        '@type': 'BreadcrumbList',
+        'itemListElement': [
+          { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://trustedescort.in' },
+          { '@type': 'ListItem', 'position': 2, 'name': 'Help Center', 'item': 'https://trustedescort.in/help-center' }
+        ]
+      }
+    ]
   });
 
   res.render('pages/help-center', {

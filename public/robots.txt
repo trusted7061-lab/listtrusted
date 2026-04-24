@@ -1,11 +1,8 @@
 # Trusted Escort India Robots.txt
-# Updated: 2026-04-17
+# Updated: 2026-04-24
 
 User-agent: *
 Allow: /
-
-# Crawl rate regulation
-Crawl-delay: 1
 
 # Block admin and private areas
 Disallow: /admin/

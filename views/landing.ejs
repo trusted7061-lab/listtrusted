@@ -125,7 +125,7 @@
     <div class="row g-3 mb-4">
       <% cities.filter(c => c.metro).forEach((city, i) => { %>
         <div class="col-6 col-sm-4 col-md-3 col-lg-2" data-aos="zoom-in" data-aos-delay="<%= i * 40 %>">
-          <a href="/escorts-service/<%= city.slug %>" class="city-card d-flex flex-column align-items-center text-center p-3 rounded-3 text-decoration-none h-100">
+          <a href="/escorts-service/<%= city.slug %>/" class="city-card d-flex flex-column align-items-center text-center p-3 rounded-3 text-decoration-none h-100">
             <i class="bi bi-building fs-3 mb-2 gradient-text"></i>
             <span class="fw-semibold small">Escorts in<br><strong><%= city.name %></strong></span>
           </a>
@@ -138,7 +138,7 @@
     <div class="row g-2">
       <% cities.filter(c => !c.metro).forEach((city, i) => { %>
         <div class="col-6 col-sm-4 col-md-3 col-lg-2" data-aos="fade-up" data-aos-delay="<%= (i % 12) * 30 %>">
-          <a href="/escorts-service/<%= city.slug %>" class="city-card-sm d-flex align-items-center gap-2 p-2 rounded-3 text-decoration-none">
+          <a href="/escorts-service/<%= city.slug %>/" class="city-card-sm d-flex align-items-center gap-2 p-2 rounded-3 text-decoration-none">
             <i class="bi bi-geo-alt-fill text-primary small"></i>
             <span class="small fw-medium"><%= city.name %></span>
           </a>
