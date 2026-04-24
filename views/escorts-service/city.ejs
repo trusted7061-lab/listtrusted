@@ -141,7 +141,7 @@
                 <span class="badge bg-warning text-dark"><i class="bi bi-star-fill me-1"></i>Featured</span>
               </div>
               <a href="<%= ad.link %>" target="_blank" rel="noopener noreferrer" class="text-decoration-none">
-                <img src="<%= ad.image %>" class="card-img-top" style="height: 200px; object-fit: cover;" loading="lazy" decoding="async"
+                <img src="<%= ad.image %>" class="card-img-top" width="400" height="200" style="height: 200px; object-fit: cover;" loading="lazy" decoding="async"
                      alt="<%= ad.title %>">
               </a>
               <div class="card-body">
@@ -166,7 +166,7 @@
             <div class="ad-card card border-0 shadow-sm h-100 overflow-hidden">
               <div class="ad-card-img-wrapper">
                 <a href="/escorts-service/profile/<%= ad._id %>">
-                  <img src="<%= ad.image %>" class="card-img-top" loading="lazy" decoding="async"
+                  <img src="<%= ad.image %>" class="card-img-top" width="400" height="260" loading="lazy" decoding="async"
                        alt="<%= ad.title %> — Escort Service in <%= city.name %>">
                 </a>
                 <span class="ad-type-badge"><%= ad.category %></span>

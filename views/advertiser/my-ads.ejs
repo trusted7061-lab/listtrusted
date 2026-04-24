@@ -51,7 +51,7 @@
           <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="<%= i * 50 %>">
             <div class="ad-card card border-0 shadow-sm h-100 overflow-hidden">
               <div class="ad-card-img-wrapper">
-                <img src="<%= ad.image %>" class="card-img-top" alt="<%= ad.title %>" loading="lazy" decoding="async">
+                <img src="<%= ad.image %>" class="card-img-top" width="400" height="260" alt="<%= ad.title %>" loading="lazy" decoding="async">
                 <span class="ad-type-badge"><%= ad.category %></span>
                 <% if (ad.status === 'pending') { %>
                   <span class="ad-status-badge bg-warning text-dark"><i class="bi bi-clock me-1"></i>Pending</span>

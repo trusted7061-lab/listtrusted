@@ -39,11 +39,48 @@ router.get('/search', async (req, res) => {
       .skip((page - 1) * limit)
       .limit(limit);
 
+    // Build canonical URL preserving city/state filters (but not free-text q or page)
+    const canonicalParams = new URLSearchParams();
+    if (cityFilter && CITY_BY_SLUG[cityFilter]) canonicalParams.set('city', cityFilter);
+    else if (stateFilter) canonicalParams.set('state', stateFilter);
+    const canonicalQS = canonicalParams.toString();
+    const canonicalUrl = raw
+      ? `https://trustedescort.in/search?q=${encodeURIComponent(raw)}`
+      : canonicalQS
+        ? `https://trustedescort.in/search?${canonicalQS}`
+        : 'https://trustedescort.in/search';
+
+    // Build human-readable location label for meta description
+    const locationLabel = cityFilter && CITY_BY_SLUG[cityFilter]
+      ? CITY_BY_SLUG[cityFilter].name
+      : stateFilter || '';
+
+    let metaDescription;
+    if (raw) {
+      metaDescription = `Search results for "${raw}" on Trusted Escort India. Browse verified escort service profiles${locationLabel ? ` in ${locationLabel}` : ''} — admin-approved, safe and discreet.`;
+    } else if (locationLabel) {
+      metaDescription = `Browse verified escort service listings in ${locationLabel} on Trusted Escort India. Admin-approved profiles — contact directly, no middlemen.`;
+    } else {
+      metaDescription = 'Search verified escort service listings across India on Trusted Escort India. Filter by city or state to find admin-approved profiles.';
+    }
+
+    let title;
+    if (raw) {
+      const truncatedRaw = raw.length > 30 ? raw.slice(0, 30) + '…' : raw;
+      title = `"${truncatedRaw}" — Search Results | Trusted Escort India`;
+    } else if (locationLabel) {
+      title = `Search Escort Service in ${locationLabel} | Trusted Escort India`;
+    } else {
+      title = 'Search Escort Service Listings | Trusted Escort India';
+    }
+
     res.render('search', {
-      title: raw ? `"${raw}" — Search Results | Trusted Escort India` : 'Search | Trusted Escort India',
-      metaDescription: `Search results for "${raw}" on Trusted Escort India.`,
-      canonical: raw ? `https://trustedescort.in/search?q=${encodeURIComponent(raw)}` : 'https://trustedescort.in/search',
-      noindex: !!(raw || stateFilter || cityFilter),
+      title,
+      metaDescription,
+      canonical: canonicalUrl,
+      // Only free-text queries are noindexed (infinite variants).
+      // Structured city/state filters are legitimate landing pages.
+      noindex: !!raw,
       q: raw,
       cityFilter,
       stateFilter,
@@ -60,6 +97,7 @@ router.get('/search', async (req, res) => {
       title: 'Search | Trusted Escort India',
       metaDescription: 'Search escort listings.',
       canonical: 'https://trustedescort.in/search',
+      noindex: true,
       q: raw, cityFilter, stateFilter: '', results: [], total: 0, page: 1, totalPages: 0, limit, cities: CITIES,
     });
   }
