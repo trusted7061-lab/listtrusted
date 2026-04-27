@@ -2,7 +2,7 @@ const fs = require('fs');
 const { CITIES } = require('./config/cities');
 const { AREAS } = require('./config/areas');
 
-const BASE = 'https://trustedescort.in';
+const BASE = 'https://listtrusted.vercel.app';
 const TODAY = new Date().toISOString().split('T')[0];
 
 // ── sitemap.xml ───────────────────────────────────────────────────────────────

@@ -14,13 +14,13 @@
 
 ### 1. **Submit Sitemap to Google Search Console**
    - [ ] Go to https://search.google.com/search-console
-   - [ ] Add property: https://trustedescort.in
+   - [ ] Add property: https://listtrusted.vercel.app
    - [ ] Navigate to Sitemaps section
-   - [ ] Submit: https://trustedescort.in/sitemap-index.xml
+   - [ ] Submit: https://listtrusted.vercel.app/sitemap-index.xml
    - [ ] Also submit individual sitemaps:
-     - https://trustedescort.in/sitemap.xml
-     - https://trustedescort.in/sitemap-profiles.xml
-     - https://trustedescort.in/sitemap-images.xml
+     - https://listtrusted.vercel.app/sitemap.xml
+     - https://listtrusted.vercel.app/sitemap-profiles.xml
+     - https://listtrusted.vercel.app/sitemap-images.xml
 
 ### 2. **Monitor Indexing Status**
    - [ ] Check Google Search Console Coverage report
@@ -35,35 +35,35 @@
 ### 4. **Test Page Accessibility**
    ```bash
    # Test if Google can crawl your pages
-   curl -I https://trustedescort.in/escorts-service/
-   curl -I https://trustedescort.in/escorts-service/delhi/
-   curl -I https://trustedescort.in/robots.txt
+   curl -I https://listtrusted.vercel.app/escorts-service/
+   curl -I https://listtrusted.vercel.app/escorts-service/delhi/
+   curl -I https://listtrusted.vercel.app/robots.txt
    ```
 
 ## 📋 Verification Steps
 
 ### Check if robots.txt blocks indexing:
 ```
-GET https://trustedescort.in/robots.txt
+GET https://listtrusted.vercel.app/robots.txt
 ```
 **Expected:** Should show "Disallow: /admin/" and "Allow: /escorts-service/"
 
 ### Check if sitemap is valid:
 ```
-GET https://trustedescort.in/sitemap-index.xml
-GET https://trustedescort.in/sitemap.xml
+GET https://listtrusted.vercel.app/sitemap-index.xml
+GET https://listtrusted.vercel.app/sitemap.xml
 ```
 **Expected:** Valid XML with proper URLs
 
 ### Check meta tags on escort-service pages:
 ```
-curl https://trustedescort.in/escorts-service/delhi/ | grep -i "robots\|index"
+curl https://listtrusted.vercel.app/escorts-service/delhi/ | grep -i "robots\|index"
 ```
 **Expected:** Should contain `<meta name="robots" content="index, follow, ..."`
 
 ### Check canonical tags:
 ```
-curl https://trustedescort.in/escorts-service/delhi/ | grep canonical
+curl https://listtrusted.vercel.app/escorts-service/delhi/ | grep canonical
 ```
 **Expected:** Should have `<link rel="canonical" href="...">`
 

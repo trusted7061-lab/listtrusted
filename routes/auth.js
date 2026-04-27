@@ -11,8 +11,8 @@ router.get('/login', (req, res) => {
   const schema = JSON.stringify({
     '@context': 'https://schema.org',
     '@type': 'WebPage',
-    '@id': 'https://trustedescort.in/auth/login#webpage',
-    'url': 'https://trustedescort.in/auth/login',
+    '@id': 'https://listtrusted.vercel.app/auth/login#webpage',
+    'url': 'https://listtrusted.vercel.app/auth/login',
     'name': 'Login — Trusted Escort India',
     'description': 'Log in to your Trusted Escort India account.'
   });
@@ -20,7 +20,7 @@ router.get('/login', (req, res) => {
   res.render('auth/login', {
     title: 'Login | Trusted Escort India',
     metaDescription: 'Log in to your Trusted Escort India account.',
-    canonical: 'https://trustedescort.in/auth/login',
+    canonical: 'https://listtrusted.vercel.app/auth/login',
     noindex: true,
     schema
   });
@@ -67,8 +67,8 @@ router.get('/register', (req, res) => {
   const schema = JSON.stringify({
     '@context': 'https://schema.org',
     '@type': 'WebPage',
-    '@id': 'https://trustedescort.in/auth/register#webpage',
-    'url': 'https://trustedescort.in/auth/register',
+    '@id': 'https://listtrusted.vercel.app/auth/register#webpage',
+    'url': 'https://listtrusted.vercel.app/auth/register',
     'name': 'Register — Post a Free Ad',
     'description': 'Create a free advertiser account on Trusted Escort India and post your escort service listing today.'
   });
@@ -76,7 +76,7 @@ router.get('/register', (req, res) => {
   res.render('auth/register', {
     title: 'Register | Post a Free Ad | Trusted Escort India',
     metaDescription: 'Create a free advertiser account on Trusted Escort India and post your escort service listing today.',
-    canonical: 'https://trustedescort.in/auth/register',
+    canonical: 'https://listtrusted.vercel.app/auth/register',
     noindex: true,
     schema
   });

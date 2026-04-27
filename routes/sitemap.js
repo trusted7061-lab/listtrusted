@@ -4,7 +4,7 @@ const { CITIES } = require('../config/cities');
 const { AREAS } = require('../config/areas');
 const Ad = require('../models/Ad');
 
-const BASE = 'https://trustedescort.in';
+const BASE = 'https://listtrusted.vercel.app';
 
 function escXml(str) {
   return String(str)

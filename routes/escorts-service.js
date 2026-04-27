@@ -36,15 +36,15 @@ router.get('/', (req, res) => {
     title: 'Escorts Service in India — All Cities | Trusted Escort India',
     metaDescription: 'Browse verified escort service listings in all major Indian cities. Delhi, Mumbai, Bangalore, Hyderabad, Chennai, Kolkata and 70+ cities. Admin-approved profiles — free to browse, contact directly.',
     metaKeywords: 'escorts service near me, escort service india, escorts in india, call girls india, escort service all cities, verified escort india, female escorts india',
-    canonical: 'https://trustedescort.in/escorts-service/',
-    ogImage: 'https://trustedescort.in/logo.png',
+    canonical: 'https://listtrusted.vercel.app/escorts-service/',
+    ogImage: 'https://listtrusted.vercel.app/logo.png',
     schema: JSON.stringify({
       '@context': 'https://schema.org',
       '@graph': [
         {
           '@type': 'WebPage',
-          '@id': 'https://trustedescort.in/escorts-service/#webpage',
-          'url': 'https://trustedescort.in/escorts-service/',
+          '@id': 'https://listtrusted.vercel.app/escorts-service/#webpage',
+          'url': 'https://listtrusted.vercel.app/escorts-service/',
           'name': 'Escorts Service in India — All Cities',
           'speakable': {
             '@type': 'SpeakableSpecification',
@@ -54,8 +54,8 @@ router.get('/', (req, res) => {
         {
           '@type': 'BreadcrumbList',
           'itemListElement': [
-            { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://trustedescort.in' },
-            { '@type': 'ListItem', 'position': 2, 'name': 'Escorts Service India', 'item': 'https://trustedescort.in/escorts-service/' }
+            { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://listtrusted.vercel.app' },
+            { '@type': 'ListItem', 'position': 2, 'name': 'Escorts Service India', 'item': 'https://listtrusted.vercel.app/escorts-service/' }
           ]
         },
         {
@@ -67,7 +67,7 @@ router.get('/', (req, res) => {
             '@type': 'ListItem',
             'position': i + 1,
             'name': `Escort Service in ${city.name}`,
-            'url': `https://trustedescort.in/escorts-service/${city.slug}/`
+            'url': `https://listtrusted.vercel.app/escorts-service/${city.slug}/`
           }))
         }
       ]
@@ -149,8 +149,8 @@ router.get('/:citySlug', async (req, res, next) => {
     const graphNodes = [
         {
           '@type': 'WebPage',
-          '@id': `https://trustedescort.in/escorts-service/${city.slug}/#webpage`,
-          'url': `https://trustedescort.in/escorts-service/${city.slug}/`,
+          '@id': `https://listtrusted.vercel.app/escorts-service/${city.slug}/#webpage`,
+          'url': `https://listtrusted.vercel.app/escorts-service/${city.slug}/`,
           'name': `Escort Service in ${city.name}`,
           'dateModified': new Date().toISOString().split('T')[0],
           'datePublished': '2024-01-01',
@@ -163,17 +163,17 @@ router.get('/:citySlug', async (req, res, next) => {
         {
           '@type': 'BreadcrumbList',
           'itemListElement': [
-            { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://trustedescort.in' },
-            { '@type': 'ListItem', 'position': 2, 'name': 'Escorts Service India', 'item': 'https://trustedescort.in/escorts-service/' },
-            { '@type': 'ListItem', 'position': 3, 'name': `Escort Service in ${city.name}`, 'item': `https://trustedescort.in/escorts-service/${city.slug}/` }
+            { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://listtrusted.vercel.app' },
+            { '@type': 'ListItem', 'position': 2, 'name': 'Escorts Service India', 'item': 'https://listtrusted.vercel.app/escorts-service/' },
+            { '@type': 'ListItem', 'position': 3, 'name': `Escort Service in ${city.name}`, 'item': `https://listtrusted.vercel.app/escorts-service/${city.slug}/` }
           ]
         },
         {
           '@type': 'LocalBusiness',
           'name': `Escort Service in ${city.name}`,
           'description': `Find verified escort service in ${city.name}, ${city.state}. Admin-approved listings — safe, discreet, premium. Browse ${ads.length}+ profiles and contact directly.`,
-          'url': `https://trustedescort.in/escorts-service/${city.slug}/`,
-          'image': 'https://trustedescort.in/logo.png',
+          'url': `https://listtrusted.vercel.app/escorts-service/${city.slug}/`,
+          'image': 'https://listtrusted.vercel.app/logo.png',
           'priceRange': 'Free to browse',
           'openingHours': 'Mo-Su 00:00-23:59',
           'address': {
@@ -202,7 +202,7 @@ router.get('/:citySlug', async (req, res, next) => {
           'provider': {
             '@type': 'Organization',
             'name': 'Trusted Escort India',
-            'url': 'https://trustedescort.in'
+            'url': 'https://listtrusted.vercel.app'
           },
           'areaServed': { '@type': 'City', 'name': city.name },
           'description': `Verified escort service listings in ${city.name}, ${city.state}. Browse admin-approved profiles and contact directly via Call or WhatsApp.`,
@@ -238,8 +238,8 @@ router.get('/:citySlug', async (req, res, next) => {
       title: `Escort Service in ${city.name} | Verified Listings | Trusted Escort India`,
       metaDescription: `Find verified escort service in ${city.name}, ${city.state}. Browse ${ads.length > 0 ? ads.length + '+' : 'latest'} admin-approved escort profiles in ${city.name}. Contact directly via Call or WhatsApp — no middlemen. Safe, discreet, 24/7.`,
       metaKeywords: `escort service in ${city.name.toLowerCase()}, escorts in ${city.name.toLowerCase()}, ${city.name.toLowerCase()} escort service, escort service near me ${city.name.toLowerCase()}, call girls in ${city.name.toLowerCase()}, verified escort ${city.name.toLowerCase()}, ${city.name.toLowerCase()} ${city.state.toLowerCase()} escorts`,
-      canonical: `https://trustedescort.in/escorts-service/${city.slug}/`,
-      ogImage: 'https://trustedescort.in/logo.png',
+      canonical: `https://listtrusted.vercel.app/escorts-service/${city.slug}/`,
+      ogImage: 'https://listtrusted.vercel.app/logo.png',
       schema,
       city,
       ads,
@@ -260,7 +260,7 @@ router.get('/:citySlug', async (req, res, next) => {
       title: `Escort Service in ${city.name} | Trusted Escort India`,
       metaDescription: `Find verified escort service in ${city.name}, ${city.state}. Admin-approved listings.`,
       metaKeywords: `escort service in ${city.name.toLowerCase()}, escorts in ${city.name.toLowerCase()}`,
-      canonical: `https://trustedescort.in/escorts-service/${city.slug}/`,
+      canonical: `https://listtrusted.vercel.app/escorts-service/${city.slug}/`,
       schema: '{}',
       city,
       ads: [],
@@ -302,8 +302,8 @@ router.get('/:citySlug/:areaSlug', async (req, res, next) => {
       '@graph': [
         {
           '@type': 'WebPage',
-          '@id': `https://trustedescort.in/escorts-service/${city.slug}/${area.slug}/#webpage`,
-          'url': `https://trustedescort.in/escorts-service/${city.slug}/${area.slug}/`,
+          '@id': `https://listtrusted.vercel.app/escorts-service/${city.slug}/${area.slug}/#webpage`,
+          'url': `https://listtrusted.vercel.app/escorts-service/${city.slug}/${area.slug}/`,
           'name': `Escort Service in ${area.name}, ${city.name}`,
           'description': `Find verified escort service in ${area.name}, ${city.name}. Admin-approved escort profiles — 100% genuine, safe & discreet.`,
           'speakable': {
@@ -314,18 +314,18 @@ router.get('/:citySlug/:areaSlug', async (req, res, next) => {
         {
           '@type': 'BreadcrumbList',
           'itemListElement': [
-            { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://trustedescort.in' },
-            { '@type': 'ListItem', 'position': 2, 'name': 'Escorts Service India', 'item': 'https://trustedescort.in/escorts-service/' },
-            { '@type': 'ListItem', 'position': 3, 'name': `Escort Service in ${city.name}`, 'item': `https://trustedescort.in/escorts-service/${city.slug}/` },
-            { '@type': 'ListItem', 'position': 4, 'name': `Escort Service in ${area.name}`, 'item': `https://trustedescort.in/escorts-service/${city.slug}/${area.slug}/` }
+            { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://listtrusted.vercel.app' },
+            { '@type': 'ListItem', 'position': 2, 'name': 'Escorts Service India', 'item': 'https://listtrusted.vercel.app/escorts-service/' },
+            { '@type': 'ListItem', 'position': 3, 'name': `Escort Service in ${city.name}`, 'item': `https://listtrusted.vercel.app/escorts-service/${city.slug}/` },
+            { '@type': 'ListItem', 'position': 4, 'name': `Escort Service in ${area.name}`, 'item': `https://listtrusted.vercel.app/escorts-service/${city.slug}/${area.slug}/` }
           ]
         },
         {
           '@type': 'LocalBusiness',
           'name': `Escort Service in ${area.name}, ${city.name}`,
           'description': `Verified escort service in ${area.name}, ${city.name}. Admin-approved listings.`,
-          'url': `https://trustedescort.in/escorts-service/${city.slug}/${area.slug}/`,
-          'image': 'https://trustedescort.in/logo.png',
+          'url': `https://listtrusted.vercel.app/escorts-service/${city.slug}/${area.slug}/`,
+          'image': 'https://listtrusted.vercel.app/logo.png',
           'areaServed': {
             '@type': 'Place',
             'name': `${area.name}, ${city.name}`,
@@ -464,8 +464,8 @@ router.get('/:citySlug/:areaSlug', async (req, res, next) => {
       title: `Escort Service in ${area.name}, ${city.name} | Trusted Escort India`,
       metaDescription: `Find verified escort service in ${area.name}, ${city.name}. Admin-approved escort profiles — 100% genuine, safe & discreet.`,
       metaKeywords: `escort service ${area.name.toLowerCase()}, escorts in ${area.name.toLowerCase()} ${city.name.toLowerCase()}, ${area.name.toLowerCase()} escort service`,
-      canonical: `https://trustedescort.in/escorts-service/${city.slug}/${area.slug}/`,
-      ogImage: 'https://trustedescort.in/logo.png',
+      canonical: `https://listtrusted.vercel.app/escorts-service/${city.slug}/${area.slug}/`,
+      ogImage: 'https://listtrusted.vercel.app/logo.png',
       schema,
       city,
       area,
@@ -484,7 +484,7 @@ router.get('/:citySlug/:areaSlug', async (req, res, next) => {
       title: `Escort Service in ${area.name}, ${city.name} | Trusted Escort India`,
       metaDescription: `Find verified escort service in ${area.name}, ${city.name}.`,
       metaKeywords: `escort service ${area.name.toLowerCase()}, escorts ${city.name.toLowerCase()}`,
-      canonical: `https://trustedescort.in/escorts-service/${city.slug}/${area.slug}/`,
+      canonical: `https://listtrusted.vercel.app/escorts-service/${city.slug}/${area.slug}/`,
       schema: '{}',
       city,
       area,
@@ -511,8 +511,8 @@ router.get('/profile/:id/', async (req, res) => {
       return res.status(404).render('404', { title: 'Profile Not Found', noindex: true });
     }
 
-    const profileUrl = `https://trustedescort.in/escorts-service/profile/${ad._id}/`;
-    const imageUrl = ad.image || 'https://trustedescort.in/logo.png';
+    const profileUrl = `https://listtrusted.vercel.app/escorts-service/profile/${ad._id}/`;
+    const imageUrl = ad.image || 'https://listtrusted.vercel.app/logo.png';
     const truncatedDesc = ad.description.length > 155
       ? ad.description.substring(0, 152) + '...'
       : ad.description;
@@ -544,9 +544,9 @@ router.get('/profile/:id/', async (req, res) => {
         {
           '@type': 'BreadcrumbList',
           'itemListElement': [
-            { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://trustedescort.in' },
-            { '@type': 'ListItem', 'position': 2, 'name': 'Escorts Service India', 'item': 'https://trustedescort.in/escorts-service/' },
-            { '@type': 'ListItem', 'position': 3, 'name': `Escort Service in ${ad.city}`, 'item': `https://trustedescort.in/escorts-service/${ad.citySlug}/` },
+            { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://listtrusted.vercel.app' },
+            { '@type': 'ListItem', 'position': 2, 'name': 'Escorts Service India', 'item': 'https://listtrusted.vercel.app/escorts-service/' },
+            { '@type': 'ListItem', 'position': 3, 'name': `Escort Service in ${ad.city}`, 'item': `https://listtrusted.vercel.app/escorts-service/${ad.citySlug}/` },
             { '@type': 'ListItem', 'position': 4, 'name': ad.title, 'item': profileUrl }
           ]
         },
@@ -574,7 +574,7 @@ router.get('/profile/:id/', async (req, res) => {
             }
           } : {}),
           'url': profileUrl,
-          'worksFor': { '@type': 'Organization', 'name': 'Trusted Escort India', 'url': 'https://trustedescort.in' }
+          'worksFor': { '@type': 'Organization', 'name': 'Trusted Escort India', 'url': 'https://listtrusted.vercel.app' }
         }
       ]
     });

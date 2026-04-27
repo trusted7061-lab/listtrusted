@@ -152,12 +152,12 @@ After deploying:
 
 1. **Google Search Console**:
    - Verify site ownership
-   - Submit sitemap: `https://trustedescort.in/sitemap.xml`
+   - Submit sitemap: `https://listtrusted.vercel.app/sitemap.xml`
    - Request indexing for important pages
    - Monitor indexing status
 
 2. **Bing Webmaster Tools**:
-   - Submit sitemap: `https://trustedescort.in/sitemap.xml`
+   - Submit sitemap: `https://listtrusted.vercel.app/sitemap.xml`
    - Monitor search performance
 
 3. **Other Search Engines**:

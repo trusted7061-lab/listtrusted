@@ -45,10 +45,10 @@ router.get('/search', async (req, res) => {
     else if (stateFilter) canonicalParams.set('state', stateFilter);
     const canonicalQS = canonicalParams.toString();
     const canonicalUrl = raw
-      ? `https://trustedescort.in/search?q=${encodeURIComponent(raw)}`
+      ? `https://listtrusted.vercel.app/search?q=${encodeURIComponent(raw)}`
       : canonicalQS
-        ? `https://trustedescort.in/search?${canonicalQS}`
-        : 'https://trustedescort.in/search';
+        ? `https://listtrusted.vercel.app/search?${canonicalQS}`
+        : 'https://listtrusted.vercel.app/search';
 
     // Build human-readable location label for meta description
     const locationLabel = cityFilter && CITY_BY_SLUG[cityFilter]
@@ -96,7 +96,7 @@ router.get('/search', async (req, res) => {
     res.render('search', {
       title: 'Search | Trusted Escort India',
       metaDescription: 'Search escort listings.',
-      canonical: 'https://trustedescort.in/search',
+      canonical: 'https://listtrusted.vercel.app/search',
       noindex: true,
       q: raw, cityFilter, stateFilter: '', results: [], total: 0, page: 1, totalPages: 0, limit, cities: CITIES,
     });
@@ -115,8 +115,8 @@ router.get('/', async (req, res) => {
       '@graph': [
         {
           '@type': 'WebSite',
-          '@id': 'https://trustedescort.in/#website',
-          'url': 'https://trustedescort.in',
+          '@id': 'https://listtrusted.vercel.app/#website',
+          'url': 'https://listtrusted.vercel.app',
           'name': 'Trusted Escort India',
           'description': 'Find trusted escorts service near me in India — verified profiles across 75+ cities',
           'inLanguage': 'en-IN',
@@ -124,18 +124,18 @@ router.get('/', async (req, res) => {
             '@type': 'SearchAction',
             'target': {
               '@type': 'EntryPoint',
-              'urlTemplate': 'https://trustedescort.in/search?q={search_term_string}'
+              'urlTemplate': 'https://listtrusted.vercel.app/search?q={search_term_string}'
             },
             'query-input': 'required name=search_term_string'
           }
         },
         {
           '@type': 'WebPage',
-          '@id': 'https://trustedescort.in/#webpage',
-          'url': 'https://trustedescort.in',
+          '@id': 'https://listtrusted.vercel.app/#webpage',
+          'url': 'https://listtrusted.vercel.app',
           'name': 'Escorts Service Near Me | Trusted Escort India',
-          'isPartOf': { '@id': 'https://trustedescort.in/#website' },
-          'about': { '@id': 'https://trustedescort.in/#business' },
+          'isPartOf': { '@id': 'https://listtrusted.vercel.app/#website' },
+          'about': { '@id': 'https://listtrusted.vercel.app/#business' },
           'speakable': {
             '@type': 'SpeakableSpecification',
             'cssSelector': ['.speakable-content', '.answer-box p', 'h1', '.hero-answer']
@@ -143,24 +143,24 @@ router.get('/', async (req, res) => {
         },
         {
           '@type': 'Organization',
-          '@id': 'https://trustedescort.in/#organization',
+          '@id': 'https://listtrusted.vercel.app/#organization',
           'name': 'Trusted Escort India',
-          'url': 'https://trustedescort.in',
+          'url': 'https://listtrusted.vercel.app',
           'logo': {
             '@type': 'ImageObject',
-            'url': 'https://trustedescort.in/logo.png',
+            'url': 'https://listtrusted.vercel.app/logo.png',
             'width': 200,
             'height': 60
           },
-          'sameAs': ['https://trustedescort.in']
+          'sameAs': ['https://listtrusted.vercel.app']
         },
         {
           '@type': 'LocalBusiness',
-          '@id': 'https://trustedescort.in/#business',
+          '@id': 'https://listtrusted.vercel.app/#business',
           'name': 'Trusted Escort India',
           'description': 'India\'s most trusted escort service directory. Verified escort profiles across 75+ cities — Delhi, Mumbai, Bangalore, Hyderabad, Chennai, Kolkata and more.',
-          'url': 'https://trustedescort.in',
-          'image': 'https://trustedescort.in/logo.png',
+          'url': 'https://listtrusted.vercel.app',
+          'image': 'https://listtrusted.vercel.app/logo.png',
           'priceRange': 'Free to browse',
           'areaServed': [
             { '@type': 'City', 'name': 'Delhi' },
@@ -188,21 +188,21 @@ router.get('/', async (req, res) => {
               'position': 1,
               'name': 'Choose Your City',
               'text': 'Browse the city grid below and select your city from 75+ Indian cities. Metro cities like Delhi, Mumbai, Bangalore and Hyderabad have the most listings.',
-              'url': 'https://trustedescort.in/#cities'
+              'url': 'https://listtrusted.vercel.app/#cities'
             },
             {
               '@type': 'HowToStep',
               'position': 2,
               'name': 'Browse Verified Listings',
               'text': 'View all admin-approved escort service profiles for your selected city. Every listing is manually reviewed before publishing.',
-              'url': 'https://trustedescort.in/escorts-service/'
+              'url': 'https://listtrusted.vercel.app/escorts-service/'
             },
             {
               '@type': 'HowToStep',
               'position': 3,
               'name': 'Contact Directly',
               'text': 'Tap the Call or WhatsApp button on any listing to contact the advertiser directly — no middlemen, no booking fees.',
-              'url': 'https://trustedescort.in/escorts-service/'
+              'url': 'https://listtrusted.vercel.app/escorts-service/'
             }
           ]
         },
@@ -266,8 +266,8 @@ router.get('/', async (req, res) => {
       title: 'Escorts Service Near Me in India | Trusted Escort India',
       metaDescription: 'Find trusted escorts service near you in India. Browse 500+ verified escort profiles across Delhi, Mumbai, Bangalore, Hyderabad, Chennai & 70+ more cities. Admin-approved, safe & discreet. Free to browse.',
       metaKeywords: 'escorts service near me, escort service india, escorts in delhi, escorts in mumbai, escorts in bangalore, escort service near me, call girls near me india, female escorts india, verified escort service, escort directory india',
-      canonical: 'https://trustedescort.in',
-      ogImage: 'https://trustedescort.in/logo.png',
+      canonical: 'https://listtrusted.vercel.app',
+      ogImage: 'https://listtrusted.vercel.app/logo.png',
       schema,
       ads: approvedAds,
       cities: CITIES
@@ -290,14 +290,14 @@ router.get('/about', (req, res) => {
     '@graph': [
       {
         '@type': 'AboutPage',
-        '@id': 'https://trustedescort.in/about#webpage',
-        'url': 'https://trustedescort.in/about',
+        '@id': 'https://listtrusted.vercel.app/about#webpage',
+        'url': 'https://listtrusted.vercel.app/about',
         'name': 'About Us — Trusted Escort India',
         'description': "Learn about Trusted Escort India — India's most trusted verified escort service directory covering 75+ cities.",
         'mainEntity': {
           '@type': 'Organization',
           'name': 'Trusted Escort India',
-          'url': 'https://trustedescort.in',
+          'url': 'https://listtrusted.vercel.app',
           'description': "India's most trusted platform for verified escort service listings. Browse admin-approved escort profiles across 75+ cities.",
           'founded': '2024'
         }
@@ -305,8 +305,8 @@ router.get('/about', (req, res) => {
       {
         '@type': 'BreadcrumbList',
         'itemListElement': [
-          { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://trustedescort.in' },
-          { '@type': 'ListItem', 'position': 2, 'name': 'About Us', 'item': 'https://trustedescort.in/about' }
+          { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://listtrusted.vercel.app' },
+          { '@type': 'ListItem', 'position': 2, 'name': 'About Us', 'item': 'https://listtrusted.vercel.app/about' }
         ]
       }
     ]
@@ -315,7 +315,7 @@ router.get('/about', (req, res) => {
   res.render('pages/about', {
     title: 'About Us | Trusted Escort India',
     metaDescription: "Learn about Trusted Escort India — India's most trusted verified escort service directory covering 75+ cities.",
-    canonical: 'https://trustedescort.in/about',
+    canonical: 'https://listtrusted.vercel.app/about',
     schema
   });
 });
@@ -326,8 +326,8 @@ router.get('/contact', (req, res) => {
     '@graph': [
       {
         '@type': 'ContactPage',
-        '@id': 'https://trustedescort.in/contact#webpage',
-        'url': 'https://trustedescort.in/contact',
+        '@id': 'https://listtrusted.vercel.app/contact#webpage',
+        'url': 'https://listtrusted.vercel.app/contact',
         'name': 'Contact Us — Trusted Escort India',
         'description': 'Get in touch with the Trusted Escort India team.',
         'mainEntity': {
@@ -335,7 +335,7 @@ router.get('/contact', (req, res) => {
           'name': 'Trusted Escort India',
           'contactPoint': {
             '@type': 'ContactPoint',
-            '@id': 'https://trustedescort.in/contact#contactpoint',
+            '@id': 'https://listtrusted.vercel.app/contact#contactpoint',
             'contactType': 'Customer Support',
             'email': 'support@trustedescort.in',
             'availableLanguage': 'en'
@@ -345,8 +345,8 @@ router.get('/contact', (req, res) => {
       {
         '@type': 'BreadcrumbList',
         'itemListElement': [
-          { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://trustedescort.in' },
-          { '@type': 'ListItem', 'position': 2, 'name': 'Contact', 'item': 'https://trustedescort.in/contact' }
+          { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://listtrusted.vercel.app' },
+          { '@type': 'ListItem', 'position': 2, 'name': 'Contact', 'item': 'https://listtrusted.vercel.app/contact' }
         ]
       }
     ]
@@ -355,7 +355,7 @@ router.get('/contact', (req, res) => {
   res.render('pages/contact', {
     title: 'Contact Us | Trusted Escort India',
     metaDescription: 'Get in touch with the Trusted Escort India team. Support, abuse reports and business enquiries.',
-    canonical: 'https://trustedescort.in/contact',
+    canonical: 'https://listtrusted.vercel.app/contact',
     schema
   });
 });
@@ -366,7 +366,7 @@ router.post('/contact', (req, res) => {
     return res.render('pages/contact', {
       title: 'Contact Us | Trusted Escort India',
       metaDescription: 'Contact Trusted Escort India.',
-      canonical: 'https://trustedescort.in/contact',
+      canonical: 'https://listtrusted.vercel.app/contact',
       error: 'Please fill in all fields.',
     });
   }
@@ -374,7 +374,7 @@ router.post('/contact', (req, res) => {
   res.render('pages/contact', {
     title: 'Contact Us | Trusted Escort India',
     metaDescription: 'Contact Trusted Escort India.',
-    canonical: 'https://trustedescort.in/contact',
+    canonical: 'https://listtrusted.vercel.app/contact',
     success: "Thank you! We've received your message and will reply within 24 hours.",
   });
 });
@@ -385,21 +385,21 @@ router.get('/privacy-policy', (req, res) => {
     '@graph': [
       {
         '@type': 'WebPage',
-        '@id': 'https://trustedescort.in/privacy-policy#webpage',
-        'url': 'https://trustedescort.in/privacy-policy',
+        '@id': 'https://listtrusted.vercel.app/privacy-policy#webpage',
+        'url': 'https://listtrusted.vercel.app/privacy-policy',
         'name': 'Privacy Policy — Trusted Escort India',
         'description': 'Read the Trusted Escort India privacy policy — how we collect, use and protect your data.',
         'mainEntity': {
           '@type': 'Organization',
           'name': 'Trusted Escort India',
-          'url': 'https://trustedescort.in'
+          'url': 'https://listtrusted.vercel.app'
         }
       },
       {
         '@type': 'BreadcrumbList',
         'itemListElement': [
-          { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://trustedescort.in' },
-          { '@type': 'ListItem', 'position': 2, 'name': 'Privacy Policy', 'item': 'https://trustedescort.in/privacy-policy' }
+          { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://listtrusted.vercel.app' },
+          { '@type': 'ListItem', 'position': 2, 'name': 'Privacy Policy', 'item': 'https://listtrusted.vercel.app/privacy-policy' }
         ]
       }
     ]
@@ -408,7 +408,7 @@ router.get('/privacy-policy', (req, res) => {
   res.render('pages/privacy-policy', {
     title: 'Privacy Policy | Trusted Escort India',
     metaDescription: 'Read the Trusted Escort India privacy policy — how we collect, use and protect your data.',
-    canonical: 'https://trustedescort.in/privacy-policy',
+    canonical: 'https://listtrusted.vercel.app/privacy-policy',
     schema
   });
 });
@@ -419,21 +419,21 @@ router.get('/terms', (req, res) => {
     '@graph': [
       {
         '@type': 'WebPage',
-        '@id': 'https://trustedescort.in/terms#webpage',
-        'url': 'https://trustedescort.in/terms',
+        '@id': 'https://listtrusted.vercel.app/terms#webpage',
+        'url': 'https://listtrusted.vercel.app/terms',
         'name': 'Terms & Conditions — Trusted Escort India',
         'description': 'Read the Trusted Escort India terms and conditions of use.',
         'mainEntity': {
           '@type': 'Organization',
           'name': 'Trusted Escort India',
-          'url': 'https://trustedescort.in'
+          'url': 'https://listtrusted.vercel.app'
         }
       },
       {
         '@type': 'BreadcrumbList',
         'itemListElement': [
-          { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://trustedescort.in' },
-          { '@type': 'ListItem', 'position': 2, 'name': 'Terms & Conditions', 'item': 'https://trustedescort.in/terms' }
+          { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://listtrusted.vercel.app' },
+          { '@type': 'ListItem', 'position': 2, 'name': 'Terms & Conditions', 'item': 'https://listtrusted.vercel.app/terms' }
         ]
       }
     ]
@@ -442,7 +442,7 @@ router.get('/terms', (req, res) => {
   res.render('pages/terms', {
     title: 'Terms & Conditions | Trusted Escort India',
     metaDescription: 'Read the Trusted Escort India terms and conditions of use.',
-    canonical: 'https://trustedescort.in/terms',
+    canonical: 'https://listtrusted.vercel.app/terms',
     schema
   });
 });
@@ -451,8 +451,8 @@ router.get('/age-verification', (req, res) => {
   const schema = JSON.stringify({
     '@context': 'https://schema.org',
     '@type': 'WebPage',
-    '@id': 'https://trustedescort.in/age-verification#webpage',
-    'url': 'https://trustedescort.in/age-verification',
+    '@id': 'https://listtrusted.vercel.app/age-verification#webpage',
+    'url': 'https://listtrusted.vercel.app/age-verification',
     'name': 'Age Verification — Adults 18+ Only',
     'description': 'Trusted Escort India is strictly for adults aged 18 and above. Read our age verification and child protection policy.'
   });
@@ -460,7 +460,7 @@ router.get('/age-verification', (req, res) => {
   res.render('pages/age-verification', {
     title: 'Age Verification — Adults 18+ Only | Trusted Escort India',
     metaDescription: 'Trusted Escort India is strictly for adults aged 18 and above. Read our age verification and child protection policy.',
-    canonical: 'https://trustedescort.in/age-verification',
+    canonical: 'https://listtrusted.vercel.app/age-verification',
     noindex: true,
     schema
   });
@@ -472,16 +472,16 @@ router.get('/help-center', (req, res) => {
     '@graph': [
       {
         '@type': 'FAQPage',
-        '@id': 'https://trustedescort.in/help-center#webpage',
-        'url': 'https://trustedescort.in/help-center',
+        '@id': 'https://listtrusted.vercel.app/help-center#webpage',
+        'url': 'https://listtrusted.vercel.app/help-center',
         'name': 'Help Center — Trusted Escort India',
         'description': 'Browse frequently asked questions and get help with browsing, posting ads, accounts and safety on Trusted Escort India.'
       },
       {
         '@type': 'BreadcrumbList',
         'itemListElement': [
-          { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://trustedescort.in' },
-          { '@type': 'ListItem', 'position': 2, 'name': 'Help Center', 'item': 'https://trustedescort.in/help-center' }
+          { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://listtrusted.vercel.app' },
+          { '@type': 'ListItem', 'position': 2, 'name': 'Help Center', 'item': 'https://listtrusted.vercel.app/help-center' }
         ]
       }
     ]
@@ -490,7 +490,7 @@ router.get('/help-center', (req, res) => {
   res.render('pages/help-center', {
     title: 'Help Center | Trusted Escort India',
     metaDescription: 'Browse frequently asked questions and get help with browsing, posting ads, accounts and safety on Trusted Escort India.',
-    canonical: 'https://trustedescort.in/help-center',
+    canonical: 'https://listtrusted.vercel.app/help-center',
     schema
   });
 });
