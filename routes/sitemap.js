@@ -60,7 +60,7 @@ router.get('/sitemap-index.xml', (req, res) => {
 </sitemapindex>`;
 
   res.header('Content-Type', 'application/xml; charset=UTF-8');
-  res.header('Cache-Control', 'public, max-age=3600, s-maxage=0, must-revalidate');
+  res.header('Cache-Control', 'public, max-age=86400, immutable');
   res.send(xml);
 });
 
@@ -169,8 +169,7 @@ ${blocks.join('\n')}
 </urlset>`;
 
   res.header('Content-Type', 'application/xml; charset=UTF-8');
-  res.header('Cache-Control', 'public, max-age=1800, s-maxage=0, must-revalidate');
-  res.header('CDN-Cache-Control', 'no-store');
+  res.header('Cache-Control', 'public, max-age=3600, immutable');
   res.send(xml);
 });
 
@@ -207,8 +206,7 @@ ${blocks.join('\n')}
 </urlset>`;
 
   res.header('Content-Type', 'application/xml; charset=UTF-8');
-  res.header('Cache-Control', 'public, max-age=1800, s-maxage=0, must-revalidate');
-  res.header('CDN-Cache-Control', 'no-store');
+  res.header('Cache-Control', 'public, max-age=3600, immutable');
   res.send(xml);
 });
 

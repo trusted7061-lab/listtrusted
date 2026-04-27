@@ -34,6 +34,19 @@ app.set('layout', 'layouts/main');
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+// ── Interceptor for XML responses: remove set-cookie header ──────────────────
+app.use((req, res, next) => {
+  const originalSend = res.send;
+  res.send = function(data) {
+    // Check if response is XML
+    if (typeof data === 'string' && (data.trim().startsWith('<?xml') || req.path.endsWith('.xml'))) {
+      res.removeHeader('set-cookie');
+    }
+    return originalSend.call(this, data);
+  };
+  next();
+});
+
 // ── Static files with long-lived cache ──────────────────────────────────────
 app.use(express.static(path.join(__dirname, 'public'), {
   maxAge: '1y',
