@@ -88,7 +88,7 @@ app.use((req, res, next) => {
 
 // ── Health check (debug) ─────────────────────────────────────────────────────
 app.get('/health', async (req, res) => {
-  const status = { env: process.env.NODE_ENV, mongoUri: !!process.env.MONGODB_URI };
+  const status = { env: process.env.NODE_ENV, mongoUri: !!process.env.MONGODB_URI, timestamp: new Date().toISOString() };
   try {
     await connectDB();
     status.db = 'connected';
