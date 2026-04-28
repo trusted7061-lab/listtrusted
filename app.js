@@ -115,8 +115,10 @@ app.get('/location', (req, res) => {
   res.redirect(301, '/escorts-service/');
 });
 
-// ── Routes ────────────────────────────────────────────────────────────────────
+// ── Mount sitemap routes BEFORE session middleware to prevent cookies ────────
 app.use('/', require('./routes/sitemap'));
+
+// ── Session ───────────────────────────────────────────────────────────────────
 app.use('/', require('./routes/public'));
 app.use('/escorts-service', require('./routes/escorts-service'));
 app.use('/auth', require('./routes/auth'));

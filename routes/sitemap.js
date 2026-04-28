@@ -61,7 +61,6 @@ router.get('/sitemap-index.xml', (req, res) => {
 
   res.header('Content-Type', 'application/xml; charset=UTF-8');
   res.header('Cache-Control', 'public, max-age=86400, immutable');
-  res.clearCookie('connect.sid');
   res.send(xml);
 });
 
@@ -171,7 +170,6 @@ ${blocks.join('\n')}
 
   res.header('Content-Type', 'application/xml; charset=UTF-8');
   res.header('Cache-Control', 'public, max-age=3600, immutable');
-  res.clearCookie('connect.sid');
   res.send(xml);
 });
 
@@ -209,7 +207,6 @@ ${blocks.join('\n')}
 
   res.header('Content-Type', 'application/xml; charset=UTF-8');
   res.header('Cache-Control', 'public, max-age=3600, immutable');
-  res.clearCookie('connect.sid');
   res.send(xml);
 });
 
