@@ -3,6 +3,7 @@ const router = express.Router();
 const { CITIES } = require('../config/cities');
 const { AREAS } = require('../config/areas');
 const Ad = require('../models/Ad');
+const connectDB = require('../config/db');
 
 const BASE = 'https://listtrusted.vercel.app';
 
@@ -60,7 +61,7 @@ router.get('/sitemap-index.xml', (req, res) => {
 </sitemapindex>`;
 
   res.header('Content-Type', 'application/xml; charset=UTF-8');
-  res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.header('Cache-Control', 'public, max-age=3600, s-maxage=3600');
   res.end(xml);
 });
 
@@ -128,7 +129,7 @@ ${blocks.join('\n')}
 </urlset>`;
 
   res.header('Content-Type', 'application/xml; charset=UTF-8');
-  res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.header('Cache-Control', 'public, max-age=3600, s-maxage=3600');
   res.end(xml);
 });
 
@@ -137,8 +138,7 @@ router.get('/sitemap-profiles.xml', async (req, res) => {
   const today = new Date().toISOString().split('T')[0];
   const blocks = [];
 
-  try {
-    const ads = await Ad.find({ status: 'approved' }, '_id title city image updatedAt').lean();
+  try {    await connectDB();    const ads = await Ad.find({ status: 'approved' }, '_id title city image updatedAt').lean();
     ads.forEach(ad => {
       const lastmod = ad.updatedAt ? ad.updatedAt.toISOString().split('T')[0] : today;
       const imgBlocks = [];
@@ -168,7 +168,7 @@ ${blocks.join('\n')}
 </urlset>`;
 
   res.header('Content-Type', 'application/xml; charset=UTF-8');
-  res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.header('Cache-Control', 'public, max-age=1800, s-maxage=1800');
   res.end(xml);
 });
 
@@ -179,6 +179,7 @@ router.get('/sitemap-images.xml', async (req, res) => {
   const blocks = [];
 
   try {
+    await connectDB();
     const ads = await Ad.find({ status: 'approved' }, '_id title city citySlug image updatedAt').lean();
     ads.forEach(ad => {
       if (!ad.image) return;
@@ -205,7 +206,7 @@ ${blocks.join('\n')}
 </urlset>`;
 
   res.header('Content-Type', 'application/xml; charset=UTF-8');
-  res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.header('Cache-Control', 'public, max-age=1800, s-maxage=1800');
   res.end(xml);
 });
 
