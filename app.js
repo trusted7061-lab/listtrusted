@@ -68,6 +68,11 @@ if (process.env.MONGODB_URI) {
     collectionName: 'sessions'
   });
 }
+
+// ── Mount sitemap routes FIRST (before session middleware) ──────────────────
+app.use('/', require('./routes/sitemap'));
+
+// NOW apply session and other middleware
 app.use(session(sessionOptions));
 
 // ── Flash + locals ────────────────────────────────────────────────────────────
@@ -115,10 +120,7 @@ app.get('/location', (req, res) => {
   res.redirect(301, '/escorts-service/');
 });
 
-// ── Mount sitemap routes BEFORE session middleware to prevent cookies ────────
-app.use('/', require('./routes/sitemap'));
-
-// ── Session ───────────────────────────────────────────────────────────────────
+// ── Routes ────────────────────────────────────────────────────────────────────
 app.use('/', require('./routes/public'));
 app.use('/escorts-service', require('./routes/escorts-service'));
 app.use('/auth', require('./routes/auth'));
