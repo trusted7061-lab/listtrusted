@@ -65,71 +65,35 @@ router.get('/sitemap-index.xml', (req, res) => {
   res.end(xml);
 });
 
-// ─── Main Sitemap (pages only, no profiles) ───────────────────────────────────
+// ─── Main Sitemap (pages only — no images, no profiles) ─────────────────────
 router.get('/sitemap.xml', (req, res) => {
   const today = new Date().toISOString().split('T')[0];
-  const blocks = [];
+  const lines = [];
 
-  // Homepage
-  blocks.push(urlBlock({ loc: `${BASE}/`, priority: '1.0', changefreq: 'daily', lastmod: today,
-    images: [{ loc: `${BASE}/logo.png`, title: 'Trusted Escort India', caption: 'India\'s most trusted escort service directory' }]
-  }));
+  const u = (loc, priority, changefreq) =>
+    `  <url><loc>${loc}</loc><lastmod>${today}</lastmod><changefreq>${changefreq}</changefreq><priority>${priority}</priority></url>`;
 
-  // Escorts service index
-  blocks.push(urlBlock({ loc: `${BASE}/escorts-service/`, priority: '0.9', changefreq: 'daily', lastmod: today }));
+  lines.push(u(`${BASE}/`, '1.0', 'daily'));
+  lines.push(u(`${BASE}/escorts-service/`, '0.9', 'daily'));
 
-  // All city pages with OG image
   CITIES.forEach(city => {
-    blocks.push(urlBlock({
-      loc: `${BASE}/escorts-service/${city.slug}/`,
-      priority: city.metro ? '0.8' : '0.7',
-      changefreq: 'daily',
-      lastmod: today,
-      images: [{
-        loc: `${BASE}/logo.png`,
-        title: `Escort Service in ${city.name}, ${city.state}`,
-        caption: `Verified escort service listings in ${city.name}. Admin-approved profiles — safe, discreet, 24/7.`
-      }]
-    }));
+    lines.push(u(`${BASE}/escorts-service/${city.slug}/`, city.metro ? '0.8' : '0.7', 'daily'));
   });
 
-  // All area pages — each shows only ads specifically targeting that area (unique content)
   Object.keys(AREAS).forEach(citySlug => {
-    const city = CITIES.find(c => c.slug === citySlug);
     (AREAS[citySlug] || []).forEach(area => {
-      blocks.push(urlBlock({
-        loc: `${BASE}/escorts-service/${citySlug}/${area.slug}/`,
-        priority: '0.6',
-        changefreq: 'weekly',
-        lastmod: today,
-        images: [{
-          loc: `${BASE}/logo.png`,
-          title: `Escort Service in ${area.name}, ${city ? city.name : citySlug}`,
-          caption: `Find verified escort service in ${area.name}. Admin-approved profiles only.`
-        }]
-      }));
+      lines.push(u(`${BASE}/escorts-service/${citySlug}/${area.slug}/`, '0.6', 'weekly'));
     });
   });
 
-  // Static pages
-  [
-    { path: '/about',            p: '0.5', freq: 'monthly' },
-    { path: '/contact',          p: '0.5', freq: 'monthly' },
-    { path: '/privacy-policy',   p: '0.4', freq: 'monthly' },
-    { path: '/terms',            p: '0.4', freq: 'monthly' },
-    { path: '/help-center',      p: '0.5', freq: 'monthly' },
-  ].forEach(({ path, p, freq }) => {
-    blocks.push(urlBlock({ loc: `${BASE}${path}`, priority: p, changefreq: freq, lastmod: today }));
+  ['/about', '/contact', '/privacy-policy', '/terms', '/help-center'].forEach(path => {
+    lines.push(u(`${BASE}${path}`, '0.5', 'monthly'));
   });
 
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
-${blocks.join('\n')}
-</urlset>`;
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${lines.join('\n')}\n</urlset>`;
 
   res.header('Content-Type', 'application/xml; charset=UTF-8');
-  res.header('Cache-Control', 'public, max-age=3600, s-maxage=3600');
+  res.header('Cache-Control', 'public, max-age=3600, s-maxage=86400');
   res.end(xml);
 });
 
