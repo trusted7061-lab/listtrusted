@@ -79,6 +79,24 @@ app.use(session(sessionOptions));
 app.use(flash());
 app.use(setLocals);
 
+// ── SEO FIX: Strip Set-Cookie on public GET pages for unauthenticated users ──
+// connect-flash initializes req.session.flash={} on every request, causing a
+// session cookie to be set even for anonymous visitors. Google refuses to index
+// pages that send Set-Cookie (treats them as personalised/gated content).
+app.use((req, res, next) => {
+  if (req.method !== 'GET') return next();
+  const privatePaths = ['/admin', '/advertiser', '/auth'];
+  if (privatePaths.some(p => req.path.startsWith(p))) return next();
+  const origEnd = res.end.bind(res);
+  res.end = function (...args) {
+    if (!req.session || !req.session.userId) {
+      res.removeHeader('Set-Cookie');
+    }
+    return origEnd(...args);
+  };
+  next();
+});
+
 // ── Ensure DB is connected before any route handler runs ─────────────────────
 // bufferCommands:false means queries fail immediately when not connected,
 // so we must explicitly await the connection on every cold-start request.
