@@ -72,30 +72,37 @@ if (process.env.MONGODB_URI) {
 // ── Mount sitemap routes FIRST (before session middleware) ──────────────────
 app.use('/', require('./routes/sitemap'));
 
-// NOW apply session and other middleware
-app.use(session(sessionOptions));
+// ── Session: only for requests that already have a session cookie OR private routes ──
+// SEO FIX: Skipping session on fresh cookieless GET requests prevents connect-flash
+// from initialising req.session.flash={}, which would set a Set-Cookie header and
+// cause Google to treat all public pages as personalised/gated (blocking indexing).
+const sessionMiddleware = session(sessionOptions);
+const PRIVATE_PATHS = ['/admin', '/advertiser', '/auth'];
 
-// ── Flash + locals ────────────────────────────────────────────────────────────
-app.use(flash());
-app.use(setLocals);
-
-// ── SEO FIX: Strip Set-Cookie on public GET pages for unauthenticated users ──
-// connect-flash initializes req.session.flash={} on every request, causing a
-// session cookie to be set even for anonymous visitors. Google refuses to index
-// pages that send Set-Cookie (treats them as personalised/gated content).
 app.use((req, res, next) => {
-  if (req.method !== 'GET') return next();
-  const privatePaths = ['/admin', '/advertiser', '/auth'];
-  if (privatePaths.some(p => req.path.startsWith(p))) return next();
-  const origEnd = res.end.bind(res);
-  res.end = function (...args) {
-    if (!req.session || !req.session.userId) {
-      res.removeHeader('Set-Cookie');
-    }
-    return origEnd(...args);
-  };
+  const isPrivate = PRIVATE_PATHS.some(p => req.path.startsWith(p));
+  const hasCookie = req.headers.cookie && req.headers.cookie.includes('connect.sid');
+
+  if (isPrivate || hasCookie || req.method !== 'GET') {
+    // Run full session middleware
+    return sessionMiddleware(req, res, next);
+  }
+
+  // No session needed — stub req.session and req.flash so templates don't crash
+  req.session = {};
+  req.flash  = () => [];
   next();
 });
+
+// ── Flash + locals ────────────────────────────────────────────────────────────
+// Only run connect-flash when a real session exists (req.session has an 'id')
+app.use((req, res, next) => {
+  if (req.session && req.session.id !== undefined) {
+    return flash()(req, res, next);
+  }
+  next();
+});
+app.use(setLocals);
 
 // ── Ensure DB is connected before any route handler runs ─────────────────────
 // bufferCommands:false means queries fail immediately when not connected,
