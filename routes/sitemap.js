@@ -61,7 +61,7 @@ router.get('/sitemap-index.xml', (req, res) => {
 
   res.header('Content-Type', 'application/xml; charset=UTF-8');
   res.header('Cache-Control', 'public, max-age=86400, immutable');
-  res.send(xml);
+  res.end(xml);
 });
 
 // ─── Main Sitemap (pages only, no profiles) ───────────────────────────────────
@@ -129,8 +129,7 @@ ${blocks.join('\n')}
 
   res.header('Content-Type', 'application/xml; charset=UTF-8');
   res.header('Cache-Control', 'public, max-age=86400, immutable');
-  res.clearCookie('connect.sid');
-  res.send(xml);
+  res.end(xml);
 });
 
 // ─── Profiles Sitemap ─────────────────────────────────────────────────────────
@@ -170,7 +169,7 @@ ${blocks.join('\n')}
 
   res.header('Content-Type', 'application/xml; charset=UTF-8');
   res.header('Cache-Control', 'public, max-age=3600, immutable');
-  res.send(xml);
+  res.end(xml);
 });
 
 // ─── Dedicated Image Sitemap ──────────────────────────────────────────────────
@@ -207,7 +206,7 @@ ${blocks.join('\n')}
 
   res.header('Content-Type', 'application/xml; charset=UTF-8');
   res.header('Cache-Control', 'public, max-age=3600, immutable');
-  res.send(xml);
+  res.end(xml);
 });
 
 module.exports = router;
