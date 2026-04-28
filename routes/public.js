@@ -337,7 +337,7 @@ router.get('/contact', (req, res) => {
             '@type': 'ContactPoint',
             '@id': 'https://listtrusted.vercel.app/contact#contactpoint',
             'contactType': 'Customer Support',
-            'email': 'support@trustedescort.in',
+            'email': 'support@listtrusted.vercel.app',
             'availableLanguage': 'en'
           }
         }
